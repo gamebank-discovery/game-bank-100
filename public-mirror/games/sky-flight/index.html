@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#071729"><meta name="description" content="GAME BANK SKY FLIGHT — 滑走路への進入・着陸・停止を目指す3Dフライトシミュレーター"><title>SKY FLIGHT v7 | GAME BANK</title>
+<style>
+:root{--cyan:#4ce5ff;--ink:#061827;--glass:rgba(4,20,36,.66);--stroke:rgba(220,247,255,.22)}*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;font-family:system-ui,-apple-system,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;background:#081a2b;color:white;touch-action:none}button,input{font:inherit}button{cursor:pointer;color:inherit}#view{position:fixed;inset:0;width:100%;height:100%;display:block}#vignette{position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,10,23,.36),transparent 24%,transparent 64%,rgba(0,13,28,.38))}#ui{position:fixed;inset:0;pointer-events:none}#ui>*{pointer-events:auto}.top{position:absolute;top:max(env(safe-area-inset-top),12px);left:14px;right:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.brand{display:flex;align-items:center;gap:10px}.brandmark{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(255,255,255,.48);background:rgba(5,21,36,.45);border-radius:13px;font-size:23px;box-shadow:0 8px 35px #06192a40}.brand-name{font-size:16px;font-weight:900;letter-spacing:.18em;line-height:1.2}.tiny{font-size:10px;opacity:.8;letter-spacing:.15em}.topActions{display:flex;gap:7px}.pill{border:1px solid var(--stroke);background:var(--glass);backdrop-filter:blur(12px);border-radius:12px;padding:10px 12px;font-size:12px;font-weight:750;box-shadow:0 8px 20px #0017;white-space:nowrap}.pill:active,.round:active{transform:scale(.95)}.metrics{position:absolute;left:14px;top:85px;display:grid;grid-template-columns:repeat(3,minmax(72px,95px));gap:6px}.metric{border:1px solid var(--stroke);border-radius:12px;background:var(--glass);backdrop-filter:blur(9px);padding:9px 10px}.metric span{font-size:9px;color:#b2dbec;letter-spacing:.1em}.metric strong{display:block;font-size:21px;font-weight:850;font-variant-numeric:tabular-nums}.metric em{font-size:10px;font-style:normal;color:#a1d9e9}.mission{position:absolute;left:50%;transform:translateX(-50%);top:88px;width:min(350px,90vw);text-align:center;background:rgba(5,21,37,.68);border:1px solid var(--stroke);border-radius:14px;padding:9px 14px;box-shadow:0 8px 25px #0015}.mission .step{font-size:10px;letter-spacing:.16em;color:var(--cyan)}.mission .name{font-size:13px;font-weight:800;margin-top:2px}.mission .distance{font-size:11px;color:#cfe6ee;margin-top:2px}.compass{position:absolute;top:164px;left:50%;transform:translateX(-50%);width:148px;text-align:center;font-size:10px;letter-spacing:.15em;color:#d5f9ff;text-shadow:0 2px 6px black}.compass strong{display:block;font-size:20px;letter-spacing:.04em}.reticle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:52px;width:62px;opacity:.56;pointer-events:none}.reticle:before{content:'';position:absolute;left:0;right:0;top:26px;height:1px;background:#ecffff}.reticle:after{content:'';position:absolute;left:31px;top:1px;width:1px;height:50px;background:#ecffff}.reticle b{position:absolute;inset:14px 19px;border:1px solid #e2feff;border-radius:50%}.flight-notice{position:absolute;left:50%;top:27%;transform:translateX(-50%);background:rgba(1,18,30,.76);border:1px solid #9eefff;border-radius:12px;box-shadow:0 7px 38px #000a;padding:10px 15px;text-align:center;font-size:13px;font-weight:800;opacity:0;transition:opacity .25s;pointer-events:none;max-width:85vw;white-space:normal}.flight-notice.show{opacity:1}.left-panel{position:absolute;bottom:max(20px,env(safe-area-inset-bottom));left:16px;display:flex;align-items:flex-end;gap:14px}.stickwrap{position:relative;width:142px;height:142px;border:1px solid #c9f9ff7d;border-radius:50%;background:radial-gradient(circle,#1a526355,rgba(3,24,41,.55));box-shadow:inset 0 0 34px #001b2e,0 10px 30px #0017;touch-action:none}.stickwrap:before,.stickwrap:after{content:'';position:absolute;background:#dcfcff35;pointer-events:none}.stickwrap:before{height:1px;left:9px;right:9px;top:50%}.stickwrap:after{width:1px;top:9px;bottom:9px;left:50%}.knob{position:absolute;left:50%;top:50%;width:61px;height:61px;border-radius:50%;background:linear-gradient(145deg,#8bedff66,#05475dbb);border:2px solid #c7f9ffb7;box-shadow:0 4px 14px #0008;transform:translate(-50%,-50%);pointer-events:none;display:grid;place-items:center;color:white;font-size:9px;letter-spacing:.09em}.sticklabel{position:absolute;top:-23px;left:20px;color:#d3fcff;font-size:10px;letter-spacing:.12em}.rudders{display:flex;flex-direction:column;gap:8px}.rudders button{width:55px;height:47px;border:1px solid var(--stroke);background:var(--glass);border-radius:13px;font-size:15px;font-weight:850}.right-panel{position:absolute;right:16px;bottom:max(20px,env(safe-area-inset-bottom));display:flex;align-items:flex-end;gap:10px}.flight-buttons{display:flex;flex-direction:column;gap:8px;align-items:flex-end}.flight-buttons button{min-width:74px;border:1px solid var(--stroke);border-radius:13px;background:var(--glass);padding:11px 9px;font-size:11px;font-weight:850}.flight-buttons button.active{color:#00e2ff;border-color:#6ee8ff}.throttle{height:206px;width:63px;border:1px solid var(--stroke);border-radius:17px;background:var(--glass);display:flex;flex-direction:column;align-items:center;padding:8px 5px 13px;gap:5px}.throttle small{font-size:10px;color:#c3f3ff}.throttle strong{font-size:17px}.throttle input{writing-mode:vertical-lr;direction:rtl;width:28px;min-height:125px;flex:1;accent-color:#48d9f9}.bottomhint{position:absolute;left:50%;bottom:max(5px,env(safe-area-inset-bottom));transform:translateX(-50%);font-size:10px;letter-spacing:.03em;color:#bce0ef;text-shadow:0 1px 6px black;pointer-events:none;white-space:nowrap}.modalback{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#0b2333c7,#000c19e0);backdrop-filter:blur(13px);z-index:10;padding:20px;overflow:auto}.modal{width:min(480px,100%);border:1px solid #a7ebfa65;border-radius:25px;background:linear-gradient(160deg,#103b57,#061524 75%);padding:27px 23px;box-shadow:0 30px 90px #0009;max-height:calc(100vh - 30px);overflow-y:auto}.eyebrow{font-size:10px;letter-spacing:.25em;color:#67e6ff;font-weight:800}.modal h1{font-size:clamp(34px,8vw,48px);margin:8px 0 5px;letter-spacing:.07em;line-height:1.08}.modal p{color:#d0e5f0;font-size:13px;line-height:1.75}.hero-symbol{font-size:70px;margin:12px 0 1px;filter:drop-shadow(0 14px 15px #001)}.chips{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0}.chip{font-size:11px;border:1px solid #87cbe766;background:#0d3451;padding:7px 10px;border-radius:24px}.selectRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.selectRow label{font-size:10px;color:#b9dae5}.selectRow select{background:#14364d;border:1px solid #88b7c177;padding:10px;width:100%;color:white;border-radius:10px;margin-top:6px}.primary{display:block;width:100%;padding:15px 18px;border-radius:15px;border:0;background:linear-gradient(100deg,#39d7ff,#7affe9);color:#05273b;font-weight:950;font-size:15px;box-shadow:0 8px 25px #18d0ff33}.help{font-size:11px!important;color:#a9d1dc!important;margin-bottom:0}.soundguide{padding:9px 10px;margin-top:10px;border-radius:10px;background:rgba(33,189,204,.13);font-size:11px;color:#c5f6ff;line-height:1.55}.pill.sound-on{border-color:#7df4ed;color:#ddfffb}.pill.sound-off{color:#b1c6d0}.test-audio{display:block;width:100%;margin:12px 0 0;padding:12px;border:1px solid #9bdeffb0;background:#0a3954;color:#e2fbff;border-radius:12px;font-size:13px;font-weight:750}.audio-status{margin:6px 0 8px;padding:7px 9px;border:1px solid #447993;border-radius:9px;color:#c8e8f4;font-size:11px;line-height:1.6}.audio-status[data-level="warn"]{color:#ffdd92;border-color:#9f7842}.hidden{display:none!important}.map{position:absolute;top:84px;right:14px;width:118px;height:118px;border:1px solid var(--stroke);border-radius:13px;background:rgba(1,19,34,.48);overflow:hidden;pointer-events:none}.map canvas{width:100%;height:100%}.maplabel{position:absolute;bottom:4px;left:7px;font-size:9px;color:#c2f4ff}.score{color:#83fcdb;font-weight:850;font-size:13px}.overlayButtons{display:flex;gap:8px;margin-top:15px}.overlayButtons>*{flex:1}@media(max-width:700px){.mission{top:151px;max-width:245px}.metrics{top:80px;grid-template-columns:repeat(3,67px)}.metric{padding:6px}.metric strong{font-size:17px}.metric span{font-size:8px}.topActions .pill{padding:9px}.topActions .label{display:none}.map{top:83px;right:12px;width:99px;height:99px}.compass{top:208px}.left-panel{bottom:calc(max(22px,env(safe-area-inset-bottom)) + 20px);left:11px;gap:6px}.stickwrap{width:126px;height:126px}.knob{height:55px;width:55px}.rudders button{width:47px;height:44px}.right-panel{right:10px;bottom:calc(max(22px,env(safe-area-inset-bottom)) + 20px);gap:7px}.throttle{height:181px;width:54px}.throttle input{min-height:105px}.flight-buttons button{min-width:62px;padding:9px 5px}.bottomhint{display:none}}@media(max-height:670px){.compass{display:none}.mission{top:80px}.map{display:none}.left-panel,.right-panel{bottom:8px}}
+
+/* SKY FLIGHT v4: purpose-led flight experience */
+.mission{width:min(390px,92vw);top:88px;border-color:#8fd9ff79;text-align:left;padding:12px 14px;background:linear-gradient(135deg,rgba(4,20,35,.93),rgba(1,31,47,.75))}
+.mission .step{font-size:10px;color:#91efff;letter-spacing:.1em}.mission .name{font-size:15px;line-height:1.4}.mission .distance{font-size:12px;line-height:1.35;color:#d5f3fb}
+.mission .mission-progress{display:flex;gap:4px;margin-top:9px}.mission .mission-progress i{height:4px;background:#45657a;flex:1;border-radius:12px}.mission .mission-progress i.on{background:#6ff1c3}
+.mission .mission-progress i.next{background:#f3d285}
+.nav-strip{position:absolute;top:232px;left:50%;transform:translateX(-50%);display:flex;gap:6px;max-width:93vw;pointer-events:none}
+.nav-chip{background:rgba(3,21,37,.78);border:1px solid #b5efff40;border-radius:9px;padding:7px 9px;text-align:center;min-width:83px;font-size:10px;color:#b9d7e5}
+.nav-chip b{display:block;font-size:12px;color:#fff;margin-top:2px;font-variant-numeric:tabular-nums}.nav-chip.ok{border-color:#60efc4;color:#65f1bb}.nav-chip.warn{border-color:#ffd17c;color:#ffe0a0}.nav-chip.bad{border-color:#ff8f9c;color:#ffb4ba}
+.atc{position:absolute;top:290px;left:50%;transform:translateX(-50%);padding:7px 11px;border-radius:11px;background:rgba(4,21,40,.65);border:1px solid #90d8ec53;font-size:11px;color:#d4f6ff;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.flap-panel{position:absolute;right:91px;bottom:max(236px,env(safe-area-inset-bottom) + 232px);border:1px solid #94cedc56;border-radius:12px;background:rgba(2,22,35,.8);padding:6px 11px;font-size:11px;display:flex;gap:8px;pointer-events:none}
+.flight-buttons button{min-height:42px;line-height:1.25}.flight-buttons button.braking{background:#f4ae52;color:#132336;border-color:#f9cb80}
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.checklist div{background:#102c43;border:1px solid #6f9fb166;border-radius:10px;padding:9px;font-size:12px}
+.goal{margin:15px 0;background:linear-gradient(130deg,#0a4e62aa,#173656bb);border:1px solid #51d7ed7a;border-radius:15px;padding:14px}.goal strong{display:block;color:#98ffdb;font-size:18px;margin:3px 0}.goal small{font-size:11px;color:#d5ecf0}
+.howto{font-size:12px;line-height:1.65;color:#d1e5ed}.primary{letter-spacing:.02em}
+.result-details{white-space:pre-line;color:#ceecf5;font-size:12px;line-height:1.85}
+@media(max-width:700px){.mission{top:150px;max-width:min(325px,84vw);padding:9px 12px}.mission .name{font-size:13px}.mission .distance{font-size:10px}.compass{top:245px;font-size:9px;left:50%}.compass strong{font-size:15px}.nav-strip{top:284px;gap:4px}.nav-chip{padding:5px 6px;min-width:69px;font-size:9px}.nav-chip b{font-size:11px}.atc{top:331px;font-size:10px;max-width:95vw}.map{top:84px}.flight-buttons button{min-width:62px;min-height:34px;padding:6px 5px;font-size:10px}.left-panel{bottom:max(20px,env(safe-area-inset-bottom))}.right-panel{bottom:max(16px,env(safe-area-inset-bottom))}.stickwrap{width:120px;height:120px}.rudders button{width:41px;height:38px}.throttle{height:201px;width:52px}.throttle input{min-height:110px}.reticle{opacity:.36}.goal strong{font-size:16px}}
+@media(max-height:680px){.nav-strip{top:253px}.atc{top:297px}.mission{top:118px}.compass{top:215px}.map{width:84px;height:84px}.flap-panel{display:none}}
+
+/* SKY FLIGHT v6 — stage-first, non-obstructing flight display.
+   The flying scene lives BETWEEN two dedicated instrumentation panels. */
+:root{--safeTop:env(safe-area-inset-top,0px);--safeBottom:env(safe-area-inset-bottom,0px);--sky-top:calc(var(--safeTop) + 145px);--dock-height:calc(var(--safeBottom) + 183px)}
+#view{inset:auto!important;top:var(--sky-top)!important;bottom:var(--dock-height)!important;left:0!important;right:0!important;width:100%!important;height:calc(100dvh - var(--sky-top) - var(--dock-height))!important;display:block;background:#9fd5ee}
+#vignette{inset:auto;top:var(--sky-top);bottom:var(--dock-height);left:0;right:0;opacity:.35}
+#ui:before{content:'';position:absolute;top:0;left:0;right:0;height:var(--sky-top);background:linear-gradient(180deg,#071829,#102e46);border-bottom:1px solid #3d7d9675;pointer-events:none}
+#ui:after{content:'';position:absolute;bottom:0;left:0;right:0;height:var(--dock-height);background:linear-gradient(180deg,#112e41,#051825 75%);border-top:1px solid #5092a774;pointer-events:none}
+#ui>.top,#ui>.mission,#ui>.metrics,#ui>.nav-strip,#ui>.left-panel,#ui>.right-panel,#ui>.control-dock-title{z-index:1}
+.top{top:calc(var(--safeTop) + 7px);left:12px;right:12px;align-items:center;height:40px;gap:8px}
+.brandmark{width:34px;height:34px;border-radius:10px;font-size:19px}
+.brand-name{font-size:14px;letter-spacing:.13em}
+.tiny{font-size:8px;letter-spacing:.11em}
+.topActions{gap:5px;align-items:center}
+.pill{padding:8px 10px;font-size:11px;border-radius:9px;background:rgba(24,54,71,.77)}
+.mission{top:calc(var(--safeTop) + 53px)!important;left:12px;right:12px;transform:none!important;width:auto!important;max-width:none!important;height:83px;padding:8px 12px!important;text-align:left;overflow:hidden;border-radius:12px;background:#0b2539!important;border:1px solid #4a9fc777!important;box-shadow:none!important;pointer-events:none!important}
+.mission-goal{color:#a8ffe4;font-size:13px;font-weight:900;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mission .step{font-size:9px!important;margin-top:4px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mission .name{font-size:12px!important;font-weight:750;line-height:1.25;display:inline;color:#f8ffff}
+.mission .name:after{content:' · ';opacity:.4}
+.mission .distance{font-size:10px!important;line-height:1.3;display:inline;margin:0;color:#b6e8f2}
+.mission .mission-progress{margin-top:6px;gap:5px}
+.mission .mission-progress i{height:3px}
+.map{display:none;top:calc(var(--sky-top) + 10px)!important;right:10px;width:130px;height:130px;z-index:4;border:2px solid #b9eaf2;background:#061d30;box-shadow:0 8px 30px #0008}
+.map.show{display:block}
+.compass{display:none!important}
+.atc{display:none!important}
+.flight-notice{top:calc(var(--sky-top) + 12px);z-index:2;max-width:min(88vw,410px);font-size:11px;padding:7px 10px;pointer-events:none}
+.reticle{top:calc(var(--sky-top) + (100% - var(--sky-top) - var(--dock-height))/2);opacity:.28;pointer-events:none}
+.metrics{top:auto!important;bottom:calc(var(--safeBottom) + 131px)!important;left:9px;right:9px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;z-index:2}
+.metric{padding:4px 7px!important;height:43px;border-radius:8px;text-align:center;background:#19394c8c;border-color:#3d6374}
+.metric span{font-size:9px;color:#b5ddea;letter-spacing:0}
+.metric strong{font-size:17px!important;line-height:1.1;white-space:nowrap;letter-spacing:-.03em}
+.metric em{font-size:9px;margin-left:3px}
+.heading-metric strong{font-size:15px!important}
+.nav-strip{top:auto!important;bottom:calc(var(--safeBottom) + 91px)!important;left:9px;right:9px;transform:none!important;width:auto;max-width:none;height:36px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;z-index:2;pointer-events:none!important}
+.nav-chip{min-width:0!important;padding:4px 2px!important;border-radius:7px;background:#113249;border-color:#426579;font-size:9px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-chip b{font-size:11px;margin-top:1px}
+.left-panel,.right-panel{bottom:calc(var(--safeBottom) + 5px)!important;z-index:2;align-items:end;max-height:83px;gap:6px}
+.left-panel{left:10px}
+.right-panel{right:10px}
+.stickwrap{width:82px!important;height:82px!important;flex-shrink:0;border-width:1px}
+.knob{width:36px!important;height:36px!important;font-size:7px!important}
+.sticklabel{display:none}
+.rudders{gap:6px}
+.rudders button{width:30px!important;height:36px!important;padding:0;border-radius:9px;font-size:17px}
+.flight-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,39px);gap:5px;align-items:stretch}
+.flight-buttons button{min-width:59px!important;min-height:39px!important;padding:4px 6px!important;font-size:10px!important;line-height:1.1;border-radius:8px}
+#resetBtn{display:none!important}
+.throttle{height:83px!important;width:46px!important;border-radius:10px;padding:5px 3px!important;gap:0!important}
+.throttle small{font-size:8px}
+.throttle strong{font-size:11px!important}
+.throttle input{min-height:45px!important;width:26px!important;flex:1}
+.flap-panel,.bottomhint{display:none!important}
+.control-dock-title{position:absolute;bottom:calc(var(--safeBottom) + 88px);left:14px;right:14px;font-size:9px;color:#9ec2d3;display:flex;justify-content:space-between;pointer-events:none!important;letter-spacing:.07em}
+#mapBtn[aria-pressed=true]{background:#215d66;border-color:#63ffd6}
+.modal{width:min(540px,100%)}
+@media (min-width:760px){
+ :root{--sky-top:152px;--dock-height:174px}
+ .mission{top:57px!important;height:86px;width:min(760px,calc(100% - 24px))!important;left:12px;right:auto}
+ .mission-goal{font-size:15px}
+ .mission .name{font-size:13px!important}
+ .mission .distance{font-size:12px!important}
+ .metrics{bottom:125px!important;left:calc(50% - 350px);right:calc(50% - 350px);gap:8px}
+ .metric{height:40px}
+ .nav-strip{bottom:79px!important;left:calc(50% - 350px);right:calc(50% - 350px);height:39px}
+ .stickwrap{width:75px!important;height:75px!important}
+ .left-panel,.right-panel{bottom:8px!important}
+ .control-dock-title{bottom:88px}
+ .flight-buttons{grid-template-columns:repeat(4,70px);grid-template-rows:65px}
+ .flight-buttons button{min-height:62px!important}
+ .throttle{width:56px!important;height:69px!important}
+ .throttle input{min-height:27px!important}
+}
+@media (max-width:420px){
+ .top{left:8px;right:8px}
+ .brandmark{display:none}
+ .brand-name{font-size:13px}
+ .topActions .pill{padding:8px 7px;font-size:11px;min-width:34px;text-align:center}
+ .topActions #cameraBtn{font-size:11px}
+ .topActions #cameraName{display:none}
+ .topActions .label{display:none}
+ .mission{left:7px;right:7px}
+ .mission-goal{font-size:11px}
+ .metrics,.nav-strip{left:7px;right:7px}
+ .metric span{font-size:8px}
+ .metric em{font-size:8px}
+ .metric strong{font-size:15px!important}
+ .heading-metric strong{font-size:13px!important}
+ .left-panel{left:7px;gap:5px}.right-panel{right:7px;gap:5px}
+ .stickwrap{width:78px!important;height:78px!important}
+ .rudders button{width:29px!important}
+ .flight-buttons{grid-template-columns:repeat(2,57px);gap:4px}
+ .flight-buttons button{min-width:57px!important;padding:3px!important}
+ .throttle{width:42px!important}
+}
+@media (max-width:345px){
+ .topActions{gap:2px}.topActions .pill{padding:6px 5px;min-width:29px}.brand-name{font-size:12px}
+ .stickwrap{width:68px!important;height:68px!important}.knob{width:32px!important;height:32px!important}
+ .rudders button{width:25px!important;height:31px!important}
+ .flight-buttons{grid-template-columns:repeat(2,52px)}
+ .flight-buttons button{min-width:52px!important}
+ .throttle{width:39px!important}
+}
+@media (orientation:landscape) and (max-height:530px){
+ :root{--sky-top:calc(var(--safeTop) + 94px);--dock-height:calc(var(--safeBottom) + 104px)}
+ .top{height:30px;top:calc(var(--safeTop) + 3px)}
+ .top .brandmark{display:none}
+ .topActions .pill{padding:4px 7px}
+ .mission{top:calc(var(--safeTop) + 34px)!important;height:55px;width:calc(100% - 16px)!important;left:8px;right:8px;padding:4px 9px!important}
+ .mission-goal{font-size:11px}.mission .step{font-size:8px!important;margin-top:2px}
+ .mission .name{font-size:10px!important}.mission .distance{font-size:9px!important}.mission .mission-progress{margin-top:2px}
+ .metrics{bottom:calc(var(--safeBottom) + 64px)!important;left:calc(50% - 175px);right:calc(50% - 175px);gap:3px}
+ .metric{height:33px!important;padding:2px 5px!important}.metric strong{font-size:12px!important}.heading-metric strong{font-size:11px!important}.metric em{font-size:7px}
+ .nav-strip{display:none!important}
+ .left-panel,.right-panel{bottom:calc(var(--safeBottom) + 3px)!important}
+ .stickwrap{width:58px!important;height:58px!important}.knob{width:31px!important;height:31px!important}
+ .rudders button{width:28px!important;height:25px!important}
+ .flight-buttons{grid-template-columns:repeat(4,57px);grid-template-rows:48px}
+ .flight-buttons button{min-width:57px!important;min-height:45px!important}
+ .throttle{height:59px!important;width:43px!important}.throttle input{min-height:22px!important}
+ .metric em{display:none}.control-dock-title{display:none}.flight-notice{top:calc(var(--sky-top) + 4px)}
+}
+
+/* v7: lightweight instructor, landing debrief, and wind telemetry. No 3D overlay clutter. */
+.tiny{max-width:190px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mission .name{font-size:11px!important;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mission .name:after{content:none!important}
+.mission .distance{display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.landing-report{margin:10px 0 14px;padding:12px;border:1px solid #66d6cb80;background:#092a3c;border-radius:13px}
+.report-head{display:flex;justify-content:space-between;font-size:12px;color:#c9f6ff;font-weight:850;margin-bottom:11px}
+.report-head strong{color:#6cffe0;font-size:19px}
+.report-row{display:grid;grid-template-columns:112px 1fr 48px;align-items:center;gap:9px;margin:8px 0;font-size:11px;color:#cfe8f0}
+.report-row b{text-align:right;font-variant-numeric:tabular-nums;color:white}
+.report-track{height:7px;border-radius:4px;background:#365366;overflow:hidden}
+.report-track i{display:block;height:100%;background:linear-gradient(90deg,#3dc7ea,#7affce);border-radius:4px}
+.report-note{font-size:10px;line-height:1.5;color:#a2c7d5;margin-top:10px}
+@media(max-width:420px){.tiny{max-width:115px}.mission .name{font-size:10px!important}.report-row{grid-template-columns:95px 1fr 44px;gap:6px}}
+</style></head><body>
+<canvas id="view" aria-label="3Dフライト画面"></canvas><div id="vignette"></div><div id="ui">
+<div class="top"><div class="brand"><div class="brandmark">✈</div><div><div class="brand-name">SKY FLIGHT</div><div class="tiny"><span id="windLabel">🌀 WIND CALM</span></div></div></div><div class="topActions"><button id="soundBtn" class="pill" aria-label="音の切り替え">🔊 <span class="label">音 ON</span></button><button id="cameraBtn" class="pill">◉ <span id="cameraName">追尾</span></button><button class="pill" id="mapBtn" aria-label="地図を表示" aria-pressed="false">🗺</button><button class="pill" id="pauseBtn">Ⅱ <span class="label">PAUSE</span></button><button class="pill" id="resetTopBtn" aria-label="最初から飛行する">↻</button></div></div>
+<div class="metrics" aria-label="飛行計器"><div class="metric"><span>速度</span><strong id="speed">270</strong><em>km/h</em></div><div class="metric"><span>高度</span><strong id="alt">268</strong><em>m</em></div><div class="metric"><span>昇降</span><strong id="climb">-5</strong><em>m/s</em></div><div class="metric heading-metric"><span>方位</span><strong id="heading">000° N</strong><em>HEADING</em></div></div>
+<div class="map"><canvas id="mapCanvas" width="236" height="236"></canvas><div class="maplabel">AKASHI STRAIT</div></div>
+<div class="mission" aria-label="今回の目標"><div class="mission-goal" id="missionGoal">🛬 ゴール：神戸空港で安全に着陸して停止</div><div class="step" id="missionStep">FLIGHT PLAN · KOBE AIRPORT RWY 36</div><div class="name" id="missionName">次の操作を確認しよう</div><div class="distance" id="missionDistance">航路に沿って進入しよう</div><div class="mission-progress" id="progress"><i class="on"></i><i></i><i></i><i></i></div></div>
+<div class="nav-strip"><div class="nav-chip" id="navAlign">左右のずれ<b>---</b></div><div class="nav-chip" id="navGlide">高度差<b>---</b></div><div class="nav-chip" id="navSpeed">速度<b>---</b></div><div class="nav-chip" id="navGear">脚・フラップ<b>---</b></div></div><div id="atc" class="atc">KOBE TOWER · 滑走路36へ進入してください</div>
+<div class="reticle"><b></b></div><div id="notice" class="flight-notice">APPROACH CLEAR</div>
+<div class="left-panel"><div class="stickwrap" id="joystick"><div class="sticklabel">PITCH / ROLL</div><div class="knob" id="knob">CONTROL</div></div><div class="rudders"><button id="rudderL" aria-label="左旋回">↶</button><button id="rudderR" aria-label="右旋回">↷</button></div></div>
+<div class="right-panel"><div class="flight-buttons"><button id="autoBtn">AUTO<br>OFF</button><button id="gearBtn">GEAR<br>UP</button><button id="flapBtn">FLAPS<br>0</button><button id="brakeBtn" aria-label="押している間ブレーキ">BRAKE<br>HOLD</button><button id="resetBtn">↻ RESET</button></div><div class="throttle"><small>THR</small><strong id="throttleNumber">76%</strong><input aria-label="スロットル" id="throttleInput" type="range" min="0" max="100" value="76" orient="vertical"></div></div><div class="bottomhint">着陸がゴール。GEAR DOWN → FLAPS 1/2 → スロットル調整 → 着地後BRAKE</div></div>
+<div id="intro" class="modalback"><div class="modal"><div class="eyebrow">GAME BANK ORIGINAL · JET LANDING CHALLENGE</div><div class="hero-symbol">✈️</div><h1>SKY<br>FLIGHT</h1><div class="goal"><small>今回のフライトの目的はひとつ</small><strong>神戸空港へ進入し、着陸してブレーキで停止！</strong><small>輪っか集めなし。空からスタートし、滑走路上で完全停止すればクリア。</small></div><div class="chips"><span class="chip">01 進入</span><span class="chip">02 着陸準備</span><span class="chip">03 接地</span><span class="chip">04 停止・評価</span></div><div class="selectRow"><label>フライトモード<select id="flightMode"><option value="landing">🛬 着陸チャレンジ（おすすめ）</option><option value="practice">🎯 着陸だけ練習（脚・フラップ準備済み）</option><option value="free">✈️ 自由飛行（クリアなし）</option></select></label><label>操縦の難易度<select id="difficulty"><option value="casual">やさしい操縦</option><option value="pro">本格操縦</option></select></label></div><div class="selectRow"><label>空の景色<select id="timeMode"><option value="day">昼・青空</option><option value="sunset">夕焼け</option><option value="night">夜景</option></select></label><label>運航案内<select id="assistMode"><option value="on">進入ガイド表示 ON</option><option value="off">計器のみ</option></select></label></div><div class="selectRow"><label>風・コンディション<select id="windMode"><option value="calm">☀ 穏やか（入門）</option><option value="cross">🌬 横風6m/s（中級）</option><option value="gust">🌪 突風あり（上級）</option></select></label><label>飛行教官<select id="coachMode"><option value="on">🧑‍✈️ 操縦ヒント ON</option><option value="off">自力で挑戦</option></select></label></div><div class="howto">① 最初は空中から。機体を滑走路36に向け、高度と速度を合わせる。<br>② スロットルを40%前後にし、着陸脚を下げてFLAPS 1に。<br>③ 左右のずれ、高度差、速度を確認して接地。<br>④ <b>BRAKEを押し続けて滑走路内で停止！</b></div><button id="startBtn" class="primary">🛫 フライトを開始する</button><button id="audioTestBtn" class="test-audio" type="button">🔥 ジェットエンジンの轟音を試す（5秒）</button><div id="audioStatus" class="audio-status" role="status" aria-live="polite">🔎 音声未開始・タップで確認できます</div><div class="soundguide" id="soundGuide">飛行中はスロットルに合わせてジェットエンジンが唸ります。音が出ないときはSafariで直接開き、端末のメディア音量を確認してください。</div><p class="help">横風と突風は練習用のシミュレーションです。 / iPhone対応 / 外部API不要 / 実際の航空訓練には使えません。</p></div></div>
+<div id="pauseMenu" class="modalback hidden"><div class="modal"><div class="eyebrow">FLIGHT STATUS</div><h1 id="pauseTitle">PAUSED</h1><p id="pauseText" class="result-details">空の旅を一時停止中。</p><div class="chips"><span class="chip" id="scoreText">スコア 0</span><span class="chip" id="bestText">ベスト 0</span></div><div id="landingReport" class="landing-report hidden" aria-live="polite"></div><button id="resumeBtn" class="primary">飛行を続ける</button><div class="overlayButtons"><button class="pill" id="restartBtn">最初から</button><button class="pill" id="menuBtn">設定に戻る</button></div></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
+const $=id=>document.getElementById(id),canvas=$('view');
+let renderer,scene,camera,plane,gearGroup,navBulbs=[],approachPapi=[],water,ringMeshes=[],clouds=[],lights={},runway,paused=true,started=false,crashed=false,completed=false,camMode=0,elapsed=0,score=0,nextRing=0,auto=false,gear=false,flaps=0,braking=false,grounded=false,touchdownTime=0,landingGrade=0,muted=false,actx,engineOsc,engineOsc2,engineGain,windSource,windGain,windFilter,audioMaster,audioFault=false,engineMedia=null,mediaTone=null,mediaAudioError="",audioURLs=[],lastAudioDiagnostic="",audioPreviewTimer=null,audioPreviewActive=false,jetSpoolTime=0,noticeUntil=0,clock=new THREE.Clock(),frame=0,mode='landing',lastStage=-1;
+let input={x:0,y:0,rudder:0,throttle:.46},keys=new Set(),heading=-.045,pitch=-.105,bank=0,speed=74,vs=-5;
+let windX=0,windZ=0,landingBreakdown=null,lastCoachText='',lastCoachNotice=-20,reportWind='',runwayLights=[];
+const windModes={calm:{label:'CALM',x:0,z:0},cross:{label:'CROSSWIND',x:6.0,z:0},gust:{label:'GUSTS',x:3.9,z:-.65}};
+function getWind(){
+ const profile=windModes[$('windMode')?.value]||windModes.calm;
+ const gust=$('windMode')?.value==='gust'?(Math.sin(elapsed*.58)*1.65+Math.sin(elapsed*1.73)*.62):0;
+ return {x:profile.x+gust,z:profile.z+.2*gust,label:profile.label};
+}
+function scoreLanding(){
+ const dx=Math.abs(state.x-runwayInfo.x),descent=Math.abs(vs),v=Math.abs(speed-60),tilt=Math.abs(bank)+Math.abs(pitch)*.6;
+ const center=Math.round(clamp(35-dx*.8,0,35));
+ const soft=Math.round(clamp(30-descent*3.7,0,30));
+ const approach=Math.round(clamp(20-v*.53,0,20));
+ const attitude=Math.round(clamp(15-tilt*30,0,15));
+ return {center,soft,approach,attitude,total:center+soft+approach+attitude};
+}
+
+const runwayInfo={x:1700,zThreshold:-65,zEnd:-1155,y:21.2};
+const route=[];
+const state={x:1560,y:268,z:2970};
+let best=Number(localStorage.getItem('gb_skyflight_best')||0),bestLanding=Number(localStorage.getItem('gb_skyflight_best_landing')||0);
+const clamp=THREE.MathUtils.clamp,deg=THREE.MathUtils.degToRad;
+
+const rnd=((seed)=>()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;})(2119);
+const mat=(color,metalness=0,roughness=.78)=>new THREE.MeshStandardMaterial({color,metalness,roughness});const make=(geom,material,parent=scene)=>{const mesh=new THREE.Mesh(geom,material);parent.add(mesh);return mesh};
+function init(){renderer=new THREE.WebGLRenderer({canvas,antialias:devicePixelRatio<2,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(Math.max(1,canvas.clientWidth),Math.max(1,canvas.clientHeight),false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;scene=new THREE.Scene();scene.background=new THREE.Color(0x94d1f3);scene.fog=new THREE.FogExp2(0xb2dbe9,.000085);camera=new THREE.PerspectiveCamera(66,Math.max(1,canvas.clientWidth)/Math.max(1,canvas.clientHeight),.7,13000);lights.hemi=new THREE.HemisphereLight(0xd9f3ff,0x648078,2);scene.add(lights.hemi);lights.sun=new THREE.DirectionalLight(0xfff1d4,2.4);lights.sun.position.set(-800,1500,-2500);scene.add(lights.sun);createWorld();createPlane();createApproachLights();addEventListener('resize',onResize);onResize();clock.start();requestAnimationFrame(loop)}
+function createWorld(){const waterGeo=new THREE.PlaneGeometry(15000,15000,68,68);waterGeo.rotateX(-Math.PI/2);const pos=waterGeo.attributes.position;for(let i=0;i<pos.count;i++)pos.setY(i,Math.sin(pos.getX(i)*.006+pos.getZ(i)*.007)*1.1);waterGeo.computeVertexNormals();water=make(waterGeo,new THREE.MeshStandardMaterial({color:0x0b6584,metalness:.24,roughness:.42,flatShading:false}));water.position.y=-6;const foamMat=new THREE.LineBasicMaterial({color:0x85d3dc,transparent:true,opacity:.2});for(let i=0;i<90;i++){const z=rnd()*5200-2600,x=rnd()*5400-2700;const p=[new THREE.Vector3(x,-4.5,z),new THREE.Vector3(x+20+rnd()*100,-4.5,z+5)];scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(p),foamMat));}
+// Approximate coastal masses flank the strait; intentionally stylized, not real terrain data.
+function terrain(side){let geo=new THREE.PlaneGeometry(3000,8000,44,80);geo.rotateX(-Math.PI/2);let a=geo.attributes.position;for(let i=0;i<a.count;i++){const z=a.getZ(i);const localX=a.getX(i);const x=localX+side*2600;let shore=side*(930+95*Math.sin(z*.0022)+48*Math.sin(z*.007));const diff=side*(x-shore);const height=Math.max(0,Math.min(1,diff/260))*18+(Math.max(0,diff-170)/450)*22+Math.sin(x*.007)*4+Math.cos(z*.004)*5;a.setXYZ(i,x,Math.max(0,height),z)}geo.computeVertexNormals();const ground=make(geo,mat(side<0?0x66886e:0x6d8c70));ground.material.side=THREE.DoubleSide;return true}terrain(-1);terrain(1);
+const buildingMats=[mat(0xd9d5c4),mat(0xc3d0cf),mat(0x9ba5b0),mat(0xe9dac9),mat(0xe8e5dc)];let groups=buildingMats.map(()=>[]);for(let i=0;i<1750;i++){const side=rnd()>.5?1:-1,z=(rnd()-.5)*6200;const sx=side*(1000+rnd()*2050);const h=4+Math.pow(rnd(),2)*62;const near=side*(sx-(side*(930+95*Math.sin(z*.0022)+48*Math.sin(z*.007))));if(near<45)continue;groups[Math.floor(rnd()*groups.length)].push({x:sx,z,h,s:4+rnd()*11})}groups.forEach((items,j)=>{const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),buildingMats[j],items.length);const dummy=new THREE.Object3D();items.forEach((b,i)=>{dummy.position.set(b.x,b.h/2+14,b.z);dummy.scale.set(b.s,b.h,b.s);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix)});mesh.instanceMatrix.needsUpdate=true;scene.add(mesh)});
+const hills=mat(0x617e7c);for(let i=0;i<19;i++){const side=i%2?1:-1,x=side*(2000+rnd()*1100),z=(rnd()-.5)*7000;let hill=make(new THREE.SphereGeometry(1,18,11),hills);hill.scale.set(280+rnd()*380,50+rnd()*140,230+rnd()*300);hill.position.set(x,23,z)}
+createBridge();createAirport();const cloudMat=new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.72,depthWrite:false});for(let i=0;i<29;i++){const grp=new THREE.Group(),x=(rnd()-.5)*7600,z=(rnd()-.5)*7200,y=750+rnd()*600;for(let q=0;q<4;q++){let c=make(new THREE.SphereGeometry(1,9,6),cloudMat,grp);c.scale.set(100+rnd()*95,25+rnd()*40,45+rnd()*40);c.position.set((q-1.5)*90,rnd()*30,0)}grp.position.set(x,y,z);scene.add(grp);clouds.push(grp)} }
+function tube(a,b,r,m,parent=scene){const dir=new THREE.Vector3().subVectors(b,a),p=make(new THREE.CylinderGeometry(r,r,dir.length(),7),m,parent);p.position.copy(a).addScaledVector(dir,.5);p.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());return p}
+function createBridge(){const road=mat(0x596c76,.05),steel=mat(0xc2d4dc,.5,.36),dark=mat(0x304c5a);let deck=make(new THREE.BoxGeometry(1930,8,27),road);deck.position.set(0,55,0);for(let z of [-13,13]){let rail=make(new THREE.BoxGeometry(1930,1.1,1),steel);rail.position.set(0,61,z)}for(let z of [-9,9]){let lane=make(new THREE.BoxGeometry(1930,.35,.5),mat(0xece0a1));lane.position.set(0,59.2,z)}for(let x of [-550,550]){for(let z of [-18,18]){const tower=make(new THREE.BoxGeometry(10,181,10),steel);tower.position.set(x,118,z)}for(let y of [100,148,193])tube(new THREE.Vector3(x-3,y,-19),new THREE.Vector3(x-3,y,19),2.4,dark)}for(let z of [-19,19]){const points=[];for(let i=0;i<=120;i++){const x=-980+(1960*i/120);let y=115+88*Math.pow(Math.abs(x)/980,2);if(Math.abs(x)<550)y=188-95*(1-Math.pow(x/550,2));points.push(new THREE.Vector3(x,y,z))}let cable=make(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),140,1.6,5,false),steel);for(let x=-915;x<=915;x+=35){let yy=115+88*Math.pow(Math.abs(x)/980,2);if(Math.abs(x)<550)yy=188-95*(1-Math.pow(x/550,2));tube(new THREE.Vector3(x,60,z),new THREE.Vector3(x,yy,z),.42,steel)}}for(let x=-950;x<=950;x+=140) {const beam=make(new THREE.BoxGeometry(4,45,9),dark);beam.position.set(x,30,0)}}
+function createAirport(){const asphalt=mat(0x373d47),white=mat(0xf8faf1),green=mat(0x4c7866);let island=make(new THREE.BoxGeometry(620,14,1440),green);island.position.set(1700,9,-650);runway=make(new THREE.BoxGeometry(72,1,1130),asphalt);runway.position.set(1700,17,-610);for(let z=-1140;z<=-80;z+=80){let line=make(new THREE.BoxGeometry(1,.6,32),white);line.position.set(1700,18,z)}for(let z of [-1160,-30])for(let x=-27;x<=27;x+=15){let stripe=make(new THREE.BoxGeometry(6,.6,28),white);stripe.position.set(1700+x,18,z)}let taxi=make(new THREE.BoxGeometry(250,1,25),asphalt);taxi.position.set(1850,18,-320);for(let x=1530;x<=1870;x+=33){let l=make(new THREE.SphereGeometry(2.2,6,6),new THREE.MeshBasicMaterial({color:0xffe9a0}));l.position.set(x,22,-72)}}
+
+function createApproachLights(){
+ const white=new THREE.MeshBasicMaterial({color:0xfff6dc}),amber=new THREE.MeshBasicMaterial({color:0xffb94e});
+ const paint=mat(0xf1f4f3),yellow=mat(0xe6b76a);
+ // Threshold and touchdown zone markings (no collection rings).
+ for(const z of [-125,-190,-250])for(const side of [-1,1]){
+  let slab=make(new THREE.BoxGeometry(12,.4,24),paint);slab.position.set(runwayInfo.x+side*21,18.5,z);
+ }
+ for(let z=-1130;z<=-70;z+=65){for(const x of [1666,1734]){
+   let light=make(new THREE.SphereGeometry(1.65,6,4),white);light.position.set(x,19,z);
+ }}
+ // Four approach slope lights near the beginning of the runway.
+ for(let i=0;i<4;i++){
+  let p=make(new THREE.BoxGeometry(6,2.5,4),(i<2?amber:white).clone());p.position.set(1751+i*8,21,-115);approachPapi.push(p);
+ }
+ // Added a believable line of lead-in approach lights; lights never count as collectibles.
+ for(let z=70;z<950;z+=85){
+   const lantern=make(new THREE.SphereGeometry(2.5,8,6),white);lantern.position.set(runwayInfo.x,15,z);runwayLights.push(lantern);
+ }
+ // Floating labels are limited to cockpit HUD: no ring collectibles.
+}
+function createPlane(){plane=new THREE.Group();const blue=mat(0x0876c8,.19,.34),white=mat(0xebf7ff,.08,.42),silver=mat(0xb5c8d2,.3,.42),windows=mat(0x173b53,.15,.25);let body=make(new THREE.CylinderGeometry(6.0,6.7,64,14,1),white,plane);body.rotation.x=Math.PI/2;body.position.z=0;let nose=make(new THREE.ConeGeometry(5.8,14,14),white,plane);nose.rotation.x=-Math.PI/2;nose.position.z=-37;let tail=make(new THREE.ConeGeometry(6.5,13,14),blue,plane);tail.rotation.x=Math.PI/2;tail.position.z=39;
+// Swept wings: geometry custom wedge planform.
+function wing(side){const sh=new THREE.Shape();sh.moveTo(2,0);sh.lineTo(63,-13);sh.lineTo(67,-8);sh.lineTo(10,9);sh.lineTo(0,9);const geo=new THREE.ShapeGeometry(sh);const w=make(geo,white,plane);w.rotation.x=Math.PI/2;w.rotation.z=0;w.scale.x=side;w.position.set(0,-1,-3);w.material.side=THREE.DoubleSide;const tip=make(new THREE.BoxGeometry(4,8,2),blue,plane);tip.position.set(side*64,2,-14);tip.rotation.z=side*.22;const eng=make(new THREE.CylinderGeometry(4.2,3.6,16,12),silver,plane);eng.rotation.x=Math.PI/2;eng.position.set(side*23,-6,5);const intake=make(new THREE.CircleGeometry(3,12),windows,plane);intake.position.set(side*23,-6,-3.1);return w}wing(1);wing(-1);
+// horizontal stabilizers
+for(let side of [-1,1]){const sh=new THREE.Shape();sh.moveTo(0,28);sh.lineTo(21,31);sh.lineTo(22,34);sh.lineTo(0,39);let stab=make(new THREE.ShapeGeometry(sh),white,plane);stab.rotation.x=Math.PI/2;stab.scale.x=side;stab.position.y=1}const fin=make(new THREE.BoxGeometry(2.7,17,22),blue,plane);fin.position.set(0,9,29);fin.rotation.x=.31;for(let i=-5;i<=5;i++){let window=make(new THREE.SphereGeometry(.55,6,4),windows,plane);window.scale.set(1.1,.7,.8);window.position.set(5.8,2,i*4)}let noseStripe=make(new THREE.BoxGeometry(11,.6,40),blue,plane);noseStripe.position.set(0,-5.8,-6);let cockpit=make(new THREE.SphereGeometry(1,12,8),windows,plane);cockpit.scale.set(4.4,1.6,4);cockpit.position.set(0,5,-27);scene.add(plane);plane.scale.set(.78,.78,.78);
+ // Gear is visible in the external camera only when deployed.
+ gearGroup=new THREE.Group();plane.add(gearGroup);
+ const strut=mat(0xa9b9c2,.43,.34),tire=mat(0x161c23,.08,.93);
+ for(const [x,z] of [[0,-21],[-17,14],[17,14]]){
+   let stem=make(new THREE.CylinderGeometry(.5,.7,7,7),strut,gearGroup);stem.position.set(x,-9,z);
+   let tyre=make(new THREE.TorusGeometry(2.7,1.15,8,12),tire,gearGroup);tyre.position.set(x,-14,z);tyre.rotation.y=Math.PI/2;
+ }
+ gearGroup.visible=false;
+ const bulbmats=[new THREE.MeshBasicMaterial({color:0xff3030}),new THREE.MeshBasicMaterial({color:0x32ff82}),new THREE.MeshBasicMaterial({color:0xffffff})];
+ for(const [idx,x,z] of [[0,-66,-11],[1,66,-11],[2,0,36]]){
+   const bulb=make(new THREE.SphereGeometry(1.5,7,6),bulbmats[idx],plane);bulb.position.set(x,2,z);navBulbs.push(bulb);
+ }
+}
+function updateRings(){ /* Legacy ring collectibles intentionally removed. */ }
+function setTime(mode){const configs={day:{bg:0x96d6f5,fog:0xb7dbe9,sea:0x0b6584,light:0xfff4de,exposure:1.35},sunset:{bg:0xf2a889,fog:0xe6b4a4,sea:0x1d5a79,light:0xffad77,exposure:1.2},night:{bg:0x071c42,fog:0x092b44,sea:0x08243e,light:0xa8c7ff,exposure:.9}};const c=configs[mode]||configs.day;scene.background.setHex(c.bg);scene.fog.color.setHex(c.fog);water.material.color.setHex(c.sea);lights.sun.color.setHex(c.light);lights.sun.intensity=mode==='night'?.65:2.4;lights.hemi.intensity=mode==='night'?.85:2;renderer.toneMappingExposure=c.exposure}
+function isFree(){return mode==='free'}
+function coachHint(){
+ if(isFree())return '自由に飛ぼう。画面右上でカメラを切り替えられるよ';
+ if(grounded)return 'BRAKEを押し続けて、滑走路の終端までに止まろう！';
+ const kmh=speed*3.6,dx=state.x-runwayInfo.x,glide=state.y-glideTarget(state.z);
+ if(state.z>1850){
+   if(Math.abs(dx)>90)return dx>0?'左へ寄せて、滑走路の中央線を目指そう':'右へ寄せて、滑走路の中央線を目指そう';
+   return '滑走路に向かって進入。高度と速度をゆっくり整えよう';
+ }
+ if(!gear)return '次の操作：GEARを押して、着陸脚を下ろそう';
+ if(flaps<1)return '次の操作：FLAPSを1以上にしよう';
+ if(kmh>290)return 'スロットルを下げよう：着陸速度の目標は約215km/h';
+ if(kmh<155)return '速度が低すぎる！ スロットルを上げよう';
+ if(Math.abs(dx)>34)return dx>0?'中央線より右側：少し左へ修正':'中央線より左側：少し右へ修正';
+ if(Math.abs(glide)>40)return glide>0?'高度が高い：少し降下しよう':'高度が低い：機首を少し上げよう';
+ if(Math.abs(bank)>.23)return '翼の傾きを戻し、安定した姿勢で着陸しよう';
+ return '進入良好！機体を水平に保ち、滑走路へゆっくり降下';
+}
+
+function glideTarget(z){return runwayInfo.y+Math.max(0,z-runwayInfo.zThreshold)*.082}
+function stage(){if(isFree())return -1;if(grounded)return 3;if(state.z>1650)return 0;if(state.z>650)return 1;return 2}
+function reset(){
+ mode=$('flightMode').value;
+ const practice=mode==='practice';
+ Object.assign(state,isFree()?{x:-300,y:320,z:1050}:practice?{x:1660,y:151,z:1210}:{x:1560,y:268,z:2970});
+ pitch=isFree()?-0.02:practice?-.10:-.105;bank=0;heading=isFree()?-.7:practice?-.012:-.045;speed=practice?63:74;vs=-5;
+ input.x=input.y=input.rudder=0;input.throttle=practice?.40:.46;$('throttleInput').value=Math.round(input.throttle*100);
+ score=0;nextRing=0;elapsed=0;crashed=false;completed=false;auto=false;gear=false;flaps=0;braking=false;grounded=false;touchdownTime=0;landingGrade=0;landingBreakdown=null;lastStage=-1;lastCoachText='';lastCoachNotice=-20;
+ gear=practice;$('gearBtn').classList.toggle('active',gear);$('gearBtn').innerHTML='GEAR<br>'+(gear?'DOWN':'UP');
+ flaps=practice?1:0;$('flapBtn').classList.toggle('active',flaps>0);$('flapBtn').innerHTML='FLAPS<br>'+flaps;
+ $('brakeBtn').classList.remove('braking');$('autoBtn').innerHTML='AUTO<br>OFF';$('autoBtn').classList.remove('active');$('landingReport').classList.add('hidden');$('landingReport').innerHTML='';if(gearGroup)gearGroup.visible=gear;
+ updateMission();document.querySelector('.nav-strip').style.display=(isFree()||$('assistMode').value==='off')?'none':'grid';$('atc').style.display=$('assistMode').value==='off'?'none':'block';$('pauseTitle').textContent='PAUSED';$('resumeBtn').textContent='飛行を続ける';
+}
+function updateMission(){
+ const s=stage();const steps=['滑走路36への進入開始','機首を中央線に合わせる','最終進入：脚と速度を確認','接地成功！ブレーキで停止'];
+ $('missionStep').textContent=isFree()?'FREE FLIGHT · 行き先は自由':'KOBE AIRPORT · RWY 36 · '+String(s+1)+' / 4';
+ $('missionName').textContent=isFree()?'行き先は自由':steps[s];
+ $('missionGoal').textContent=isFree()?'✈ 自由飛行モード：好きな空を飛ぼう':'🛬 ゴール：神戸空港に着陸して、BRAKEで停止';
+ document.querySelectorAll('#progress i').forEach((el,i)=>{el.className=i<s?'on':i===s?'next':''});
+ if(isFree())$('atc').textContent='ATC · フリーフライト中（着陸判定なし）';
+ else if(s===0)$('atc').textContent='KOBE TOWER · 滑走路36、進入を許可します';
+ else if(s===1)$('atc').textContent='APPROACH · 高度を下げ、脚とフラップを準備';
+ else if(s===2)$('atc').textContent='TOWER · 中央線に合わせ、降下を安定させてください';
+ else $('atc').textContent='GROUND · BRAKEを押して滑走路内で停止';
+}
+function notify(msg){$('notice').textContent=msg;$('notice').classList.add('show');noticeUntil=performance.now()+2800}
+function setBrake(v){braking=!!v;$('brakeBtn').classList.toggle('braking',braking)}
+function endLanding(){
+ grounded=false;landingGrade=Math.max(0,Math.round(landingGrade));
+ const conditions=$('windMode').value;const multiplier=conditions==='gust'?1.5:conditions==='cross'?1.25:1;
+ score+=Math.round(landingGrade*10*multiplier)+250;
+ const r=landingBreakdown||scoreLanding();
+ $('landingReport').innerHTML=`<div class="report-head">着陸評価の内訳 <strong>${landingGrade}/100</strong></div>${[['中央線との精度',r.center,35],['接地のやさしさ',r.soft,30],['進入速度',r.approach,20],['機体の安定',r.attitude,15]].map(([name,points,max])=>`<div class="report-row"><span>${name}</span><div class="report-track"><i style="width:${100*points/max}%"></i></div><b>${points}/${max}</b></div>`).join('')}<div class="report-note">${conditions==='calm'?'穏やかな天候':conditions==='cross'?'横風チャレンジ ×1.25':'突風チャレンジ ×1.5'} · 安全な停止でクリア</div>`;
+ $('landingReport').classList.remove('hidden');
+ if(landingGrade>bestLanding){bestLanding=landingGrade;localStorage.setItem('gb_skyflight_best_landing',String(bestLanding))}
+ endFlight('🛬 着陸成功！',`滑走路内で停止できました！\n着陸品質：${landingGrade} / 100点\n飛行時間：${Math.floor(elapsed/60)}分${Math.floor(elapsed%60)}秒`,true);
+}
+function simulate(dt){
+ elapsed+=dt;
+ let pro=$('difficulty').value==='pro',ax=input.x,ay=input.y,ar=input.rudder;
+ if(keys.has('ArrowLeft')||keys.has('a'))ax=-1;
+ if(keys.has('ArrowRight')||keys.has('d'))ax=1;
+ if(keys.has('ArrowUp')||keys.has('w'))ay=-1;
+ if(keys.has('ArrowDown')||keys.has('s'))ay=1;
+ if(keys.has('q'))ar=-1;if(keys.has('e'))ar=1;
+ const maxPitch=pro?.44:.29,maxBank=pro?.95:.55;
+ if(grounded){
+   const brake=braking||keys.has('b');
+   const decel=brake?24:3.2;
+   speed=Math.max(0,speed-dt*decel);
+   heading+=-ar*.075*dt;
+   state.x+=-Math.sin(heading)*speed*dt;
+   state.z+=-Math.cos(heading)*speed*dt;
+   state.y=runwayInfo.y;vs=0;bank*=.86;pitch*=.80;
+   touchdownTime+=dt;
+   plane.position.set(state.x,state.y,state.z);
+   plane.rotation.set(0,heading,0,'YXZ');
+   if(Math.abs(state.x-runwayInfo.x)>34 || state.z<runwayInfo.zEnd+15){endFlight('滑走路から逸脱','着地後は BRAKE を押し続けて、滑走路内で停止しよう。');return}
+   if(speed<=16 && touchdownTime>1.5)endLanding();
+   return;
+ }
+ if(auto&&!isFree()){
+   // Lane capture: align the nose with the runway center while following a 4.7° game glide slope.
+   const ahead=Math.max(850,state.z+220);
+   const wind=getWind();
+   const desired=clamp(Math.atan2(-(runwayInfo.x-state.x),ahead)+Math.atan2(wind.x,Math.max(40,speed)),-.47,.47);
+   const error=Math.atan2(Math.sin(desired-heading),Math.cos(desired-heading));
+   ax=clamp(-error*2.1,-.72,.72);
+   const desiredPitch=clamp(-.105+(glideTarget(state.z)-state.y)*.005,-.22,.10);
+   const trim=!isFree()&&!pro?-.105:0;
+   ay=clamp((trim-desiredPitch)/maxPitch,-.85,.85);
+   ar=0;
+   input.throttle=state.z<1000?.33:.43;
+   $('throttleInput').value=Math.round(input.throttle*100);
+ }
+ bank+=(ax*maxBank-bank)*Math.min(1,dt*(pro?1.6:2.25));
+ const trimPitch=!isFree()&&!pro?-.105:0;
+ pitch+=(clamp(trimPitch-ay*maxPitch,-maxPitch,maxPitch)-pitch)*Math.min(1,dt*1.85);
+ heading+=(-Math.sin(bank)*(.14+speed/280)-ar*.28)*dt;
+ const targetSpeed=34+input.throttle*86;
+ speed+=(targetSpeed-speed)*dt*(pro?.16:.26);
+ if(pro&&Math.abs(bank)>.55)speed-=dt*1.8;
+ speed=clamp(speed,30,132);
+ const stall=Math.max(0,(flaps?43:49)-speed);
+ vs=speed*Math.sin(pitch)*.70+(speed-75)*.012-stall*.65;
+ if(flaps>=1)vs+=.4; // flaps add lift in low-speed flight
+ state.y+=vs*dt;
+ const wind=getWind();
+ // Wind drift is a ground-track effect: players must crab into a crosswind.
+ state.x+=(-Math.sin(heading)*speed*Math.cos(pitch)+wind.x)*dt;
+ state.z+=(-Math.cos(heading)*speed*Math.cos(pitch)+wind.z)*dt;
+ plane.position.set(state.x,state.y,state.z);
+ plane.rotation.set(pitch,heading,-bank,'YXZ');
+ // Real objective: contact the runway, then brake to a full stop.
+ const overRunway=Math.abs(state.x-runwayInfo.x)<=42 && state.z<=-42 && state.z>=runwayInfo.zEnd;
+ const onAirportIsland=state.x>1395 && state.x<2005 && state.z>-1370 && state.z<70;
+ if(overRunway && state.y<=runwayInfo.y+1.6){
+   const aligned=Math.abs(Math.atan2(Math.sin(heading),Math.cos(heading)))<.24;
+   const soft=vs>=-8 && vs<=2.5;
+   const rightSpeed=speed>=42&&speed<=84;
+   const level=Math.abs(bank)<.25 && Math.abs(pitch)<.21;
+   if(!gear||flaps<1||!aligned||!soft||!rightSpeed||!level){
+      const reasons=[];if(!gear)reasons.push('脚が出ていません');if(flaps<1)reasons.push('FLAPSを1以上に');if(!aligned)reasons.push('滑走路の向きに合わせて');if(!soft)reasons.push('降下が急すぎる');if(!rightSpeed)reasons.push('着陸速度は150〜300km/h');if(!level)reasons.push('機体の傾きを戻して');
+      endFlight('着陸失敗',reasons.join(' / ')+'。最初から再挑戦しよう。');return;
+   }
+   landingBreakdown=scoreLanding();landingGrade=landingBreakdown.total;state.y=runwayInfo.y;grounded=true;touchdownTime=0;
+   notify('TOUCHDOWN! 🛬 BRAKEで停止！');playSfx('checkpoint');updateMission();return;
+ }
+ if(state.y<4 || (onAirportIsland && state.y<runwayInfo.y+1 && !overRunway)){
+   endFlight('地面に接触','滑走路の中央線・高さをよく見て、安全に接地しよう。');return;
+ }
+ if(state.y>1700)state.y=1700;
+ if(!isFree()){
+   if(state.z < -1290 && !grounded){endFlight('滑走路を通過','着陸できずに通過しました。高度・速度・進入位置を調整しよう。');return}
+   const s=stage();if(s!==lastStage){lastStage=s;updateMission();if(s===1){notify('進入準備：GEAR DOWN / FLAPS 1');playSfx('switch')}if(s===2){notify('FINAL APPROACH · 中央線と速度を確認');playSfx('checkpoint')}}
+   if(state.z<1100 && state.z>780 && gear===false && (Math.floor(elapsed)%8===0))$('atc').textContent='⚠ GEAR DOWN と FLAPS 1 が必要です';
+ }
+}
+function endFlight(title,desc,success=false){
+ playSfx(success?'success':'fail');paused=true;crashed=!success;completed=success;
+ if(score>best){best=score;localStorage.setItem('gb_skyflight_best',String(best))}
+ $('pauseTitle').textContent=title;$('pauseText').textContent=desc;if(!success){$('landingReport').classList.add('hidden');$('landingReport').innerHTML='';}
+ $('resumeBtn').textContent='もう一度フライト';$('pauseMenu').classList.remove('hidden');
+ $('scoreText').textContent='スコア '+score;$('bestText').textContent='着陸ベスト '+bestLanding+'点';updateSound();
+}
+function updateCamera(dt){
+ const pos=plane.position;let desired=new THREE.Vector3(),aim=pos.clone();
+ const f=new THREE.Vector3(-Math.sin(heading),0,-Math.cos(heading)),back=f.clone().multiplyScalar(-1);
+ if(camMode===0){desired.copy(pos).addScaledVector(back,142).add(new THREE.Vector3(0,58,0));aim.addScaledVector(f,130);aim.y+=4}
+ else if(camMode===1){desired.copy(pos).addScaledVector(f,19).add(new THREE.Vector3(0,10,0));aim.addScaledVector(f,700);aim.y+=12}
+ else {const theta=elapsed*.18;desired.copy(pos).add(new THREE.Vector3(Math.cos(theta)*185,85,Math.sin(theta)*185));aim.y+=2}
+ camera.position.lerp(desired,Math.min(1,dt*3.5));camera.lookAt(aim);
+}
+function setChip(id,text,status){let el=$(id);el.querySelector('b').textContent=text;el.classList.remove('ok','warn','bad');if(status)el.classList.add(status)}
+function refreshHUD(){
+ const kmh=Math.round(speed*3.6);
+ $('speed').textContent=kmh;$('alt').textContent=Math.max(0,Math.round(state.y));$('climb').textContent=(vs>=0?'+':'')+vs.toFixed(1);
+ let h=((heading*180/Math.PI%360)+360)%360;
+ const course=(360-h)%360;
+ const cardinal=['N','NE','E','SE','S','SW','W','NW'][Math.floor((course+22.5)/45)%8];
+ $('heading').textContent=String(Math.round(course)).padStart(3,'0')+'° '+cardinal;
+ $('throttleNumber').textContent=Math.round(input.throttle*100)+'%';
+ const wind=getWind();$('windLabel').textContent=wind.label==='CALM'?'🌀 WIND CALM':`🌀 ${wind.label==='GUSTS'?'GUST':'X-WIND'} ${Math.abs(wind.x).toFixed(1)}m/s`;
+ if(gearGroup)gearGroup.visible=gear;
+ if(navBulbs.length){const flash=Math.floor(performance.now()/460)%2===0;navBulbs[2].visible=flash;}
+ if(approachPapi.length){const delta=state.y-glideTarget(state.z);const reds=clamp(Math.round(2-delta/22),0,4);for(let i=0;i<4;i++)approachPapi[i].material.color.setHex(i<reds?0xff394b:0xfff5dd);}
+ if(!isFree()&&$('coachMode').value==='on')$('missionName').textContent='教官：'+coachHint();
+
+ if(isFree()){$('missionDistance').textContent='自由飛行 · '+Math.floor(elapsed)+'秒 / '+Math.round(state.y)+'m';}
+ else{
+   const dist=Math.max(0,Math.round(state.z-runwayInfo.zThreshold)),lateral=Math.round(Math.abs(state.x-runwayInfo.x)),glide=Math.round(state.y-glideTarget(state.z));
+   $('missionDistance').textContent=grounded?'接地できた！ BRAKEを押して速度を落とそう':`滑走路まで ${dist}m · 高度目標 ${Math.round(glideTarget(state.z))}m`;
+   setChip('navAlign',(state.x>runwayInfo.x?'+':'-')+lateral+'m',lateral<30?'ok':lateral<110?'warn':'bad');
+   setChip('navGlide',(glide>0?'+':'')+glide+'m',Math.abs(glide)<28?'ok':Math.abs(glide)<65?'warn':'bad');
+   setChip('navSpeed',kmh+'km/h',kmh>=155&&kmh<=290?'ok':kmh<=340?'warn':'bad');
+   setChip('navGear',gear?(flaps>=1?'READY':'FLAPS 0'):'UP',gear&&flaps>=1?'ok':gear?'warn':'bad');
+ }
+ if(performance.now()>noticeUntil)$('notice').classList.remove('show');
+ $('scoreText').textContent='スコア '+score;$('bestText').textContent='着陸ベスト '+bestLanding+'点';
+}
+function drawMap(){
+ const c=$('mapCanvas'),g=c.getContext('2d'),w=c.width,h=c.height;
+ g.clearRect(0,0,w,h);g.fillStyle='#0b4662';g.fillRect(0,0,w,h);
+ const xx=x=>24+(x+550)*188/3100,yy=z=>214-(z+1600)*192/4900;
+ g.fillStyle='#3d7774';g.fillRect(xx(960),0,110,h);
+ g.strokeStyle='#7bb8c4';g.lineWidth=2;g.beginPath();g.moveTo(xx(-500),yy(0));g.lineTo(xx(1000),yy(0));g.stroke();
+ g.strokeStyle='#faf0ba';g.lineWidth=5;g.beginPath();g.moveTo(xx(1700),yy(-1155));g.lineTo(xx(1700),yy(-65));g.stroke();
+ if(!isFree()){g.setLineDash([5,4]);g.strokeStyle='#83f5d0';g.lineWidth=2;g.beginPath();g.moveTo(xx(1700),yy(-65));g.lineTo(xx(1700),yy(3000));g.stroke();g.setLineDash([])}
+ let px=clamp(xx(state.x),6,230),py=clamp(yy(state.z),6,230);
+ g.save();g.translate(px,py);g.rotate(-heading);g.fillStyle='#fff';g.beginPath();g.moveTo(0,-11);g.lineTo(-7,9);g.lineTo(0,3);g.lineTo(7,9);g.closePath();g.fill();g.restore();
+}
+function loop(){
+ requestAnimationFrame(loop);let dt=Math.min(clock.getDelta(),.045);
+ if(!paused&&started)simulate(dt);
+ for(let c of clouds)c.position.x+=dt*2.4;
+ updateCamera(dt);renderer.render(scene,camera);
+ if((frame++%5)===0){refreshHUD();drawMap()}
+ updateEngineSound();
+}
+function onResize(){if(!renderer)return;const w=Math.max(1,canvas.clientWidth),h=Math.max(1,canvas.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+// iOS: Web Audio normally uses the ambient audio session and is silenced by Ring/Silent mode.
+// Explicit playback session and a separate HTMLMediaElement engine are intentional.
+function setPlaybackSession(repair=false){
+  try{
+    const session=navigator.audioSession;
+    if(!session)return '未対応';
+    if(repair&&session.type==='playback'){
+      // Some WebKit versions retain stale playback state across GPU-process restarts.
+      session.type='ambient';
+      setTimeout(()=>{try{session.type='playback'}catch(e){}updateAudioDiagnostic()},0);
+    }else session.type='playback';
+    return session.type||'設定済み';
+  }catch(e){return '切替できません'}
+}
+function createWav(duration, fn, rate=22050){
+  const sampleCount=Math.ceil(duration*rate),buffer=new ArrayBuffer(44+sampleCount*2),v=new DataView(buffer);
+  const str=(pos,x)=>{for(let i=0;i<x.length;i++)v.setUint8(pos+i,x.charCodeAt(i))};
+  str(0,'RIFF');v.setUint32(4,36+sampleCount*2,true);str(8,'WAVE');str(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,rate,true);
+  v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);str(36,'data');v.setUint32(40,sampleCount*2,true);
+  for(let i=0;i<sampleCount;i++)v.setInt16(44+i*2,Math.max(-32767,Math.min(32767,Math.round(fn(i/rate,i,sampleCount)*32767))),true);
+  const url=URL.createObjectURL(new Blob([buffer],{type:'audio/wav'}));audioURLs.push(url);return url;
+}
+function createEngineMedia(){
+  if(engineMedia)return engineMedia;
+  // ORIGINAL JET ROAR: layered combustion rumble + broad turbulent exhaust +
+  // compressor whine. Generated entirely in the browser. No movie samples or beeps.
+  // The last 180ms smoothly connects to the first sample so the loop never clicks.
+  const seconds=4,rate=22050,count=seconds*rate,tail=Math.round(.18*rate);
+  const wave=new Float32Array(count);
+  let seed=0x51d1a7b3,lo=0,mid=0,slow=0;
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return (seed/4294967296)*2-1};
+  for(let i=0;i<count;i++){
+    const t=i/rate,n=random();
+    lo=lo*.985+n*.015;mid=mid*.80+n*.20;slow=slow*.997+n*.003;
+    const surge=.90+.08*Math.sin(2*Math.PI*3*t)+.06*Math.sin(2*Math.PI*9*t);
+    const phase=2*Math.PI*(64*t+.18*Math.sin(2*Math.PI*4*t)/(2*Math.PI));
+    const combustion=.30*Math.sin(phase)+.16*Math.sin(phase*2.0)+.07*Math.sin(phase*3.0);
+    const exhaust=.58*(mid-lo)+.19*(n-mid)+.19*(lo-slow);
+    const fan=.045*Math.sin(2*Math.PI*780*t+.21*Math.sin(2*Math.PI*8*t));
+    wave[i]=Math.tanh((combustion*.63+exhaust*.82+fan)*surge*1.75)*.82;
+  }
+  const start=wave.slice(0,tail);
+  for(let j=0;j<tail;j++){
+    const u=j/(tail-1),smooth=u*u*(3-2*u),i=count-tail+j;
+    wave[i]=wave[i]*(1-smooth)+start[tail-1-j]*smooth;
+  }
+  const src=createWav(seconds,(t,i)=>wave[i],rate);
+  engineMedia=new Audio(src);engineMedia.preload='auto';engineMedia.loop=true;
+  engineMedia.playsInline=true;engineMedia.volume=.85;
+  engineMedia.preservesPitch=false;
+  engineMedia.addEventListener('error',()=>{mediaAudioError='エンジン音を読み込めません';updateAudioDiagnostic()});
+  return engineMedia;
+}
+
+function updateAudioDiagnostic(){
+  const el=$('audioStatus');if(!el)return;
+  const ctx=actx?actx.state:'未作成';
+  const session=navigator.audioSession?.type||'未対応';
+  const media=engineMedia?(engineMedia.paused?'停止中':'再生指示中'):'未開始';
+  el.textContent='🔥 ジェットエンジン：'+media+' / iPhone設定 '+session+' / Web Audio '+ctx+(mediaAudioError?' / '+mediaAudioError:'');
+  el.dataset.level=(!!mediaAudioError||(!engineMedia&&audioFault))?'warn':'ok';
+}
+function showSoundState(){
+  const b=$('soundBtn');b.innerHTML=muted?'🔇 <span class="label">JET OFF</span>':'🔥 <span class="label">JET ON</span>';
+  b.classList.toggle('sound-on',!muted);b.classList.toggle('sound-off',muted);
+  b.setAttribute('aria-pressed',String(!muted));
+  b.setAttribute('aria-label',muted?'効果音をオンにする':'効果音をオフにする');
+}
+function unlockAudio(repair=false){
+  if(muted)return;
+  // Must run synchronously inside a touch/click handler, before awaiting any Promise.
+  setPlaybackSession(repair);
+  try{
+    if(!actx){
+      const Ctor=window.AudioContext||window.webkitAudioContext;
+      if(!Ctor)throw new Error('Web Audio API not available');
+      actx=new Ctor({latencyHint:'interactive'});
+      audioMaster=actx.createGain();audioMaster.gain.value=.45;
+      const limiter=actx.createDynamicsCompressor();limiter.threshold.value=-18;limiter.knee.value=16;limiter.ratio.value=5;
+      audioMaster.connect(limiter);limiter.connect(actx.destination);
+      engineGain=actx.createGain();engineGain.gain.value=0;
+      const lowpass=actx.createBiquadFilter();lowpass.type='lowpass';lowpass.frequency.value=880;
+      engineOsc=actx.createOscillator();engineOsc.type='sawtooth';engineOsc.frequency.value=120;
+      engineOsc.connect(lowpass);lowpass.connect(engineGain);
+      engineOsc2=actx.createOscillator();engineOsc2.type='triangle';engineOsc2.frequency.value=215;
+      const upper=actx.createGain();upper.gain.value=.24;
+      engineOsc2.connect(upper);upper.connect(engineGain);engineGain.connect(audioMaster);
+      const noise=actx.createBuffer(1,actx.sampleRate*1,actx.sampleRate);
+      const arr=noise.getChannelData(0);for(let i=0;i<arr.length;i++)arr[i]=(Math.random()*2-1)*.4;
+      windSource=actx.createBufferSource();windSource.buffer=noise;windSource.loop=true;
+      const highpass=actx.createBiquadFilter();highpass.type='highpass';highpass.frequency.value=340;
+      windFilter=actx.createBiquadFilter();windFilter.type='lowpass';windFilter.frequency.value=1300;
+      windGain=actx.createGain();windGain.gain.value=0;
+      windSource.connect(highpass);highpass.connect(windFilter);windFilter.connect(windGain);windGain.connect(audioMaster);
+      engineOsc.start();engineOsc2.start();windSource.start();
+      actx.addEventListener('statechange',()=>{updateAudioDiagnostic();if(actx.state==='running')updateSound()});
+    }
+    // Prime output with a single-sample buffer on the same user gesture.
+    const sample=actx.createBuffer(1,1,actx.sampleRate);
+    const silent=actx.createBufferSource();silent.buffer=sample;silent.connect(actx.destination);silent.start(0);
+    if(actx.state!=='running'){
+      const r=actx.resume();if(r?.then)r.then(()=>{updateSound();updateAudioDiagnostic()}).catch(e=>{audioFault=true;updateAudioDiagnostic();console.warn('Web Audio resume failed',e)});
+    }
+    audioFault=false;
+  }catch(e){audioFault=true;console.warn('Web Audio initialization failed',e)}
+  try{
+    const media=createEngineMedia();
+    if((started&&!paused)||audioPreviewActive){
+      media.playbackRate=.78+input.throttle*.59;
+      const promise=media.play();
+      if(promise?.then)promise.then(()=>{mediaAudioError='';updateAudioDiagnostic()}).catch(e=>{mediaAudioError=e.name||'media blocked';updateAudioDiagnostic()});
+    }
+  }catch(e){mediaAudioError=e.message||'音声再生不可'}
+  updateSound();updateAudioDiagnostic();
+}
+function updateSound(){
+  showSoundState();
+  const enabled=!muted&&((!paused&&started)||audioPreviewActive);
+  // HTMLAudio is used for the engine, so WebAudio does not play a second engine in parallel.
+  if(engineMedia){
+    engineMedia.volume=enabled?.88:0;
+    if(!enabled&&!engineMedia.paused)engineMedia.pause();
+    if(enabled&&engineMedia.paused){
+      // Only a tap handler may call play() on iPhone. Startup/toggle calls unlockAudio().
+    }
+  }
+  if(actx&&engineGain){
+    engineGain.gain.setTargetAtTime(0,actx.currentTime,.11);
+    windGain.gain.setTargetAtTime(enabled?.06:0,actx.currentTime,.20);
+  }
+  updateAudioDiagnostic();
+}
+function updateEngineSound(){
+  if(muted||(paused&&!audioPreviewActive))return;
+  if(engineMedia&&!engineMedia.paused){
+    const engineTime=performance.now();
+    const spool=clamp((engineTime-jetSpoolTime)/2100,0,1);
+    const rpm=audioPreviewActive?(.72+spool*.70):(.64+input.throttle*.74);
+    engineMedia.playbackRate=rpm*(.76+.24*spool);
+  }
+  if(!actx||actx.state!=='running'||!engineOsc)return;
+  const t=actx.currentTime;
+  windFilter.frequency.setTargetAtTime(540+speed*4+input.throttle*1650,t,.18);
+  windGain.gain.setTargetAtTime((!muted&&!paused&&started)?(.025+.12*input.throttle*input.throttle):0,t,.16);
+}
+function createMechanicalNoise(type){
+  // One-shot engine/mechanical sounds rather than UI sine-wave beeps.
+  const seconds=type==='fail'?.9:type==='success'?.75:type==='gear'?.45:.23;
+  let seed=0x1327217,low=0,prev=0;
+  const src=createWav(seconds,(t)=>{
+    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+    const n=(seed/4294967296)*2-1;
+    low=low*.84+n*.16;
+    const envelope=Math.min(1,t/.012)*Math.pow(Math.max(0,1-t/seconds),type==='fail'?.8:2.6);
+    const thud=type==='gear'||type==='fail'?Math.sin(2*Math.PI*65*t)*.32:0;
+    const hiss=(type==='success'?.33:.22)*(n-low);
+    const crackle=type==='fail'?.37*low:0;
+    return .70*envelope*(hiss+thud+crackle);
+  });
+  return src;
+}
+function playSfx(type){
+  if(muted||type==='start')return; // Engine startup is the actual jet spool-up.
+  try{
+    const effectUrl=createMechanicalNoise(type),hit=new Audio(effectUrl);
+    hit.playsInline=true;hit.volume=.6;
+    const p=hit.play();
+    if(p?.catch)p.catch(()=>{});
+    hit.addEventListener('ended',()=>{hit.removeAttribute('src');hit.load();URL.revokeObjectURL(effectUrl);audioURLs=audioURLs.filter(u=>u!==effectUrl)},{once:true});
+  }catch(e){console.warn('Mechanical effect unavailable',e)}
+}
+function toggleSound(){
+  muted=!muted;showSoundState();
+  if(!muted){jetSpoolTime=performance.now()-1200;unlockAudio(true);playSfx('switch');notify('🔥 ジェットエンジン ON');}
+  else {updateSound();notify('🔇 音声 OFF')}
+}
+function testAudio(){
+  muted=false;showSoundState();
+  if(audioPreviewTimer)clearTimeout(audioPreviewTimer);
+  audioPreviewActive=true;jetSpoolTime=performance.now();
+  unlockAudio(true);
+  try{
+    const media=createEngineMedia();media.currentTime=0;media.playbackRate=.76;
+    media.volume=.88;
+    const p=media.play();
+    if(p?.then)p.then(()=>{mediaAudioError='';updateAudioDiagnostic()}).catch(e=>{mediaAudioError=e.name||'ジェット音がブロックされました';updateAudioDiagnostic()});
+  }catch(e){mediaAudioError=e.message||'ジェット音テスト失敗'}
+  notify('🔥 ジェット轟音を再生中 · 音量を上げてね');
+  audioPreviewTimer=setTimeout(()=>{
+    audioPreviewActive=false;
+    if(!started||paused)engineMedia?.pause();
+    updateSound();
+  },5000);
+  updateAudioDiagnostic();
+}
+function openPause(){if(!started||crashed||completed)return;paused=true;$('pauseTitle').textContent='PAUSED';$('pauseText').textContent='空の旅を一時停止中。';$('resumeBtn').textContent='飛行を続ける';$('landingReport').classList.add('hidden');$('pauseMenu').classList.remove('hidden');updateSound()}function resume(){if(crashed||completed){reset()}$('pauseMenu').classList.add('hidden');paused=false;clock.getDelta();jetSpoolTime=performance.now()-1600;unlockAudio(true);updateSound()}
+$('startBtn').addEventListener('click',()=>{
+ reset();setTime($('timeMode').value);$('intro').classList.add('hidden');started=true;paused=false;
+ audioPreviewActive=false;jetSpoolTime=performance.now();unlockAudio(true);clock.getDelta();notify(isFree()?'自由飛行を開始！':mode==='practice'?'着陸練習：脚・フラップ準備済み':'KOBE APPROACH · 目標は着陸・停止');playSfx('start');
+});
+$('audioTestBtn').addEventListener('click',testAudio);
+$('pauseBtn').addEventListener('click',openPause);
+$('resumeBtn').addEventListener('click',resume);
+$('restartBtn').addEventListener('click',()=>{resume()});
+$('menuBtn').addEventListener('click',()=>{$('pauseMenu').classList.add('hidden');$('intro').classList.remove('hidden');started=false;paused=true;updateSound()});
+$('resetBtn').addEventListener('click',()=>{reset();notify('フライトをリスタート')});
+$('cameraBtn').addEventListener('click',()=>{playSfx('switch');camMode=(camMode+1)%3;$('cameraName').textContent=['追尾','操縦席','シネマ'][camMode]});
+$('soundBtn').addEventListener('click',toggleSound);
+$('mapBtn').addEventListener('click',()=>{const map=document.querySelector('.map');const show=map.classList.toggle('show');$('mapBtn').setAttribute('aria-pressed',String(show));$('mapBtn').setAttribute('aria-label',show?'地図を閉じる':'地図を表示')});
+$('resetTopBtn').addEventListener('click',()=>{reset();notify('フライトを最初からやり直します')});
+$('autoBtn').addEventListener('click',()=>{playSfx('switch');auto=!auto;$('autoBtn').innerHTML='AUTO<br>'+(auto?'ON':'OFF');$('autoBtn').classList.toggle('active',auto);notify(auto?'進入支援ON（脚・フラップ・ブレーキは手動）':'進入支援OFF')});
+$('gearBtn').addEventListener('click',()=>{playSfx('gear');gear=!gear;$('gearBtn').innerHTML='GEAR<br>'+(gear?'DOWN':'UP');$('gearBtn').classList.toggle('active',gear)});
+$('flapBtn').addEventListener('click',()=>{playSfx('switch');flaps=(flaps+1)%3;$('flapBtn').innerHTML='FLAPS<br>'+flaps;$('flapBtn').classList.toggle('active',flaps>0)});
+$('brakeBtn').addEventListener('pointerdown',e=>{e.preventDefault();$('brakeBtn').setPointerCapture(e.pointerId);setBrake(true)});
+for(let event of ['pointerup','pointercancel','lostpointercapture'])$('brakeBtn').addEventListener(event,()=>setBrake(false));
+$('throttleInput').addEventListener('input',e=>{input.throttle=+e.target.value/100;if(auto){auto=false;$('autoBtn').innerHTML='AUTO<br>OFF';$('autoBtn').classList.remove('active')}});
+const joy=$('joystick'),knob=$('knob');function stickmove(e){const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,lim=r.width*.31;let x=clamp((e.clientX-cx)/lim,-1,1),y=clamp((e.clientY-cy)/lim,-1,1);input.x=x;input.y=y;knob.style.transform=`translate(calc(-50% + ${x*lim}px),calc(-50% + ${y*lim}px))`;}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);stickmove(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))stickmove(e)});function clearStick(){input.x=0;input.y=0;knob.style.transform='translate(-50%,-50%)'}joy.addEventListener('pointerup',clearStick);joy.addEventListener('pointercancel',clearStick);for(const [id,sign] of [['rudderL',-1],['rudderR',1]]){const b=$(id);b.addEventListener('pointerdown',e=>{b.setPointerCapture(e.pointerId);input.rudder=sign});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{input.rudder=0})}window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase().startsWith('arrow')?e.key:e.key.toLowerCase());if(e.repeat)return;if(e.key.toLowerCase()==='c')$('cameraBtn').click();if(e.key.toLowerCase()==='p'||e.key==='Escape'){if(paused&&started&&!$('pauseMenu').classList.contains('hidden'))resume();else openPause()}if(e.key===' ')$('autoBtn').click();if(e.key.toLowerCase()==='g')$('gearBtn').click();if(e.key.toLowerCase()==='f')$('flapBtn').click()});window.addEventListener('keyup',e=>{keys.delete(e.key.toLowerCase().startsWith('arrow')?e.key:e.key.toLowerCase());if(e.key.toLowerCase()==='b')setBrake(false)});document.addEventListener('visibilitychange',()=>{if(document.hidden&&started&&!paused)openPause()});window.addEventListener('contextmenu',e=>e.preventDefault());showSoundState();updateAudioDiagnostic();try{init()}catch(err){$('intro').querySelector('.help').textContent='3D描画を開始できませんでした。Safari/Chromeの最新版とWebGL対応端末でお試しください。';console.error(err)}
+</script></body></html>

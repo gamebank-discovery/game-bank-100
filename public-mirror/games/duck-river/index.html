@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#133f46" />
+<title>カモの川ながれ｜DUCK RIVER</title>
+<style>
+:root{--dark:#173f45;--cream:#fffaf0;--gold:#e6a93a;--mint:#bfe5da;--ink:#243c3c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#142f35;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,-apple-system,sans-serif;color:var(--ink)}
+body{display:flex;justify-content:center;align-items:center}
+#app{position:relative;width:min(100%,520px);height:100vh;height:100dvh;overflow:hidden;background:#a1c9c1;isolation:isolate;box-shadow:0 0 70px #071d2466}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+#hud{position:absolute;inset:0 0 auto;z-index:3;pointer-events:none;padding:max(15px,env(safe-area-inset-top)) 15px 0}
+.topline{display:flex;gap:8px;align-items:flex-start}
+.brand{padding:9px 12px 10px;background:#fffdf4ee;box-shadow:0 5px 18px #092d3131;border:1px solid #ffffffb3;border-radius:17px;min-width:0;flex:1;backdrop-filter:blur(7px)}
+.brand strong{display:block;font-size:16px;line-height:1.15;letter-spacing:.035em;font-weight:900}.brand small{display:block;margin-top:2px;font-size:9px;letter-spacing:.23em;color:#64837d;font-weight:900}
+.hudbtn{pointer-events:auto;display:grid;place-items:center;border:1px solid #ffffffa8;background:#fffdf4e9;color:#264e4f;width:41px;height:41px;border-radius:14px;font-size:19px;box-shadow:0 4px 14px #082c362a;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px}
+.stat{background:#fffaf0e9;border:1px solid #ffffffb5;border-radius:14px;padding:8px 7px 6px;box-shadow:0 3px 13px #19392f21;text-align:center;backdrop-filter:blur(7px)}
+.stat b{display:block;font-size:17px;line-height:1.15;color:#194e4b;font-variant-numeric:tabular-nums}.stat span{display:block;margin-top:3px;font-size:9px;font-weight:900;letter-spacing:.055em;color:#68847a}
+.progressbox{margin-top:8px;background:#fffaf0e9;border-radius:14px;padding:8px 10px;box-shadow:0 4px 15px #0c33351f;border:1px solid #ffffffaf}
+.progressinfo{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px;font-size:11px;font-weight:900}.progressinfo small{color:#6a847a;font-weight:800}
+.bar{height:7px;background:#d6e7d7;border-radius:100px;overflow:hidden}.bar>div{height:100%;width:0%;border-radius:100px;background:linear-gradient(90deg,#e1b74f,#f0a846);transition:width .16s}
+#floodBanner{position:absolute;z-index:3;top:197px;left:50%;transform:translateX(-50%) translateY(-8px);width:max-content;max-width:92%;padding:9px 15px;border-radius:100px;background:#275663f2;color:#fff;font-size:13px;letter-spacing:.03em;font-weight:900;box-shadow:0 7px 25px #06303a5e;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;text-align:center}
+#floodBanner.show{opacity:1;transform:translateX(-50%) translateY(0)}#floodBanner.danger{background:#a45036f2}
+#toast{position:absolute;top:53%;left:50%;z-index:4;color:#fffdf4;text-shadow:0 2px 9px #113d45,0 2px 2px #113d45;transform:translate(-50%,-50%) scale(.85);font-size:23px;font-weight:1000;opacity:0;pointer-events:none;text-align:center;white-space:nowrap;transition:opacity .2s,transform .2s}#toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}#toast{width:90%;white-space:normal;font-size:clamp(16px,4.6vw,23px)}
+#controls{position:absolute;left:0;right:0;bottom:max(17px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:end;padding:0 18px;z-index:3;pointer-events:none}
+.controlcol{display:flex;flex-direction:column;align-items:center;gap:4px}.power{pointer-events:auto;width:76px;height:76px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;border-radius:25px;background:linear-gradient(155deg,#fffdf5f5,#ebede0ef);border:2px solid #fffdf8;color:#29524d;box-shadow:0 6px 24px #0d333c53;user-select:none;cursor:pointer;touch-action:manipulation;transition:transform .1s,filter .15s}.power:active{transform:scale(.94)}.power .emoji{font-size:27px;line-height:1}.power strong{font-size:11px;font-weight:1000}.power small{font-size:9px}.power:disabled{filter:grayscale(.8);opacity:.64}.power.boost{background:linear-gradient(140deg,#ffdb88,#ffae68);color:#693e1b}.hint{font-size:10px;color:#fff;font-weight:800;text-shadow:0 2px 5px #183f48;max-width:90px;text-align:center}
+#layer{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(180deg,#153d4ac9,#12373d7d 45%,#102b3fc9);backdrop-filter:blur(5px);overflow-y:auto}
+.panel{width:100%;max-width:420px;background:linear-gradient(160deg,#fffcf4,#fff9e8);border:1px solid #ffffff;box-shadow:0 22px 75px #06222f8c;border-radius:31px;padding:27px 24px 22px;text-align:center;position:relative;overflow:hidden}
+.panel:before{content:"";position:absolute;top:-65px;right:-60px;width:195px;height:195px;border-radius:50%;background:radial-gradient(circle,#eaf4d3,#f5df9810 73%);pointer-events:none}
+.eyebrow{font-weight:1000;font-size:10px;letter-spacing:.28em;color:#65857d;margin-bottom:7px}.title{font-size:clamp(27px,8vw,39px);line-height:1.15;letter-spacing:-.045em;color:#224a47;font-weight:1000;margin:0}.title em{font-style:normal;color:#e8a23c}.sub{font-size:13px;color:#7f8b75;font-weight:850;margin:8px 0 13px;line-height:1.5}
+.duckart{height:150px;position:relative;display:flex;justify-content:center;align-items:center;margin:0 -10px 8px;background:radial-gradient(ellipse at 50% 63%,#b2d5c6 0%,#d8e9d9 33%,transparent 64%);font-size:75px}.duckart .baby{position:absolute;font-size:38px;bottom:22px}.duckart .one{left:20%}.duckart .two{right:18%;bottom:36px}.duckart .flower{position:absolute;font-size:24px;left:12%;top:20px}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:15px 0}.feature{background:#f5f0df;border:1px solid #ede9d8;border-radius:14px;padding:10px 5px;font-size:11px;font-weight:900;color:#436762}.feature span{display:block;font-size:24px;margin-bottom:3px}
+.cta{border:0;display:block;width:100%;padding:15px 12px;border-radius:17px;background:linear-gradient(100deg,#2a7970,#20605e);color:#fff;font-size:17px;font-weight:1000;box-shadow:0 7px 18px #2f75674d;cursor:pointer}.cta:active{transform:translateY(2px)}.micro{font-size:10px;line-height:1.5;color:#85918a;font-weight:800;margin-top:12px}.best{background:#fce9b7;padding:8px 12px;border-radius:13px;font-weight:900;font-size:12px;color:#74562e;margin:10px 0}
+.endstats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:15px 0}.endstats div{padding:12px 4px;background:#edf4e9;border-radius:15px}.endstats b{display:block;font-size:19px;color:#22575a}.endstats small{display:block;font-size:10px;font-weight:800;color:#6a827e;margin-top:4px}.secondary{background:transparent;border:1px solid #bdd1c5;border-radius:13px;padding:10px;color:#37635e;font-weight:900;margin-top:10px;width:100%;cursor:pointer}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:4;pointer-events:none;transition:opacity .18s}
+@media(max-height:690px){.panel{padding:18px}.duckart{height:100px;font-size:58px}.duckart .baby{font-size:29px;bottom:7px}.features{margin:8px 0}.feature{padding:7px 4px}.panel .sub{margin:4px 0}.power{width:65px;height:65px;border-radius:21px}.power .emoji{font-size:23px}}
+</style>
+</head>
+<body>
+<div id="app">
+<canvas id="world" aria-label="カモの川ながれのゲーム画面"></canvas>
+<div id="hud">
+ <div class="topline"><div class="brand"><strong>🦆 カモの川ながれ</strong><small>DUCK RIVER · TOGETHER WE GROW</small></div><button class="hudbtn" id="sound" aria-label="音を切り替え">♫</button><button class="hudbtn" id="pause" aria-label="一時停止">Ⅱ</button></div>
+ <div class="stats"><div class="stat"><b id="score">0</b><span>🏆 スコア</span></div><div class="stat"><b id="flock">1 羽</b><span>🦆 なかま</span></div><div class="stat"><b id="life">♥ ♥ ♥</b><span>💛 たいりょく</span></div></div>
+ <div class="progressbox"><div class="progressinfo"><span id="levelName">LV.1 · ひなガモ</span><small id="nextText">つぎまで 12 エサ</small></div><div class="bar"><div id="xpBar"></div></div></div>
+</div>
+<div id="floodBanner"></div><div id="toast"></div><div id="flash"></div>
+<div id="controls"><div class="controlcol"><button class="power" id="gather"><span class="emoji">🛟</span><strong>みんな集合</strong><small id="gatherCd">まもる</small></button><div class="hint">群れを守るバリア</div></div><div class="controlcol"><button class="power boost" id="dash"><span class="emoji">⚡</span><strong>ダッシュ</strong><small id="dashCd">エサを集める</small></button><div class="hint">加速＆エサ吸引</div></div></div>
+<div id="layer"><div class="panel" id="panelContent"></div></div>
+</div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), canvas=$('world'), ctx=canvas.getContext('2d',{alpha:false});
+let W=400,H=760,dpr=1,raf=0,last=0,muted=false,audioCtx=null;
+let game=null, pointerDown=false, keys=new Set(), toastTimeout=0;
+const stages=[{need:0,name:'ひなガモ'},{need:12,name:'若ガモ'},{need:32,name:'大人ガモ'},{need:65,name:'川のリーダー'},{need:115,name:'伝説のカモ'}];
+const rand=(a,b)=>a+Math.random()*(b-a),clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const best=()=>{try{return Number(localStorage.getItem('duck_river_best')||0)}catch{return 0}};
+const saveBest=n=>{try{localStorage.setItem('duck_river_best',String(n))}catch{}};
+function resize(){const r=canvas.getBoundingClientRect();W=r.width;H=r.height;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);if(game){game.player.x=clamp(game.player.x,40,W-40);game.player.y=clamp(game.player.y,H*.23,H*.75);game.player.tx=game.player.x;game.player.ty=game.player.y;}}
+window.addEventListener('resize',resize,{passive:true});resize();
+function init(){return {phase:'playing',time:0,dist:0,score:0,food:0,level:1,hearts:4,ducks:[],items:[],particles:[],textFx:[],player:{x:W/2,y:H*.62,tx:W/2,ty:H*.62,history:[],inv:0,tilt:0},spawn:0,flood:false,warn:false,floodEnd:0,nextFlood:23,cycle:0,shield:0,gatherCd:0,slow:0,intro:0,dash:0,dashCd:0,combo:0,comboTimer:0,shake:0,flash:0,uiTick:0,riverScroll:0,pauseFrom:'playing'};}
+function audio(f=550,d=.09,type='sine',vol=.055,slide=0){if(muted)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(f,audioCtx.currentTime);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(55,f+slide),audioCtx.currentTime+d);g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.01);}catch{}}
+function alertToast(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>el.classList.remove('show'),1500)}
+function showMenu(){game=null;$('hud').style.display='none';$('controls').style.display='none';$('floodBanner').classList.remove('show');$('layer').style.display='flex';$('panelContent').innerHTML=`<div class="eyebrow">A LITTLE RIVER, A BIG ADVENTURE</div><h1 class="title">カモの<br><em>川ながれ。</em></h1><div class="sub">食べて、仲間を増やして、<br>丸太をかわし、雑草を抜け、<br>いたずらガモから仲間を守ろう。</div><div class="duckart"><span class="flower">🌼</span><span>🦆</span><span class="baby one">🐤</span><span class="baby two">🐤</span></div><div class="features"><div class="feature"><span>🪵</span>回る丸太</div><div class="feature"><span>🌿</span>からまる雑草</div><div class="feature"><span>🦆</span>敵ガモ襲来</div></div><button class="cta" id="start">川へ出発する →</button><div class="best">🏆 ベストスコア：${best().toLocaleString()} 点</div><div class="micro">スマホ：画面をなぞって泳ぐ / PC：マウス・矢印キー<br>🌿 雑草は減速！ ダッシュで脱出<br>🛟 バリア / ⚡ ダッシュで赤い敵ガモを撃退<br>PC：Spaceでダッシュ / Shiftで集合<br>※ 今回はカモの群れと協力する1人プレイ版</div>`;$('start').onclick=start;}
+function start(){game=init();for(const [kind,p,y] of [['fish',.03,H*.34],['seed',-.08,H*.09],['baby',.20,-12]])game.items.push({kind,p,y,x:W/2,drift:0,s:1,rot:0,phase:1,used:false});$('layer').style.display='none';$('hud').style.display='block';$('controls').style.display='flex';$('pause').textContent='Ⅱ';alertToast('🐣 みんなで大きくなろう！');audio(450,.13,'sine',.08,290);updateHud(true)}
+function end(){if(!game||game.phase==='over')return;game.phase='over';const g=game;if(g.score>best())saveBest(g.score);$('layer').style.display='flex';$('panelContent').innerHTML=`<div class="eyebrow">THE RIVER REMEMBERS</div><h2 class="title">みんな、<br><em>よく泳いだね。</em></h2><div class="sub">${g.level>=4?'立派な群れのリーダーになれた！':'次はもっと大きな群れに育てよう！'}</div><div class="duckart"><span>🦆</span><span class="baby one">🐤</span><span class="baby two">🐤</span></div><div class="endstats"><div><b>${g.score.toLocaleString()}</b><small>スコア</small></div><div><b>${g.ducks.length+1}羽</b><small>さいごの群れ</small></div><div><b>${Math.floor(g.dist)}m</b><small>泳いだ距離</small></div></div><div class="best">🏆 ベストスコア：${best().toLocaleString()} 点</div><button class="cta" id="restart">もう一度、川へ！ →</button><button class="secondary" id="shareScore">結果をシェア / コピー</button>`;$('restart').onclick=start;$('shareScore').onclick=async()=>{const s=`🦆 カモの川ながれで ${g.score.toLocaleString()} 点！ ${g.ducks.length+1}羽の仲間と${Math.floor(g.dist)}m泳いだよ。 #カモの川ながれ`;try{if(navigator.share)await navigator.share({text:s});else if(navigator.clipboard){await navigator.clipboard.writeText(s);alertToast('結果をコピーしたよ！')}else alert(s)}catch{}};audio(240,.35,'sine',.07,-140);}
+function updateHud(force=false){const g=game;if(!g)return; if(!force&&g.uiTick>0)return;g.uiTick=.12;$('score').textContent=g.score.toLocaleString();$('flock').textContent=`${g.ducks.length+1} 羽`;$('life').textContent=('♥ '.repeat(Math.max(0,g.hearts))).trim()||'—';$('life').style.color=g.hearts===1?'#b8513f':'#bd7e44';let i=clamp(g.level-1,0,stages.length-1),curr=stages[i].need,next=stages[i+1]?.need;$('levelName').textContent=`LV.${g.level} · ${stages[i].name}`;$('nextText').textContent=next?`つぎまで ${next-g.food} エサ`:'MAX LEVEL!';$('xpBar').style.width=next?`${clamp((g.food-curr)/(next-curr),0,1)*100}%`:'100%';$('dashCd').textContent=g.dashCd>0?`${Math.ceil(g.dashCd)}秒`:'エサを集める';$('gatherCd').textContent=g.gatherCd>0?`${Math.ceil(g.gatherCd)}秒`:'まもる';$('dash').disabled=g.dashCd>0||g.phase!=='playing';$('gather').disabled=g.gatherCd>0||g.phase!=='playing';const b=$('floodBanner');if(g.flood){b.className='show danger';b.textContent=`🌊 洪水！ あと ${Math.ceil(g.floodEnd-g.time)} 秒 · 仲間を守ろう`;}else if(g.warn){b.className='show';b.textContent=`⚠️ 洪水接近！ あと ${Math.ceil(g.nextFlood-g.time)} 秒`;}else{b.className='';b.textContent='';}}
+function boost(){const g=game;if(!g||g.phase!=='playing'||g.dashCd>0)return;g.dash=3;g.dashCd=12;g.slow=0;g.shake=3;alertToast('⚡ ぐんぐん泳ぐ！');audio(600,.2,'triangle',.11,540)}
+function gather(){const g=game;if(!g||g.phase!=='playing'||g.gatherCd>0)return;g.shield=4.5;g.gatherCd=19;g.slow=0;g.ducks.forEach((d,i)=>d.rescue=.6+i*.07);alertToast('🛟 みんな、こっち！');audio(420,.13,'sine',.08,220);setTimeout(()=>audio(650,.14,'sine',.04,100),80)}
+$('dash').addEventListener('pointerdown',e=>{e.stopPropagation();boost()});$('gather').addEventListener('pointerdown',e=>{e.stopPropagation();gather()});$('sound').onclick=()=>{muted=!muted;$('sound').textContent=muted?'♪̸':'♫';if(!muted)audio(660)};
+$('pause').onclick=()=>{if(!game||game.phase==='over')return;if(game.phase==='playing'){game.phase='paused';$('pause').textContent='▶';$('layer').style.display='flex';$('panelContent').innerHTML=`<div class="eyebrow">A LITTLE BREAK</div><h2 class="title">ちょっと<br><em>ひとやすみ。</em></h2><div class="duckart">🦆</div><p class="sub">仲間も待ってるよ。</p><button class="cta" id="resume">つづきから泳ぐ →</button><button class="secondary" id="backmenu">タイトルへ戻る</button>`;$('resume').onclick=resume;$('backmenu').onclick=showMenu}else resume()};
+function resume(){if(!game)return;game.phase='playing';$('layer').style.display='none';$('pause').textContent='Ⅱ'}
+function setTarget(e){if(!game||game.phase!=='playing')return;const r=canvas.getBoundingClientRect();game.player.tx=clamp(e.clientX-r.left,22,W-22);game.player.ty=clamp(e.clientY-r.top,H*.25,H*.78)}
+canvas.addEventListener('pointerdown',e=>{pointerDown=true;try{canvas.setPointerCapture(e.pointerId)}catch{}setTarget(e)});
+canvas.addEventListener('pointermove',e=>{if(pointerDown)setTarget(e)});
+canvas.addEventListener('pointerup',()=>pointerDown=false);canvas.addEventListener('pointercancel',()=>pointerDown=false);
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' ','a','d','w','s','A','D','W','S'].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase());if(e.code==='Space')boost();if(e.key==='Shift')gather();if(e.key==='Escape'&&game&&game.phase==='playing')$('pause').click()});window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+function centerAt(y,scroll){return W*.5+Math.sin((y+scroll)*.0061)*W*.041+Math.sin((y+scroll)*.0027+1.1)*W*.029}
+function halfAt(y,flood){return W*(flood?.418:.379)+Math.sin(y*.007+(game?.riverScroll||0)*.003)*W*.009}
+function bankX(y,side,g){return centerAt(y,g?g.riverScroll:0)+side*halfAt(y,g?.flood)}
+const hazards=['log','weed','enemy','rock','plastic','whirlpool'];
+function addItem(g,kind,p=rand(-.78,.78),y=-70){
+const it={kind,p,y,x:centerAt(y,g.riverScroll)+p*halfAt(y,g.flood)*.93,drift:rand(-1,1),s:rand(.7,1.2),rot:rand(-.45,.45),phase:rand(0,6.3),used:false,alerted:false};g.items.push(it);return it;
+}
+function spawnItem(g){const r=Math.random(),hazardChance=g.flood?.47:(g.time<15?.2:.32);let kind;
+if(r<hazardChance){const pool=g.time<8?['log','weed','rock']:g.time<12?['log','weed','rock','plastic']:['log','log','weed','weed','enemy','enemy','rock','plastic','whirlpool'];kind=pick(pool);if(kind==='enemy'&&g.items.filter(i=>i.kind==='enemy'&&!i.used).length>=2)kind='weed';}
+else if(r<hazardChance+.12&&g.ducks.length<11)kind='baby';else kind=pick(['fish','fish','bug','shrimp','seed']);addItem(g,kind);
+}
+function nearHazard(it,p){
+const angle=it.kind==='log'?it.rot+Math.sin(it.phase)*.15:Math.sin(it.phase)*.15;
+const dx=p.x-it.x,dy=p.y-it.y,c=Math.cos(angle),sn=Math.sin(angle),x=dx*c+dy*sn,y=-dx*sn+dy*c;
+const rx=it.kind==='log'?59:it.kind==='weed'?48:it.kind==='enemy'?34:it.kind==='whirlpool'?45:35;
+const ry=it.kind==='log'?29:it.kind==='weed'?36:it.kind==='enemy'?43:it.kind==='whirlpool'?45:35;
+return x*x/(rx*rx)+y*y/(ry*ry)<1;
+}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function particle(g,x,y,color,count=9){for(let i=0;i<count;i++)g.particles.push({x,y,vx:rand(-90,90),vy:rand(-80,70),r:rand(2,5),life:rand(.35,.8),max:.8,c:color})}
+function textPop(g,x,y,s,color='#fff8d8'){g.textFx.push({x,y,s,color,life:1})}
+function pickup(g,it){it.used=true;const p=g.player;if(it.kind==='baby'){g.ducks.push({x:p.x+rand(-20,20),y:p.y+55+rand(2,20),phase:rand(0,6),rescue:1});g.score+=100;textPop(g,it.x,it.y-20,'🐣 なかま +1','#ffe99c');particle(g,it.x,it.y,'#ffe4a4',18);audio(560,.12,'sine',.05,280);setTimeout(()=>audio(850,.13,'sine',.045,180),90);alertToast(`🦆 ${g.ducks.length+1}羽の群れになった！`)}else{g.combo=g.comboTimer>0?Math.min(g.combo+1,8):1;g.comboTimer=2.5;g.food++;const add=Math.round((it.kind==='fish'?25:it.kind==='shrimp'?35:15)*(1+g.ducks.length*.08)*g.combo);g.score+=add;particle(g,it.x,it.y,it.kind==='fish'?'#f7c96c':'#d8f3c4',7);textPop(g,it.x,it.y-18,`+${add}`);audio(460+Math.min(500,g.combo*56),.075,'sine',.028,130);let newLevel=g.level;for(let i=stages.length-1;i>=0;i--)if(g.food>=stages[i].need){newLevel=i+1;break}if(newLevel>g.level){g.level=newLevel;g.hearts=Math.min(4,g.hearts+1);g.shield=Math.max(g.shield,1.3);alertToast(`✨ LV.${g.level} ${stages[g.level-1].name} に進化！`);particle(g,p.x,p.y,'#f6d374',29);audio(520,.35,'triangle',.10,500)}}}
+function hurt(g,x,y){if(g.player.inv>0||g.shield>0)return;g.hearts--;g.player.inv=2.3;g.shake=12;g.flash=.36;g.combo=0;g.comboTimer=0;particle(g,x,y,'#ffe0a7',21);textPop(g,g.player.x,g.player.y-38,'💔 あぶない！','#ffe2cb');audio(210,.26,'sawtooth',.045,-130);if(g.hearts<=0)end();}
+function tick(dt){const g=game;if(!g||g.phase!=='playing')return;dt=Math.min(.05,dt);g.time+=dt;g.uiTick-=dt;g.slow=Math.max(0,g.slow-dt);g.shield=Math.max(0,g.shield-dt);g.gatherCd=Math.max(0,g.gatherCd-dt);g.dash=Math.max(0,g.dash-dt);g.dashCd=Math.max(0,g.dashCd-dt);g.player.inv=Math.max(0,g.player.inv-dt);g.shake=Math.max(0,g.shake-dt*35);g.flash=Math.max(0,g.flash-dt*1.7);g.comboTimer=Math.max(0,g.comboTimer-dt);
+if(!g.flood&&g.time>=g.nextFlood){g.flood=true;g.floodEnd=g.time+10;g.warn=false;g.shake=9;alertToast('🌊 洪水だ！ みんな集合！');audio(150,.5,'sawtooth',.045,-60)}
+if(g.flood&&g.time>=g.floodEnd){g.flood=false;g.cycle++;g.nextFlood=g.time+Math.max(32,47-g.cycle*2);g.shield=Math.max(g.shield,1);alertToast('☀️ 洪水を乗り越えた！ +500');g.score+=500+g.ducks.length*50;audio(600,.3,'sine',.07,340)}
+g.warn=!g.flood&&g.nextFlood-g.time<5;
+const baseSpeed=(g.flood?238:133)+Math.min(95,g.dist*.13)+(g.dash>0?48:0);g.riverScroll+=baseSpeed*dt;g.dist+=baseSpeed*.024*dt;
+const p=g.player,oldX=p.x;
+const km=235*dt*(g.dash>0?1.55:g.slow>0?.45:1);
+if(keys.has('arrowleft')||keys.has('a'))p.tx-=km;if(keys.has('arrowright')||keys.has('d'))p.tx+=km;if(keys.has('arrowup')||keys.has('w'))p.ty-=km;if(keys.has('arrowdown')||keys.has('s'))p.ty+=km;
+const left=bankX(p.y,-1,g)+20,right=bankX(p.y,1,g)-20;p.tx=clamp(p.tx,left,right);p.ty=clamp(p.ty,H*.27,H*.77);
+const mobility=(g.flood?.75:1)*(g.slow>0&&g.dash<=0?.4:1);p.x+=(p.tx-p.x)*Math.min(1,dt*8.5*mobility);p.y+=(p.ty-p.y)*Math.min(1,dt*6.8*mobility);
+if(g.flood){const push=Math.sin(g.time*2.9+p.y*.009)*20+Math.sin(g.time*1.3)*30;p.x+=push*dt*.5;p.x=clamp(p.x,left,right)}
+p.tilt+=(clamp((p.x-oldX)/Math.max(dt,.01)*.002,-.4,.4)-p.tilt)*dt*6;
+p.history.unshift({x:p.x,y:p.y});if(p.history.length>210)p.history.length=210;
+for(let i=0;i<g.ducks.length;i++){const d=g.ducks[i],hist=p.history[Math.min(p.history.length-1,Math.floor(8+i*7))]||p;const side=(i%2===0?-1:1)*(12+Math.floor(i/2)*5);const targetX=clamp(hist.x+side,bankX(hist.y,-1,g)+17,bankX(hist.y,1,g)-17),targetY=hist.y+25+Math.floor(i/2)*14;d.x+=(targetX-d.x)*Math.min(1,dt*(g.shield>0?9:5));d.y+=(targetY-d.y)*Math.min(1,dt*(g.shield>0?9:5));d.rescue=Math.max(0,(d.rescue||0)-dt)}
+// Introduce each new obstacle separately, with room to learn its counter.
+const lessons=[{at:4,kind:'log',p:-.35,msg:'🪵 丸太！ 横に広いから回り込もう'},{at:8,kind:'weed',p:.35,msg:'🌿 雑草は減速！ ダッシュで脱出'},{at:12,kind:'enemy',p:-.3,msg:'🦆 赤い敵ガモ！ ダッシュかバリアで撃退'}];
+if(g.intro<lessons.length&&g.time>=lessons[g.intro].at){const lesson=lessons[g.intro++];addItem(g,lesson.kind,lesson.p);alertToast(lesson.msg)}
+g.spawn-=dt;let spawnEvery=g.flood?.43:.56;spawnEvery=Math.max(.28,spawnEvery-Math.min(.13,g.dist*.00013));if(g.spawn<=0){spawnItem(g);g.spawn=spawnEvery*rand(.65,1.32)}
+for(const it of g.items){
+if(it.used)continue;
+it.y+=baseSpeed*(it.kind==='enemy'?.62:it.kind==='baby'?.72:it.kind==='fish'?.92:1)*dt;
+if(it.kind==='log')it.rot+=dt*it.drift*.32;
+if(it.kind==='enemy'&&it.y>H*.25&&it.y<p.y+65){
+if(!it.alerted){it.alerted=true;textPop(g,it.x,it.y-42,'!','#ffb8a1');audio(290,.12,'triangle',.035,100)}
+const targetP=clamp((p.x-centerAt(it.y,g.riverScroll))/Math.max(1,halfAt(it.y,g.flood)*.93),-.86,.86);
+const maxTurn=(g.flood?.3:.24)*dt;it.p+=clamp(targetP-it.p,-maxTurn,maxTurn);
+}
+it.x=centerAt(it.y,g.riverScroll)+it.p*halfAt(it.y,g.flood)*.93+Math.sin(g.time*2+it.phase)*(it.kind==='baby'?9:4);
+it.phase+=dt*(it.kind==='fish'?2:1);
+const radius=it.kind==='baby'?23:17,d=Math.hypot(it.x-p.x,it.y-p.y);
+const food=['fish','shrimp','bug','seed'].includes(it.kind);
+if(g.dash>0&&food&&d<130){it.p+=(clamp((p.x-centerAt(it.y,g.riverScroll))/Math.max(1,halfAt(it.y,g.flood)*.93),-.87,.87)-it.p)*Math.min(1,dt*8);it.x+=(p.x-it.x)*Math.min(1,dt*7);it.y+=(p.y-it.y)*Math.min(1,dt*6)}
+if(food||it.kind==='baby'){
+let collected=d<radius+18;if(!collected&&food)for(const duck of g.ducks){if(Math.hypot(it.x-duck.x,it.y-duck.y)<radius+11){collected=true;break}}if(collected)pickup(g,it);
+}else if(nearHazard(it,p)){
+if(it.kind==='weed'){
+if(g.dash>0||g.shield>0){it.used=true;g.slow=0;g.score+=30;particle(g,it.x,it.y,'#c8ec8b',15);textPop(g,it.x,it.y-22,'雑草を突破 +30','#e3ffc2');audio(420,.1,'triangle',.035,200)}
+else{g.slow=1.3;if(!it.alerted){it.alerted=true;textPop(g,p.x,p.y-48,'🌿 減速！ ⚡で脱出','#e1ffb7');audio(170,.16,'triangle',.035,-60)}}
+}else if(it.kind==='enemy'&&(g.dash>0||g.shield>0)){
+it.used=true;g.score+=150;particle(g,it.x,it.y,'#ffb98d',20);textPop(g,it.x,it.y-30,'撃退！ +150','#ffdf91');audio(710,.16,'triangle',.055,300);
+}else{const protectedByShield=g.shield>0;hurt(g,it.x,it.y);it.used=true;if(protectedByShield){particle(g,it.x,it.y,'#d7ffff',12);g.score+=15;audio(650,.1,'sine',.03,150)}}
+}
+if(g.phase!=='playing')break;
+}
+
+g.items=g.items.filter(it=>!it.used&&it.y<H+90);
+for(const a of g.particles){a.life-=dt;a.x+=a.vx*dt;a.y+=a.vy*dt;a.vy+=75*dt}g.particles=g.particles.filter(a=>a.life>0);
+for(const a of g.textFx){a.life-=dt;a.y-=42*dt}g.textFx=g.textFx.filter(a=>a.life>0);
+updateHud();}
+function pathBank(g,side,start=-32,end=H+35,step=16){ctx.beginPath();for(let y=start;y<=end;y+=step){const x=bankX(y,side,g);if(y===start)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.lineTo(bankX(end,side,g),end);}
+function riverPath(g){ctx.beginPath();for(let y=-35;y<=H+35;y+=15){const x=bankX(y,-1,g);if(y===-35)ctx.moveTo(x,y);else ctx.lineTo(x,y)}for(let y=H+35;y>=-35;y-=15)ctx.lineTo(bankX(y,1,g),y);ctx.closePath()}
+function drawBG(g,t){ctx.fillStyle='#e7e1c9';ctx.fillRect(0,0,W,H);
+const landGrad=ctx.createLinearGradient(0,0,W,0);landGrad.addColorStop(0,'#859d7a');landGrad.addColorStop(.5,'#b3b79a');landGrad.addColorStop(1,'#7e9b81');ctx.fillStyle=landGrad;ctx.fillRect(0,0,W,H);
+// Walkways, stone retaining edges, and guard rails from the photographed canal.
+for(const side of [-1,1]){ctx.beginPath();for(let y=-35;y<H+40;y+=14){let x=bankX(y,side,g)+side*11;if(y===-35)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.lineTo(side<0?0:W,H+40);ctx.lineTo(side<0?0:W,-35);ctx.closePath();ctx.fillStyle='#6f7e72';ctx.fill();ctx.strokeStyle='#45565d';ctx.lineWidth=14;ctx.stroke();}
+riverPath(g);let river=ctx.createLinearGradient(0,0,W,H);river.addColorStop(0,g.flood?'#708f8b':'#82b6ad');river.addColorStop(.42,g.flood?'#658985':'#78aca6');river.addColorStop(1,g.flood?'#566f75':'#5a9997');ctx.fillStyle=river;ctx.fill();ctx.save();riverPath(g);ctx.clip();
+// Flow and shallow-water light reflections
+for(let i=0;i<60;i++){const y=((i*83+g.riverScroll*(.65+i%3*.15))%(H+100))-50;const rx=(Math.sin(i*93.71)*.5+.5)*W;const lx=bankX(y,-1,g)+10,rr=bankX(y,1,g)-10;const x=lx+(rr-lx)*(rx/W);const sw=Math.sin(i*32.7)*11+26;ctx.strokeStyle=`rgba(218,246,232,${g.flood?.11:.18})`;ctx.lineWidth=i%3===0?2:1;ctx.beginPath();ctx.moveTo(x,y);ctx.bezierCurveTo(x+sw*.2,y-3,x+sw*.75,y+4,x+sw,y);ctx.stroke()}
+for(let i=0;i<23;i++){const x=(i*73.13)%W,y=((i*154.3+g.riverScroll*.38)%(H+80))-35;ctx.beginPath();ctx.ellipse(x,y,4+i%4*3,2+i%2,0,0,Math.PI*2);ctx.strokeStyle='#d6ede04b';ctx.lineWidth=1;ctx.stroke()}
+ctx.restore();
+// Stone face and plantings at both banks.
+for(const side of [-1,1]){pathBank(g,side);ctx.strokeStyle='#344c50';ctx.lineWidth=10;ctx.stroke();pathBank(g,side);ctx.strokeStyle='#6f7f73';ctx.lineWidth=5;ctx.stroke();
+for(let i=-3;i<Math.ceil(H/51)+3;i++){const y=i*51+(g.riverScroll*.36%51),x=bankX(y,side,g)-side*3;ctx.save();ctx.translate(x,y);ctx.fillStyle=i%2?'#63756a':'#526766';ctx.beginPath();ctx.ellipse(0,0,4,10,.35,0,Math.PI*2);ctx.fill();ctx.restore()}
+// Flower banks, like the yellow goldenrod in the photographs.
+for(let i=-2;i<Math.ceil(H/37)+2;i++){const y=i*37+(g.riverScroll*.5%37),x=bankX(y,side,g)+side*randStable(i,side,2,12);const seed=Math.abs((i*47+side*83))%7;if(seed<4)drawFlower(x+side*2,y,side,i+17,g.time);else drawGrass(x,y,side,i);}
+// Railway-style handrails along walkway
+ctx.strokeStyle='#bfc7c5';ctx.lineWidth=4;ctx.beginPath();for(let y=-20;y<H+20;y+=12){const x=bankX(y,side,g)+side*32;if(y===-20)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();ctx.strokeStyle='#77888b';ctx.lineWidth=2;ctx.beginPath();for(let y=-20;y<H+20;y+=12){const x=bankX(y,side,g)+side*37;if(y===-20)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();for(let i=-2;i<Math.ceil(H/80)+2;i++){const y=i*80+(g.riverScroll*.7%80),x=bankX(y,side,g)+side*33;ctx.strokeStyle='#d3dad7';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x-2,y-8);ctx.lineTo(x+2,y+13);ctx.stroke()}}
+if(g.flood){ctx.fillStyle='rgba(67,87,95,.13)';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#edf8f38e';ctx.lineWidth=1;for(let i=0;i<85;i++){const x=(i*81.3+Math.sin(i)*70)%W,y=(i*61+g.time*390)%(H+70)-35;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-7,y+17);ctx.stroke()}}
+}
+function randStable(i,s,a,b){let q=Math.abs(Math.sin(i*65.723+s*9.37));return a+(b-a)*q}
+function drawGrass(x,y,side,i){ctx.save();ctx.translate(x,y);ctx.strokeStyle=i%2?'#788d52':'#90a66a';ctx.lineWidth=1.4;for(let j=0;j<5;j++){let dx=side*(j-2)*3;ctx.beginPath();ctx.moveTo(0,13);ctx.quadraticCurveTo(dx,0,dx*(1.1+Math.sin(i+j)), -11-Math.abs(dx));ctx.stroke()}ctx.restore()}
+function drawFlower(x,y,side,i,t){ctx.save();ctx.translate(x,y);const sway=Math.sin(t*1.2+i)*2.5;ctx.strokeStyle='#5c7848';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,19);ctx.quadraticCurveTo(sway*2,-1,sway,-19);ctx.stroke();for(let j=0;j<5;j++){const fx=sway+(j-2)*3,fy=-20+Math.abs(j-2)*3;ctx.fillStyle=j%2?'#efbd4c':'#f5d26b';ctx.beginPath();ctx.arc(fx,fy,2.7,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function oval(x,y,rx,ry,fill,rot=0){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.fillStyle=fill;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);ctx.fill();ctx.restore()}
+function drawDuck(x,y,scale,leader,phase,inv=0,shield=0,tilt=0){if(inv>0&&Math.floor(inv*9)%2)return;ctx.save();ctx.translate(x,y+Math.sin(phase*4)*1.8);ctx.rotate(tilt);ctx.scale(scale,scale);
+// swimming rings
+ctx.strokeStyle='#f3f8e997';ctx.lineWidth=1.8;ctx.beginPath();ctx.ellipse(0,18,25,15,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.ellipse(0,28,15,5,0,0,Math.PI);ctx.stroke();
+oval(1,4,22,31,'#254a4a40');
+oval(0,5,20,29,leader?'#e2d4a7':'#d4ae75');
+oval(0,9,16,24,leader?'#b7a783':'#bb8b55');
+// feather wings
+ctx.fillStyle=leader?'#e5dabb':'#e8c99a';for(const s of [-1,1]){ctx.beginPath();ctx.moveTo(s*8,-11);ctx.quadraticCurveTo(s*27,-7,s*21,13);ctx.quadraticCurveTo(s*13,23,s*5,19);ctx.quadraticCurveTo(s*15,2,s*8,-11);ctx.fill();ctx.strokeStyle=leader?'#b5a078':'#9f774b';ctx.lineWidth=1;ctx.stroke()}
+// tail
+ctx.fillStyle=leader?'#625d57':'#8a684c';ctx.beginPath();ctx.moveTo(-9,27);ctx.lineTo(0,38);ctx.lineTo(9,27);ctx.closePath();ctx.fill();
+// neck and head
+oval(0,-16,12,13,leader?'#ece1ca':'#b58d56');oval(0,-25,16,16,leader?'#257a67':'#9c734a');oval(-4,-29,8,7,leader?'#398f74':'#bc8d58');
+ctx.fillStyle='#f4b052';ctx.beginPath();ctx.moveTo(-7,-36);ctx.quadraticCurveTo(0,-46,7,-36);ctx.lineTo(4,-34);ctx.lineTo(-4,-34);ctx.closePath();ctx.fill();
+for(const s of [-1,1]){oval(s*9,-27,2.6,3,'#f8f6e9');oval(s*9.5,-27.2,1.5,2,'#273d38')}
+if(leader){ctx.strokeStyle='#eee8cf';ctx.lineWidth=2.4;ctx.beginPath();ctx.arc(0,-17,11.8,.17,Math.PI-.17);ctx.stroke()}
+if(leader&&game?.level>=4){ctx.fillStyle='#f1c85d';ctx.beginPath();ctx.moveTo(-10,-37);ctx.lineTo(-12,-46);ctx.lineTo(-4,-42);ctx.lineTo(0,-51);ctx.lineTo(6,-42);ctx.lineTo(12,-46);ctx.lineTo(10,-37);ctx.closePath();ctx.fill()}
+if(shield>0){ctx.strokeStyle=`rgba(248,247,203,${.56+.18*Math.sin(phase*8)})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,49,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#cbf9ef20';ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.fill()}
+ctx.restore()}
+function drawItem(it,g){const {x,y,kind}=it;ctx.save();ctx.translate(x,y);ctx.rotate(Math.sin(it.phase)*.15);
+if(kind==='fish'){oval(0,1,13,7,'#e9c879',-.2);ctx.fillStyle='#d4a952';ctx.beginPath();ctx.moveTo(-11,-1);ctx.lineTo(-22,-9);ctx.lineTo(-21,9);ctx.closePath();ctx.fill();oval(7,-1,1.8,1.8,'#3b5150');ctx.strokeStyle='#fff2c088';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-3,-4);ctx.lineTo(3,-5);ctx.stroke()}
+if(kind==='shrimp'){ctx.strokeStyle='#f0a785';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.arc(0,0,10,-1.5,1.8);ctx.stroke();oval(9,-6,2,2,'#653b36');ctx.strokeStyle='#e6c7a5';ctx.lineWidth=1;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(-3+i*4,6);ctx.lineTo(-7+i*4,13);ctx.stroke()}}
+if(kind==='bug'){oval(0,1,5,10,'#555b39');oval(-9,-5,10,5,'#f0f4c9bb',-.3);oval(9,-5,10,5,'#f0f4c9bb',.3);oval(0,-7,4,3,'#a2b359')}
+if(kind==='seed'){for(let i=0;i<4;i++){oval(Math.cos(i*1.57)*6,Math.sin(i*1.57)*6,5,8,i%2?'#eac36e':'#f4d78e',i*1.57)}oval(0,0,3,3,'#8eaf7b')}
+if(kind==='baby'){const pulse=1+Math.sin(g.time*5)*.07;ctx.scale(pulse*.7,pulse*.7);oval(0,0,31,38,'#ffffb42a');oval(0,7,19,25,'#f2d46c');oval(0,-18,15,15,'#ffe083');ctx.fillStyle='#f5a74e';ctx.beginPath();ctx.moveTo(-5,-24);ctx.lineTo(0,-32);ctx.lineTo(5,-24);ctx.closePath();ctx.fill();oval(-7,-20,2,2,'#293d3b');oval(7,-20,2,2,'#293d3b');ctx.strokeStyle='#fef7cdd4';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,36,0,Math.PI*2);ctx.stroke()}
+if(kind==='log'){
+ctx.rotate(it.rot);oval(0,5,47,15,'#27484944');ctx.fillStyle='#765139';ctx.beginPath();ctx.roundRect(-42,-13,84,26,10);ctx.fill();ctx.strokeStyle='#b08b58';ctx.lineWidth=3;for(let j=-1;j<=1;j++){ctx.beginPath();ctx.moveTo(-34,j*7);ctx.bezierCurveTo(-7,j*7-4,13,j*7+4,34,j*7);ctx.stroke()}
+oval(-40,0,7,13,'#d8b67e');ctx.strokeStyle='#89623f';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(-40,0,3,8,0,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#654932';ctx.fillRect(10,-20,8,12);oval(14,-20,5,3,'#bc9b68');
+}
+if(kind==='weed'){
+oval(0,5,36,23,'#426d4b66');for(let j=-3;j<=3;j++){const dx=j*9,sway=Math.sin(g.time*3+it.phase+j)*7;ctx.strokeStyle=j%2?'#b2cc65':'#71994b';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(dx,18);ctx.bezierCurveTo(dx-12,-2,dx+10+sway,-7,dx+sway,-23+Math.abs(j)*3);ctx.stroke();oval(dx+sway,-15+Math.abs(j)*3,4,8,j%2?'#c4dc79':'#87b85a',.5)}
+}
+if(kind==='enemy'){
+// Red head and eye mask clearly distinguish enemies from the green leader.
+ctx.rotate(Math.PI);drawDuck(0,0,.8,false,g.time+it.phase);oval(0,-25,13,14,'#aa4d42');oval(-3,-29,8,7,'#ce7150');ctx.fillStyle='#f8b04b';ctx.beginPath();ctx.moveTo(-5,-37);ctx.lineTo(0,-44);ctx.lineTo(5,-37);ctx.fill();ctx.strokeStyle='#532c30';ctx.lineWidth=3;for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(side*4,-31);ctx.lineTo(side*11,-28);ctx.stroke();oval(side*8,-25,2,2,'#fff6d6')}
+ctx.rotate(Math.PI);if(it.alerted){ctx.fillStyle='#ffe1a3';ctx.font='900 19px system-ui';ctx.textAlign='center';ctx.fillText('!',0,-44)}
+}
+if(kind==='rock'){oval(1,4,22,18,'#475b5b55');ctx.fillStyle='#677b77';ctx.beginPath();ctx.moveTo(-19,6);ctx.lineTo(-13,-12);ctx.lineTo(5,-19);ctx.lineTo(22,-4);ctx.lineTo(18,12);ctx.lineTo(-5,17);ctx.closePath();ctx.fill();ctx.strokeStyle='#91aaa1';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-11,-4);ctx.lineTo(2,-12);ctx.lineTo(13,-5);ctx.stroke()}
+if(kind==='plastic'){ctx.fillStyle='#f7f1dcdd';ctx.beginPath();ctx.moveTo(-11,-13);ctx.lineTo(12,-11);ctx.lineTo(15,12);ctx.lineTo(-12,15);ctx.closePath();ctx.fill();ctx.strokeStyle='#7d9492';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#c6d6ce';ctx.fillRect(-7,-7,14,4)}
+if(kind==='whirlpool'){for(let i=0;i<3;i++){ctx.strokeStyle=['#eaf6e088','#bfd9ce99','#d3eae099'][i];ctx.lineWidth=2.8-i*.4;ctx.beginPath();ctx.arc(0,0,10+i*8,g.time*2+i,g.time*2+i+4.5);ctx.stroke()}oval(0,0,4,4,'#375c69')}
+ctx.restore()}
+function paint(g){ctx.save();if(g?.shake>0)ctx.translate(rand(-g.shake,g.shake)*.4,rand(-g.shake,g.shake)*.4);drawBG(g||{time:0,riverScroll:0,flood:false},performance.now()/1000);
+if(g){g.items.forEach(it=>drawItem(it,g));for(let i=g.ducks.length-1;i>=0;i--){const d=g.ducks[i];drawDuck(d.x,d.y,.57+(Math.floor((g.level-1)/2)*.07),false,g.time+d.phase,0,g.shield*.4,Math.sin(g.time*2+i)*.06)}drawDuck(g.player.x,g.player.y,.91+(g.level-1)*.075,true,g.time,g.player.inv,g.shield,g.player.tilt);
+for(const p of g.particles){ctx.globalAlpha=clamp(p.life/p.max,0,1);oval(p.x,p.y,p.r,p.r,p.c)}ctx.globalAlpha=1;for(const f of g.textFx){ctx.globalAlpha=clamp(f.life,0,1);ctx.fillStyle=f.color;ctx.font='900 16px system-ui';ctx.textAlign='center';ctx.shadowColor='#1c5b5a';ctx.shadowBlur=5;ctx.fillText(f.s,f.x,f.y);ctx.shadowBlur=0}ctx.globalAlpha=1;
+// Soft golden combo indicator in playfield
+if(g.slow>0&&g.dash<=0){ctx.strokeStyle='#c5ed93';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(g.player.x,g.player.y+25,33,12,0,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#edffcb';ctx.font='900 13px system-ui';ctx.textAlign='center';ctx.fillText('🌿 減速中 · ダッシュで脱出',W/2,H*.3)}
+if(g.combo>=3&&g.comboTimer>0){ctx.fillStyle='#fff9d9';ctx.textAlign='center';ctx.font='900 14px system-ui';ctx.shadowColor='#385d54';ctx.shadowBlur=7;ctx.fillText(`✨ ${g.combo} COMBO`,W/2,H*.255);ctx.shadowBlur=0}
+if(g.flash>0){ctx.fillStyle=`rgba(255,201,180,${g.flash*.25})`;ctx.fillRect(0,0,W,H)}}
+ctx.restore()}
+function loop(now){const dt=last?(now-last)/1000:0;last=now;tick(dt);paint(game);raf=requestAnimationFrame(loop)}
+showMenu();raf=requestAnimationFrame(loop);
+})();
+</script>
+<script defer src="/assets/play-track.js" data-game-map='{"":"151"}'></script></body>
+</html>
+<script async data-explicit-opt-in="true" data-deployment-id="dpl_6ZiQNpeQpCs2iqdKbuWVm7ujAcYx" src="https://vercel.live/_next-live/feedback/feedback.js"></script>

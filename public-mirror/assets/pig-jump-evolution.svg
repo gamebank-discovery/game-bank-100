@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" role="img" aria-labelledby="t d">
+<title id="t">PIG JUMP EVOLUTION</title><desc id="d">ピンクの豚が夕焼けの空をジャンプするゲームサムネイル</desc><defs><linearGradient id="sky" x2=".15" y2="1"><stop stop-color="#527ab9"/><stop offset=".65" stop-color="#ffbbbd"/><stop offset="1" stop-color="#ffe1a0"/></linearGradient><linearGradient id="pink" x2="0.7" y2="1"><stop stop-color="#ffe0e2"/><stop offset="1" stop-color="#f58eaf"/></linearGradient><linearGradient id="mount" x2="0" y2="1"><stop stop-color="#9dcbb6"/><stop offset="1" stop-color="#5e9a94"/></linearGradient><filter id="shade"><feDropShadow dx="0" dy="14" stdDeviation="15" flood-color="#303458" flood-opacity=".32"/></filter></defs>
+<rect width="760" height="440" fill="url(#sky)"/><circle cx="610" cy="116" r="70" fill="#ffe9bc" opacity=".85"/><path d="M0 310Q125 220 250 300T505 275T760 295V440H0Z" fill="#acc5c6"/><path d="M0 350Q158 273 280 340T540 307T760 310V440H0Z" fill="url(#mount)"/><path d="M0 409Q170 340 295 406T760 372V440H0Z" fill="#487e78"/>
+<g transform="translate(344 198) rotate(-15)" filter="url(#shade)">
+<ellipse cx="-16" cy="15" rx="126" ry="87" fill="url(#pink)" stroke="#f47e9d" stroke-width="5"/>
+<ellipse cx="87" cy="-15" rx="76" ry="70" fill="url(#pink)" stroke="#f47e9d" stroke-width="5"/>
+<path d="M42-52Q24-114 4-115Q-11-101 16-49M104-56Q130-120 149-109Q160-89 133-44" fill="#f799b4" stroke="#dd6a90" stroke-width="6"/>
+<ellipse cx="133" cy="-3" rx="42" ry="33" fill="#ffb5c8" stroke="#dd6a90" stroke-width="4"/>
+<ellipse cx="122" cy="-4" rx="7" ry="10" fill="#cb6283"/><ellipse cx="147" cy="-4" rx="7" ry="10" fill="#cb6283"/>
+<circle cx="102" cy="-43" r="8" fill="#49394a"/><circle cx="105" cy="-47" r="3" fill="white"/>
+<ellipse cx="-83" cy="81" rx="23" ry="17" fill="#fa8cab"/><ellipse cx="42" cy="81" rx="23" ry="17" fill="#fa8cab"/>
+<path d="M-133-1q-47-35-37-60q22-12 33 6" fill="none" stroke="#f49bb3" stroke-width="12" stroke-linecap="round"/>
+</g>
+<g fill="#ffe3a1"><circle cx="205" cy="119" r="9"/><circle cx="263" cy="78" r="6"/><circle cx="492" cy="72" r="7"/></g>
+<rect x="18" y="17" rx="17" width="273" height="43" fill="#142b48" opacity=".77"/><text x="39" y="46" fill="#fff4e8" font-size="23" font-family="Arial,sans-serif" font-weight="900">PIG JUMP EVOLUTION</text><rect x="474" y="363" width="260" height="53" rx="25" fill="#142b48" opacity=".84"/><text x="493" y="398" fill="#ffe1a2" font-size="24" font-family="Arial,sans-serif" font-weight="900">30 LEVELS • 🥕</text>
+</svg>

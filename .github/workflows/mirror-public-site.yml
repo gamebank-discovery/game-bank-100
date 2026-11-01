@@ -44,5 +44,9 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore: recover publicly served GAME BANK assets from Vercel"
+            # Other GAME BANK projects may commit at the same time.
+            # Rebase safely; never force-push or overwrite their work.
+            git fetch origin main
+            git rebase origin/main
             git push origin HEAD:main
           fi
