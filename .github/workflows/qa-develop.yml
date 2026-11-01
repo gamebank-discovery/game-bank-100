@@ -33,7 +33,7 @@ jobs:
           assert "enabled: false" in config, "Revenue configuration requires explicit manual review"
           games = json.loads((base / "data" / "games.json").read_text(encoding="utf-8"))
           assert len(games) >= 140, f"Catalog unexpectedly reduced: {len(games)}"
-          pages = list((base / "games").glob("*/index.html"))
+          pages = list((base / "games").rglob("index.html"))
           assert len(pages) >= 140, f"Game pages unexpectedly reduced: {len(pages)}"
           report = json.loads((base / "migration-report.json").read_text(encoding="utf-8"))
           errors = report.get("failed", [])
