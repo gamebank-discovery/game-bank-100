@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f6f0">
+  <meta name="description" content="今の幸せを見つめる、約3分のセルフチェック。10の分野から、心を充電するものと負担になっているものを見つけよう。">
+  <meta name="color-scheme" content="light">
+  <title>幸せバロメーター｜GAME BANK</title>
+  <meta property="og:title" content="幸せバロメーター｜GAME BANK">
+  <meta property="og:description" content="今日の心に、小さな充電を。10分野で今の自分を見つめるセルフチェック。">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./model.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="site-shell">
+    <a class="bank-back" href="/">← GAME BANKへ戻る</a>
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="DISCOVERY ホーム"><span class="brand-mark" aria-hidden="true">d.</span><span>DISCOVERY<span class="brand-sub">A LITTLE MORE YOU.</span></span></a>
+      <button class="header-link" id="history-toggle" type="button"><span class="small-clock" aria-hidden="true">◷</span> 記録</button>
+    </header>
+    <main id="app" tabindex="-1"></main>
+    <footer class="site-footer"><span>幸せは、あなたのものさしで。</span><button type="button" id="about-toggle">このチェックについて</button></footer>
+  </div>
+  <dialog id="info-dialog" aria-labelledby="info-title">
+    <div class="dialog-top"><h2 id="info-title">このチェックについて</h2><button class="icon-button" type="button" data-close-dialog aria-label="閉じる">×</button></div>
+    <p>「幸せバロメーター」は、今の気持ちを整理するためのセルフチェックです。最初に入力する0〜100の幸福度は、あなた自身の感覚をそのまま表示します。</p>
+    <p>10分野の「充電」と「負担」を、それぞれ5段階（0・25・50・75・100）に換算します。総合の充電・負担は、回答した分野の平均です。飛ばした分野は計算に含めません。</p>
+    <p>充電・負担が50以上の分野を、結果の候補として表示します。同じ分野が支えにも負担にもなる場合は、両方に表示されます。回答は気持ちの傾向を示すもので、原因の証明や医学的な診断ではありません。</p>
+    <p class="privacy-note">回答の途中保存・記録は、このブラウザの中だけに保存されます。外部への送信は行いません。端末を共有している場合は、記録画面から削除できます。</p>
+  </dialog>
+  <dialog id="history-dialog" aria-labelledby="history-title">
+    <div class="dialog-top"><h2 id="history-title">わたしの記録</h2><button class="icon-button" type="button" data-close-dialog aria-label="閉じる">×</button></div>
+    <p class="muted">このブラウザに保存した記録です。旧版の記録は自動では引き継がれません。</p>
+    <div id="history-content"></div>
+    <button class="text-button danger" id="clear-records" type="button">記録と途中の回答を削除</button>
+    <p id="clear-hint" class="small-text"></p>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><div class="noscript">このアプリを使うには、ブラウザのJavaScriptを有効にしてください。</div></noscript>
+</body>
+</html>
+<script async data-explicit-opt-in="true" data-deployment-id="dpl_6ZiQNpeQpCs2iqdKbuWVm7ujAcYx" src="https://vercel.live/_next-live/feedback/feedback.js"></script>

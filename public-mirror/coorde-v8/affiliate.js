@@ -1,0 +1,14 @@
+(()=>{'use strict';
+const path='/coorde-v8/affiliate-links.json';
+const approved=new Map();
+const hosts=new Set(['hb.afl.rakuten.co.jp','a.r10.to','ck.jp.ap.valuecommerce.com','amazon.co.jp','www.amazon.co.jp','t.felmat.net']);
+const skuPattern=/^https:\/\/www\.urban-research\.jp\/shop\/g\/(g[A-Za-z0-9-]+)\//;
+function verified(v){try{const u=new URL(v);if(u.protocol!=='https:'||!hosts.has(u.hostname)||u.username||u.password)return null;if(/amazon\.co\.jp$/.test(u.hostname)&&!/^[a-z0-9-]{3,64}$/i.test(u.searchParams.get('tag')||''))return null;return u.toString();}catch{return null;}}
+const banner=document.createElement('div');banner.id='coorde-affiliate-disclosure';banner.setAttribute('role','note');banner.style.cssText='max-width:1100px;margin:15px auto;padding:12px 16px;border:1px solid #cfdbd2;border-radius:12px;background:#f8faf6;color:#284437;font:500 13px/1.65 system-ui,sans-serif';
+function renderBanner(){banner.textContent=approved.size?('PR・広告：このサイトにはアフィリエイトリンクが含まれます。正式な紹介リンク登録済み：'+approved.size+'点。購入時にCOORDÉが紹介報酬を受け取る場合があります。価格や在庫は販売店でご確認ください。'):'現在、アフィリエイト報酬付きリンクは未登録です。商品は各販売店の通常ページで確認できます。この段階では紹介報酬は発生しません。';}
+function place(){if(banner.isConnected)return;const near=document.querySelector('#section-products .section-head')||document.querySelector('main');if(near)near.insertAdjacentElement('afterend',banner);}
+function sync(){for(const a of document.querySelectorAll('a[href]')){const base=a.getAttribute('data-coorde-aff-base')||a.href;const match=base.match(skuPattern);if(!match)continue;const link=approved.get(match[1]);if(!link||a.dataset.coordeAffUrl===link.url)continue;a.setAttribute('data-coorde-aff-base',base);a.dataset.coordeAffUrl=link.url;a.href=link.url;a.target='_blank';a.rel='sponsored nofollow noopener noreferrer';const t=a.textContent.trim();if(t&&!t.startsWith('PR｜')&&/(販売店|購入|確認)/.test(t))a.textContent='PR｜'+t;a.setAttribute('aria-label','PR：'+link.provider+'の商品紹介リンクを開く');}}
+let pending=false;const observer=new MutationObserver(()=>{if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;sync();});});
+renderBanner();place();
+fetch(path,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(json=>{if(json&&json.version===1&&json.links&&typeof json.links==='object')for(const [sku,x] of Object.entries(json.links)){if(!/^g[A-Za-z0-9-]{5,90}$/.test(sku)||!x||x.approved!==true||typeof x.url!=='string')continue;const v=verified(x.url);if(v)approved.set(sku,{url:v,provider:String(x.provider||'提携ショップ').slice(0,40)});}renderBanner();place();sync();observer.observe(document.body,{subtree:true,childList:true});window.COORDE_AFFILIATE_STATUS={approvedLinks:approved.size,active:approved.size>0};}).catch(()=>{renderBanner();place();});
+})();
