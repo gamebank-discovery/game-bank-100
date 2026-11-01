@@ -1,0 +1,44 @@
+name: GAME BANK develop build and asset QA
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verify build and archive
+        run: |
+          python3 -m py_compile scripts/build_cloudflare.py
+          python3 scripts/build_cloudflare.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          base = Path("dist")
+          assert (base / "index.html").is_file(), "Homepage missing"
+          assert (base / "data" / "games.json").is_file(), "Game catalog missing"
+          assert (base / "monetization" / "config.js").is_file(), "Revenue config missing"
+          html = (base / "index.html").read_text(encoding="utf-8")
+          assert "gamebank-monetize.js" in html, "Revenue adapter not injected"
+          config = (base / "monetization" / "config.js").read_text(encoding="utf-8")
+          assert "enabled: false" in config, "Revenue configuration requires explicit manual review"
+          games = json.loads((base / "data" / "games.json").read_text(encoding="utf-8"))
+          assert len(games) >= 140, f"Catalog unexpectedly reduced: {len(games)}"
+          pages = list((base / "games").glob("*/index.html"))
+          assert len(pages) >= 140, f"Game pages unexpectedly reduced: {len(pages)}"
+          report = json.loads((base / "migration-report.json").read_text(encoding="utf-8"))
+          errors = report.get("failed", [])
+          print("QA SUMMARY")
+          print("catalog_entries:", len(games), "game_pages:", len(pages))
+          print("recovery_failures_from_original:", len(errors))
+          print("NOTE: This verifies files and build only, not browser play/audio or 404 remediation.")
+          PY
