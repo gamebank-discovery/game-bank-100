@@ -1,0 +1,56 @@
+name: Build GAME BANK for Cloudflare Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public-mirror/**'
+      - 'monetization/**'
+      - 'scripts/build_cloudflare.py'
+      - '.github/workflows/build-cloudflare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Generate Cloudflare Pages directory
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/build_cloudflare.py
+          python3 scripts/build_cloudflare.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('dist')
+          assert (root / 'index.html').is_file(), 'Missing homepage'
+          assert (root / 'data/games.json').is_file(), 'Missing game catalog'
+          assert (root / 'monetization/config.js').is_file(), 'Missing monetization config'
+          text = (root / 'index.html').read_text(encoding='utf-8')
+          assert 'gamebank-monetize.js' in text, 'Monetization hook missing'
+          catalog = json.loads((root / 'data/games.json').read_text(encoding='utf-8'))
+          pages = list((root / 'games').rglob('index.html'))
+          assert len(catalog) >= 140, f'Catalog unexpectedly small: {len(catalog)}'
+          assert len(pages) >= 140, f'Only {len(pages)} game pages'
+          config=(root / 'monetization/config.js').read_text(encoding='utf-8')
+          assert 'enabled: false' in config, 'Ads/affiliate disabled-by-default setting missing'
+          report=json.loads((root / 'migration-report.json').read_text(encoding='utf-8'))
+          print('Catalog entries:',len(catalog))
+          print('Game HTML pages:',len(pages))
+          print('Prior unreachable URLs:',len(report.get('failed',[])))
+          print('Static build is valid; browser/audio/API verification remains separate.')
+          PY
+      - name: Package ready-to-upload static site
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamebank-cloudflare-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
