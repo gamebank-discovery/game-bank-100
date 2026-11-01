@@ -1,13 +1,13 @@
 [
   {
     "id": 163,
-    "title": "KEIBA EDGE PRO v4｜競馬予想×育成×レース",
+    "title": "KEIBA EDGE PRO v5｜予想新聞×育成×レース",
     "category": "レース",
     "status": "published",
     "type": "standalone",
     "url": "/games/keiba-edge-pro/index.html",
     "emoji": "🏇",
-    "description": "競馬新聞風のレース予想・GⅠ結果検証・馬育成・タップレース・予想クイズが楽しめる。AI独自予想の精度は検証中。",
+    "description": "新聞風出馬表・予想印と市場基準の比較、発走前予想のローカル保存と結果採点、育成・タップレース・無料クイズ。独自AIの実戦精度は未検証。",
     "listed": true,
     "playable": true,
     "hidden": false,
