@@ -1,0 +1,22 @@
+{
+  "id": "keiba-edge-pro",
+  "slug": "keiba-edge-pro",
+  "title": "KEIBA EDGE PRO",
+  "description": "競馬新聞風UIと実GⅠ結果検証・馬育成・レースゲーム。独自予想精度は未検証。",
+  "url": "/games/keiba-edge-pro/index.html",
+  "category": "スポーツ",
+  "genre": "予想・育成・レース",
+  "tags": [
+    "競馬",
+    "予想",
+    "育成",
+    "クイズ"
+  ],
+  "image": "/games/keiba-edge-pro/cover.svg",
+  "thumbnail": "/games/keiba-edge-pro/cover.svg",
+  "hidden": false,
+  "playable": true,
+  "listed": true,
+  "source": "KEIBA EDGE PRO v4",
+  "published": false
+}
