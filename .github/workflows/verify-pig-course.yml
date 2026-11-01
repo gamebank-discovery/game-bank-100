@@ -1,0 +1,42 @@
+name: Verify PIG JUMP five-world course
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/patch_pig_course.py'
+      - 'scripts/build_cloudflare.py'
+      - '.github/workflows/verify-pig-course.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-course:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out public game bank
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Build the Cloudflare-ready static site
+        run: |
+          python3 -m py_compile scripts/build_cloudflare.py scripts/patch_pig_course.py scripts/restore_pig_love.py
+          python3 scripts/build_cloudflare.py
+      - name: Verify preserved gameplay and final goal
+        run: |
+          node --check dist/games/pig-jump-evolution/pig.js
+          node --check dist/games/pig-jump-evolution/engine.js
+          python3 - <<'PY'
+          from pathlib import Path
+          base=Path('dist/games/pig-jump-evolution')
+          assert (base/'index.html').is_file()
+          js=(base/'pig.js').read_text()
+          engine=(base/'engine.js').read_text()
+          for marker in ('__PIG_COURSE_GOAL_V3__','COURSE_MAX=1000','function courseFinish()','function memoryFlightCleared(distance)','__PIG_LOVE_PLAY_V2__','__PIG_WORLD_ALL15__'):
+              assert marker in js,marker
+          for marker in ('__PIG_COURSE_SCENE_V3__','const zone=Math.min(4','for(let k=1;k<=5;k++)'):
+              assert marker in engine,marker
+          print('PASS: original Love Story + five distinct worlds + 1000m final goal')
+          PY
