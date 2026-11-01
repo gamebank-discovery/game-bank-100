@@ -1,19 +1,5 @@
 [
   {
-    "id": 164,
-    "title": "COLOR BEAT 4｜4色×ダンス性格診断",
-    "category": "クイズ・カード",
-    "status": "published",
-    "type": "standalone",
-    "url": "https://color-beat-4.vercel.app/",
-    "emoji": "🎨",
-    "description": "24問から8色の傾向を測り、4色コード・割合・ダンスタイプ・ミラの仕事／恋愛／人間関係／相性の考察を表示。独自診断は未検証。",
-    "listed": true,
-    "playable": true,
-    "hidden": false,
-    "genre": "クイズ・カード"
-  },
-  {
     "id": 163,
     "title": "KEIBA EDGE PRO v6｜ダービー物語×競馬予想",
     "category": "レース",
@@ -26,6 +12,20 @@
     "playable": true,
     "hidden": false,
     "genre": "レース"
+  },
+  {
+    "id": 164,
+    "title": "COLOR BEAT 4｜4色×ダンス性格診断",
+    "category": "クイズ・カード",
+    "status": "published",
+    "type": "standalone",
+    "url": "https://color-beat-4.vercel.app/",
+    "emoji": "🎨",
+    "description": "24問から8色の傾向を測り、4色コード・割合・ダンスタイプ・ミラの仕事／恋愛／人間関係／相性の考察を表示。独自診断は未検証。",
+    "listed": true,
+    "playable": true,
+    "hidden": false,
+    "genre": "クイズ・カード"
   },
   {
     "id": 151,
