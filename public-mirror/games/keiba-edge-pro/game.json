@@ -1,8 +1,8 @@
 {
   "id": "keiba-edge-pro",
   "slug": "keiba-edge-pro",
-  "title": "KEIBA EDGE PRO v5",
-  "description": "新聞風出馬表・予想印と市場基準の比較、発走前予想のローカル保存と結果採点、育成・タップレース・無料クイズ。独自AIの実戦精度は未検証。",
+  "title": "KEIBA EDGE PRO v6｜ダービー物語",
+  "description": "5章のタクティカル競馬ゲーム。架空の愛馬を育て、作戦を選び、新聞号外とトロフィーを集めよう。予想分析や実績検証も収録。独自AIの実戦精度は未検証。",
   "url": "/games/keiba-edge-pro/index.html",
   "category": "スポーツ",
   "genre": "予想・育成・レース",
@@ -17,6 +17,6 @@
   "hidden": false,
   "playable": true,
   "listed": true,
-  "source": "KEIBA EDGE PRO v5",
+  "source": "KEIBA EDGE PRO v6",
   "published": false
 }
