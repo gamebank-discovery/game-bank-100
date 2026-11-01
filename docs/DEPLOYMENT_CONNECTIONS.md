@@ -9,6 +9,13 @@ Verified at 2026-11-01.
 - Source mirror: `public-mirror/` contains game pages and assets; original Vercel website remains live.
 - Monetization build: `python3 scripts/build_cloudflare.py`, output `dist`; AdSense and affiliate links disabled pending real IDs and consent/policy checks.
 
+## Vercel staging available (static snapshot; 2026-11-01)
+- Verified public URL: https://game-bank-next-git-test-maverick11041-7939s-projects.vercel.app/
+- Vercel project: `game-bank-next-git-test` (`prj_vllBgeaxz8j71ig9AXeFjtFgrjV9`).
+- Successful READY deployment: `dpl_9F5UfsmzZ5fSmpPNvhnhjNdT4Shj`. A small build script downloads the **public** `develop` GitHub branch at build time and runs `scripts/build_cloudflare.py` to render `dist`. This is a one-time/API-initiated deployment, **not native Git push auto-deploy**.
+- Homepage, SKY FLIGHT page, `data/games.json` and `monetization/config.js` were externally fetched successfully; ads are still disabled.
+- Native Git auto-deploy requires an account-level Vercel GitHub Login Connection, which is not currently present; a direct Git source attempt failed `git_info_fail`. Once logged in, link the repo, choose production branch `develop`, enable automatic deployments.
+
 ## Vercel (test)
 - Existing Vercel login on connected team: `maverick11041-7939` (`team_M00dwk6FHyiXZHJcZFAr4bDx`). This is NOT evidence that a different account has been connected.
 - An attempt to create a Git-linked project returned `You need to add a Login Connection to your GitHub account first`.
