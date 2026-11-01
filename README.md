@@ -20,15 +20,15 @@
 
 **重要:** これは公開済みサイトの静的スナップショットです。元の開発リポジトリ、Vercel Functions、Blob、DB、ユーザー記録、環境変数、Git履歴まで復元したものではありません。
 
-## Cloudflare Pagesの予定設定
+## Cloudflare Pagesの予定設定（自動接続・公開URLは未確認）
 
 | 項目 | 値 |
 |---|---|
 | GitHubリポジトリ | `gamebank-discovery/game-bank-100` |
 | プロダクションブランチ | `main` |
 | フレームワーク | None / 静的サイト |
-| ビルドコマンド | 空欄 |
-| 出力ディレクトリ | `public-mirror` |
+| ビルドコマンド | `python3 scripts/build_cloudflare.py` |
+| 出力ディレクトリ | `dist` |
 
 公開前に必ずプレビューで確認。既存Vercelサイトは削除せず、段階的に切り替えます。
 
