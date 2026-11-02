@@ -264,7 +264,11 @@ const ACHIEVEMENTS=[
 {id:"listener",icon:"🫶",name:"寄り添い名人",hint:"深夜の相談で最高の結末を見る",test:d=>(d.storyEndings.night||[]).includes("spark")},
 {id:"explore",icon:"🗺️",name:"全ルート制覇",hint:"4つの物語をクリア",test:d=>Object.keys(STORY_ROUTES).every(k=>(d.storyEndings[k]||[]).length>0)},
 {id:"daily",icon:"📆",name:"毎日ひとこと",hint:"日替わり問題に3日挑戦",test:d=>d.dailyDates.length>=3},
-{id:"repeat",icon:"💎",name:"物語の探究者",hint:"合計10回物語をクリア",test:d=>d.storyPlays>=10}
+{id:"repeat",icon:"💎",name:"物語の探究者",hint:"合計10回物語をクリア",test:d=>d.storyPlays>=10},
+{id:"rush-first",icon:"⚡",name:"モテラッシュ初勝利",hint:"MOTE RUSHを初クリア",test:d=>d.arenaWins>=1},
+{id:"rush-all",icon:"👑",name:"3ワールド完全攻略",hint:"3つのワールドを全制覇",test:d=>d.arenaCleared.length>=3},
+{id:"rush-10",icon:"🔥",name:"挑戦の達人",hint:"MOTE RUSHに10回挑戦",test:d=>d.arenaRuns>=10},
+{id:"rush-score",icon:"🌟",name:"スーパースコア",hint:"いずれかのワールドで1500点達成",test:d=>Object.values(d.arenaBest).some(n=>n>=1500)}
 ];
 let branchGame=null;
 function renderBranchCards(){const el=byId("branch-list");el.innerHTML=Object.values(STORY_ROUTES).map((r,i)=>{const count=(data.storyEndings[r.id]||[]).length;return '<button class="branch-card" data-route="'+r.id+'"><span class="branch-top">EPISODE '+String(i+1).padStart(2,"0")+' <small>'+(count?count+' / 3 ENDINGS':'NEW STORY')+'</small></span><span class="branch-art">'+r.emoji+'</span><strong>'+safe(r.title)+'</strong><small>'+safe(r.short)+'</small><span class="branch-bottom">選択で展開が変わる <b>↗</b></span></button>'}).join("");byId("daily-status").textContent=data.dailyDates.includes(todayLocal())?"本日はクリア済み ✦ 明日も新しい一問に挑戦しよう。":"今日だけの3択で、言葉のセンスを磨こう。初回は+20コイン";byId("daily-start").textContent=data.dailyDates.includes(todayLocal())?"もう一度練習 ↗":"今日の一問に挑戦 ↗"}
