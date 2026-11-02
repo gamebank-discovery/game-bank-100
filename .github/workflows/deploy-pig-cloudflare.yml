@@ -44,6 +44,11 @@ jobs:
           set -euo pipefail
           python3 -m py_compile scripts/build_cloudflare.py scripts/patch_pig_course.py scripts/patch_pig_fun.py
           python3 scripts/build_cloudflare.py
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          Path('dist/gamebank-release.json').write_text(json.dumps({'commit':os.environ['GITHUB_SHA'],'game':'pig-jump','version':'arcade-v4'}))
+          PY
           node --check dist/games/pig-jump-evolution/pig.js
           node --check dist/games/pig-jump-evolution/engine.js
           python3 - <<'PY'
@@ -98,8 +103,41 @@ jobs:
           print('Selected existing Pages project:',project)
           with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('project='+project+'\n')
           PY
-      - name: Deploy to Cloudflare Pages (production)
+      - name: Check already published GAME BANK commit
+        id: published
         if: steps.credentials.outputs.ready == 'true'
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_PROJECT: ${{ steps.target.outputs.project }}
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/$PAGES_PROJECT" > /tmp/cf-current-project.json
+          SUBDOMAIN=$(python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/cf-current-project.json'))['result']
+          print(p.get('subdomain') or (p['name']+'.pages.dev'))
+          PY
+          )
+          SUBDOMAIN=$(printf '%s' "$SUBDOMAIN" | sed 's|^https://||;s|/$||')
+          if curl --fail --location --silent --show-error --max-time 20 \
+            "https://$SUBDOMAIN/gamebank-release.json?check=$GITHUB_SHA" -o /tmp/cf-live-release.json \
+            && python3 - <<'PY'
+          import json,os
+          d=json.load(open('/tmp/cf-live-release.json'))
+          assert d.get('commit')==os.environ['GITHUB_SHA']
+          PY
+          then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+            echo "Same commit is already public. Skipping unnecessary Cloudflare deployment."
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "New commit not yet public. Publishing."
+          fi
+      - name: Deploy to Cloudflare Pages (production)
+        if: steps.credentials.outputs.ready == 'true' && steps.published.outputs.current != 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -131,10 +169,17 @@ jobs:
           SUBDOMAIN=$(printf '%s' "$SUBDOMAIN" | sed 's|^https://||;s|/$||')
           echo "Checking Cloudflare at $SUBDOMAIN"
           TEST_URL="https://$SUBDOMAIN/games/pig-jump-evolution/pig.js?sha=$GITHUB_SHA"
+          RELEASE_URL="https://$SUBDOMAIN/gamebank-release.json?sha=$GITHUB_SHA"
           for attempt in $(seq 1 10); do
             if curl --fail --location --silent --show-error --max-time 20 "$TEST_URL" -o /tmp/cloudflare-live-pig.js \
               && grep -q '__PIG_ARCADE_FUN_V1__' /tmp/cloudflare-live-pig.js \
-              && grep -q 'COURSE_MAX=1000' /tmp/cloudflare-live-pig.js; then
+              && grep -q 'COURSE_MAX=1000' /tmp/cloudflare-live-pig.js \
+              && curl --fail --silent --show-error --max-time 20 "$RELEASE_URL" -o /tmp/live-release.json \
+              && python3 - <<'PY'
+          import json,os
+          assert json.load(open('/tmp/live-release.json'))['commit']==os.environ['GITHUB_SHA']
+          PY
+          then
               echo "Verified LIVE URL https://$SUBDOMAIN/games/pig-jump-evolution/"
               echo "### Cloudflare PIG JUMP published" >> "$GITHUB_STEP_SUMMARY"
               echo "https://$SUBDOMAIN/games/pig-jump-evolution/" >> "$GITHUB_STEP_SUMMARY"
