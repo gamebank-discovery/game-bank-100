@@ -94,7 +94,7 @@ function collectBonuses(){
  for(const b of p.bonuses||[]){
   if(b.taken||b.missed||p.z<b.z)continue;
   if(Math.abs(p.y-b.y)>18){b.missed=true;continue;}
-  b.taken=true;const pts={ring:120,star:80,square:55,feather:45}[b.kind];
+  b.taken=true;funCollect(b);const pts={ring:120,star:80,square:55,feather:45}[b.kind];
   const carrots={ring:2,star:2,square:1,feather:1}[b.kind];
   const m=(p.spinAct>0?2:1)*eventPointsMult(b.kind);p.points+=pts*m;p.carrots+=carrots;
   if(p.magnet>0)p.worldScore+=15;if(b.kind==='ring'){p.vy+=.085;chargeDuo(14);missionHit('rings');}
@@ -527,7 +527,7 @@ function memoryShow(index,newly){
  if(!panel||!chapter)return;
  if(label)label.textContent=(newly?'NEW MEMORY UNLOCKED · ':'記憶の手紙 · ')+String(index).padStart(2,'0')+' / 10';
  if(title)title.textContent=chapter.icon+' '+chapter.name;
- buildMemoryChoices(index);if(copy){copy.replaceChildren();for(const [tag,t] of [['h4',chapter.time],['p',chapter.hint],['blockquote',chapter.letter],['small','思い出したもの：'+chapter.clue]]){const c=document.createElement(tag);c.textContent=t;copy.appendChild(c);}}
+ buildMemoryChoices(index);buildMemoryPuzzle(index);if(copy){copy.replaceChildren();for(const [tag,t] of [['h4',chapter.time],['p',chapter.hint],['blockquote',chapter.letter],['small','思い出したもの：'+chapter.clue]]){const c=document.createElement(tag);c.textContent=t;copy.appendChild(c);}}
  if(portrait){const blurred=index>=5 && index<10;if(index===10)portrait.innerHTML=humanCoupleArt;else if(blurred)portrait.innerHTML='<div style="width:100%;filter:blur('+(10-index)*1.85+'px);opacity:'+(.28+index*.067)+'">'+humanCoupleArt+'</div><div class="memorySilhouette">人間の顔が、少しずつ見えてきた…</div>';else portrait.innerHTML='<div class="loveMemoryGlyph">'+chapter.icon+'</div><div class="memorySilhouette">あの頃の記憶が、光の中から戻ってくる…</div>';}
  panel.style.display='flex';panel.setAttribute('aria-hidden','false');
  const close=el('loveClose');if(close)close.focus();
@@ -557,7 +557,7 @@ function memoryFlightCleared(distance){
  memoryHudUpdate();renderMemoryMenu();
  setTimeout(()=>memoryShow(newN,true),680);
 }
-function renderMemoryMenu(){
+function renderMemoryMenu(){memoryArcadeMenu();
  const b=el('loveArchiveOpen');if(b)b.textContent='💌 記憶の書庫　'+memoryUnlocked()+'/10 通';
  const banner=el('loveMemoryProgress');
  if(banner)banner.textContent=memoryUnlocked()<10?'人間だった頃の記憶を、あと'+(10-memoryUnlocked())+'通。':'すべて思い出した。最後の「はじめまして」を読み返そう。';
@@ -708,6 +708,139 @@ function drawLoveRoutes(now){
 }
 initLoveExtraUi();
 
+
+/* __PIG_MEMORY_ARCADE_V5__ -- one-time memory puzzles and in-flight heart-link rescues */
+const MEMORY_LINK_Z=[110+247,110+447,110+647,110+847];
+function memorySolvedMap(){
+ if(!saved.memoryPuzzles||typeof saved.memoryPuzzles!=='object'||Array.isArray(saved.memoryPuzzles))saved.memoryPuzzles={};
+ return saved.memoryPuzzles;
+}
+function memorySolvedCount(){return Object.values(memorySolvedMap()).filter(Boolean).length;}
+function memoryPuzzleReward(index){
+ if(index<1||index>memoryUnlocked()||memorySolvedMap()[String(index)])return false;
+ memorySolvedMap()[String(index)]=true;
+ saved.carrots=(Number(saved.carrots)||0)+20;
+ saved.memoryStars=(Number(saved.memoryStars)||0)+1;
+ if(memorySolvedCount()===10)saved.memoryMaster=true;
+ persist();status();renderMemoryMenu();buildMemoryPuzzle(index);
+ if(el('memoryPuzzleBanner'))el('memoryPuzzleBanner').textContent=
+  saved.memoryMaster?'👑 全10通の記憶を復元！真実のエピローグ解放！':'✨ 記憶がつながった！ 🥕+20　星のかけら +1';
+ sfx('level');
+ return true;
+}
+function memoryPuzzleOptions(index){
+ const want=LOVE_CHAPTERS[index-1].clue;
+ const a=LOVE_CHAPTERS[(index+2)%10].clue;
+ const b=LOVE_CHAPTERS[(index+5)%10].clue;
+ const items=[want,a,b];
+ const offset=index%3;
+ return items.map((_,j)=>items[(j+offset)%3]);
+}
+function buildMemoryPuzzle(index){
+ const box=el('memoryPuzzleBox');
+ if(!box||index<1||index>memoryUnlocked())return;
+ box.replaceChildren();
+ const title=document.createElement('h3');title.textContent='🧩 記憶を復元しよう';title.className='memoryPuzzleTitle';box.appendChild(title);
+ const question=document.createElement('div');question.className='memoryPuzzleQuestion';
+ question.textContent='この手紙で思い出したものは何？';box.appendChild(question);
+ if(memorySolvedMap()[String(index)]){
+  const done=document.createElement('div');done.className='memoryPuzzleDone';
+  done.textContent='✅ 復元成功：'+LOVE_CHAPTERS[index-1].clue+'　⭐';box.appendChild(done);
+  if(saved.memoryMaster&&index===10){
+   const ep=document.createElement('div');ep.className='memoryEpilogue';
+   ep.textContent='💍 真実のエピローグ：忘れたくないのは、顔でも姿でもない。あなたに初めて「はじめまして」と言えた、あの日の胸の高鳴り。';
+   box.appendChild(ep);
+  }
+  return;
+ }
+ const layout=document.createElement('div');layout.className='memoryPuzzleChoices';
+ const feedback=document.createElement('div');feedback.className='memoryPuzzleFeedback';feedback.setAttribute('aria-live','polite');
+ memoryPuzzleOptions(index).forEach((clue,j)=>{
+  const b=document.createElement('button');b.type='button';b.className='memoryPuzzlePick';b.textContent='✦ '+clue;
+  b.addEventListener('click',()=>{
+   if(clue===LOVE_CHAPTERS[index-1].clue){
+    if(memoryPuzzleReward(index))return;
+   }else{
+    feedback.textContent='違う記憶みたいや…。手紙の文章をもう一度読んでみよう。';
+    b.disabled=true;b.classList.add('wrong');
+   }
+  });
+  layout.appendChild(b);
+ });
+ box.appendChild(layout);box.appendChild(feedback);
+ const note=document.createElement('p');note.className='memoryPuzzleNote';note.textContent='正解すると🥕20個と星のかけら。間違えても何度でも挑戦できるよ。';
+ box.appendChild(note);
+}
+function initMemoryArcadeUi(){
+ const css=document.createElement('style');
+ css.textContent='#memoryPuzzleBox{margin:15px 0 9px;padding:14px 12px;background:linear-gradient(145deg,#fff9f1,#f3dce4);border:1px solid #d8b8a3;border-radius:16px}#memoryPuzzleBox .memoryPuzzleTitle{color:#72455e;font:900 17px system-ui;margin:0 0 5px}#memoryPuzzleBox .memoryPuzzleQuestion{font:800 12px system-ui;color:#92717a;margin-bottom:9px}#memoryPuzzleBox .memoryPuzzleChoices{display:grid;gap:6px}#memoryPuzzleBox .memoryPuzzlePick{border:1px solid #d8b2a0;border-radius:11px;background:#fffaf2;color:#604653;text-align:left;padding:11px 12px;font:800 12px system-ui;touch-action:manipulation}#memoryPuzzleBox .memoryPuzzlePick.wrong{opacity:.42}#memoryPuzzleBox .memoryPuzzleDone{font:800 13px/1.6 system-ui;color:#695057;padding:11px;background:#e8f6e4;border-radius:10px}#memoryPuzzleBox .memoryPuzzleFeedback{color:#ad6169;font:700 11px/1.5 system-ui;margin:5px 0}#memoryPuzzleBox .memoryPuzzleNote{font:700 10px/1.6 system-ui;color:#ab7777;margin:9px 0 0}.memoryEpilogue{font:600 13px/1.7 Georgia,serif;color:#71505f;border-top:1px solid #e0b2a1;padding-top:10px;margin-top:9px}#memoryPuzzleBanner{font:800 11px/1.6 system-ui;color:#fbe4b5;padding:4px 0}#heartLinkPanel{display:none;position:fixed;left:9px;top:calc(env(safe-area-inset-top) + 161px);z-index:29;width:min(44vw,180px);padding:8px 9px;background:#432854e8;border:1px solid #ffe6b6;border-radius:15px;box-shadow:0 7px 16px #231e3590;color:#fff8eb}#heartLinkPanel strong{display:block;font:900 11px system-ui;margin-bottom:4px}#heartLinkButton{width:100%;border:1px solid #fff1d3;border-radius:11px;background:linear-gradient(110deg,#ffb9d9,#ffe6ad);color:#683d58;padding:10px 4px;font:900 12px system-ui;touch-action:manipulation}#heartLinkMeter{height:4px;border-radius:10px;background:#ffffff45;overflow:hidden;margin-top:5px}#heartLinkMeterFill{width:100%;height:100%;background:#ffeaaa}#memoryArcadeStats{font:700 11px/1.65 system-ui;color:#ffe9c2;margin:4px 0 8px}@media(max-height:680px){#heartLinkPanel{top:calc(env(safe-area-inset-top) + 112px);width:43vw;padding:5px}#heartLinkButton{padding:7px 2px;font-size:11px}}';
+ document.head.appendChild(css);
+ const card=el('loveMemoryCard');if(card){
+  const node=document.createElement('section');node.id='memoryPuzzleBox';
+  const choices=el('loveDecisionPanel');
+  if(choices)choices.insertAdjacentElement('beforebegin',node);else card.appendChild(node);
+ }
+ const bar=document.createElement('div');bar.id='heartLinkPanel';
+ bar.innerHTML='<strong>💞 記憶の嵐！</strong><button type="button" id="heartLinkButton">💕 彼を助ける！</button><div id="heartLinkMeter"><div id="heartLinkMeterFill"></div></div>';
+ document.body.appendChild(bar);
+ el('heartLinkButton').addEventListener('click',e=>{e.stopPropagation();memoryLinkPress();});
+ const n=document.createElement('div');n.id='memoryPuzzleBanner';const progress=el('loveMemoryProgress');
+ if(progress)progress.insertAdjacentElement('afterend',n);
+ const stats=document.createElement('p');stats.id='memoryArcadeStats';
+ if(el('funMenu'))el('funMenu').appendChild(stats);
+ memoryArcadeMenu();
+}
+function memoryArcadeMenu(){
+ const n=memorySolvedCount(),a=el('memoryPuzzleBanner');
+ if(a)a.textContent='🧩 記憶復元 '+n+'/10　⭐ '+(Number(saved.memoryStars)||0)+(saved.memoryMaster?'　👑 MEMORY MASTER':'');
+ const stats=el('memoryArcadeStats');
+ if(stats)stats.textContent='💞 ハートリンク成功 '+(Number(saved.memoryLinks)||0)+'回 ｜ 🧩 復元 '+n+'/10';
+}
+function memoryArcadeBegin(){
+ p.heartLinks=MEMORY_LINK_Z.map(z=>({z,done:false}));
+ p.heartLinkActive=null;p.heartLinkWon=0;p.heartLinkCommitted=false;
+ const b=el('heartLinkPanel');if(b)b.style.display='none';
+ memoryArcadeMenu();
+}
+function memoryLinkPress(){
+ if(p.phase!=='air'||!p.heartLinkActive)return;
+ const evt=p.heartLinkActive;
+ if(evt.done||p.z>=evt.z+75)return;
+ evt.done=true;p.heartLinkActive=null;p.heartLinkWon++;
+ p.vy=Math.max(.30,p.vy+.27);p.glide=Math.max(p.glide||0,55);
+ p.funEnergy=Math.min(100,(p.funEnergy||0)+25);
+ p.points=(p.points||0)+180;p.worldScore=(p.worldScore||0)+130;
+ chargeDuo(35);sfx('level');funNotice('💞 ハートリンク成功！ +310P・羽ばたき回復');
+ if(el('heartLinkPanel'))el('heartLinkPanel').style.display='none';
+}
+function memoryArcadeTick(distance){
+ if(p.phase!=='air')return;
+ for(const evt of p.heartLinks||[]){
+  if(evt.done||p.z<evt.z)continue;
+  if(p.z>evt.z+75){evt.done=true;continue;}
+  if(!p.heartLinkActive)p.heartLinkActive=evt;
+ }
+ const evt=p.heartLinkActive;
+ if(evt&&(evt.done||p.z>=evt.z+75)){
+  evt.done=true;p.heartLinkActive=null;
+  toast('💭 記憶の嵐は過ぎ去った…');
+ }
+ const box=el('heartLinkPanel');
+ if(box){
+  box.style.display=p.heartLinkActive?'block':'none';
+  if(p.heartLinkActive&&el('heartLinkMeterFill'))el('heartLinkMeterFill').style.width=
+   Math.max(0,Math.min(100,(p.heartLinkActive.z+75-p.z)/75*100))+'%';
+ }
+}
+function memoryArcadeLand(){
+ if(el('heartLinkPanel'))el('heartLinkPanel').style.display='none';
+ if(p.phase!=='air'||p.heartLinkCommitted)return;
+ p.heartLinkCommitted=true;
+ saved.memoryLinks=(Number(saved.memoryLinks)||0)+(p.heartLinkWon||0);
+ persist();memoryArcadeMenu();
+}
+initMemoryArcadeUi();
+
 function status(){
  const upd=(id,v)=>{const e=el(id);if(e)e.textContent=v;};
  upd('total',Math.floor(saved.carrots));upd('level',saved.level);upd('best',Math.floor(saved.best));
@@ -816,7 +949,272 @@ function unlockSound(){PigAudio.setVolume(saved.volume??.72);const ok=PigAudio.u
 function beep(freq,duration,shape,volume){if(!saved.muted)PigAudio.sfx(freq>790?'carrot':freq>500?'tap':'oink');}
 function sfx(name){PigAudio.sfx(name);}
 function toast(s){el('toast').textContent=s;p.toastTimer=75;}
-function begin(){p.hopY=0;p.hopV=0;p.downAt=0;PigAudio.setScene('run');p.phase='ready';p.z=0;p.y=0;p.vy=0;p.speed=.57;p.holding=false;p.boosted=false;p.carrots=0;p.combo=0;p.score=0;p.earned=0;p.spin=0;p.points=0;p.flaps=3;p.glide=0;p.glideUsed=false;p.spinAct=0;p.spinUsed=false;p.diveUsed=false;p.actionCool=0;initItems();worldInit();memoryInit();resetLoveActions();showLoveActions(false);showWorld(false);if(el("loveMemoryHud"))el("loveMemoryHud").style.display="none";resetPigEvent();flyMenu(false);if(el('groundJump'))el('groundJump').style.display='block';el('modal').classList.add('hidden');el('phase').textContent='HOLD TO RUN';el('action').textContent='🐷 タップでジャンプ・長押しでダッシュ';el('guide').textContent='🐷 タップでジャンプ・長押しダッシュ → 空中でランダムイベント！';el('toast').textContent='';el('distance').innerHTML='0<small>METERS</small>';el('fill').style.width='0%';}
+
+/* __PIG_COURSE_GOAL_V3__ */
+const COURSE_MAX=1000;
+const COURSE_ZONES=[
+ ['🌸','花咲く丘','#ffb5d4'],
+ ['🍬','スイーツ空','#ffb4e7'],
+ ['🌊','大海原','#80d8ff'],
+ ['🌋','マグマ谷','#ffad7b'],
+ ['🪐','銀河宇宙','#c5a6ff']
+];
+function courseSkyTheme(){
+ return [0,3,4,1,5][Math.min(4,Math.floor(Math.max(0,p.z-110)/200))];
+}
+function courseInstall(){
+ if(el('courseHud'))return;
+ const style=document.createElement('style');
+ style.textContent='#courseHud{position:fixed;z-index:17;bottom:calc(env(safe-area-inset-bottom) + 215px);left:9px;width:min(53vw,200px);display:none;border:1px solid #ffb5d4;background:linear-gradient(130deg,#142f50ef,#433056ec);padding:9px 11px;border-radius:15px;box-shadow:0 6px 20px #071c3980;color:white;pointer-events:none;font:800 11px/1.5 system-ui}#courseHud strong{display:block;font-size:13px}#courseHudTrack{background:#ffffff38;border-radius:15px;height:8px;overflow:hidden;margin:6px 0}#courseHudFill{height:100%;width:0;background:linear-gradient(90deg,#ffa4d6,#ffe9ab)}#courseMap{margin:12px 0;padding:10px 7px;border:1px solid #ffffff60;background:#ffffff14;border-radius:14px;font:800 11px/1.5 system-ui}#courseMapRows{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;margin-top:7px}#courseMapRows span{min-width:0;padding:6px 1px;background:#ffffff17;border-radius:8px;text-align:center;font-size:9px;opacity:.48}#courseMapRows .active,#courseMapRows .done{opacity:1;background:#ffe2a63b}#courseMapRows em{display:block;font:normal 19px system-ui}#courseConfetti{position:fixed;inset:0;z-index:48;display:none;pointer-events:none;background-image:radial-gradient(circle,#ffeda0 5px,transparent 7px),radial-gradient(circle,#ffc9df 5px,transparent 7px),radial-gradient(circle,#a6dcff 5px,transparent 7px);background-size:95px 117px,127px 101px,143px 135px;animation:courseRain 1.3s linear infinite}@keyframes courseRain{to{background-position:0 320px,0 350px,0 330px}}@media(max-height:640px){#courseHud{bottom:calc(env(safe-area-inset-bottom) + 163px);width:155px;padding:5px 8px}}';
+ document.head.appendChild(style);
+ const hud=document.createElement('div');hud.id='courseHud';
+ hud.innerHTML='<strong id="courseHudTitle">🌸 WORLD 1/5</strong><div id="courseHudTrack"><div id="courseHudFill"></div></div><span id="courseHudSub">ゴールまで1000m</span>';
+ document.body.appendChild(hud);
+ const map=document.createElement('div');map.id='courseMap';
+ map.innerHTML='<b id="courseMapTitle">🏆 5つの世界・1000mのゴールへ！</b><div id="courseMapRows"></div>';
+ const d=el('description');if(d)d.insertAdjacentElement('afterend',map);
+ const confetti=document.createElement('div');confetti.id='courseConfetti';document.body.appendChild(confetti);
+ courseMapUpdate();
+}
+function courseMapUpdate(){
+ const n=Math.max(0,Number(saved.coursesReached)||0);
+ const box=el('courseMapRows');if(box)box.innerHTML=COURSE_ZONES.map((w,i)=>'<span class="'+(saved.courseChampion||i<n?'done':i===n?'active':'')+'"><em>'+(saved.courseChampion||i<=n?w[0]:'🔒')+'</em>'+(i+1)+'. '+w[1]+'</span>').join('');
+ const t=el('courseMapTitle');if(t)t.textContent=saved.courseChampion?'🏆 1000m完全制覇！':'🏆 5つの世界・1000mのゴールへ！';
+}
+function courseBegin(){
+ courseInstall();p.courseWorld=0;p.courseHudFrame=-100;
+ el('courseHud').style.display='block';
+ courseHudUpdate(0);courseMapUpdate();
+}
+function courseHudUpdate(distance){
+ const i=Math.min(4,Math.floor(Math.max(0,distance)/200));
+ const w=COURSE_ZONES[i],h=el('courseHud');
+ if(h)h.style.borderColor=w[2];
+ const t=el('courseHudTitle');if(t)t.textContent=w[0]+' WORLD '+(i+1)+'/5 '+w[1];
+ const b=el('courseHudFill');if(b){b.style.width=Math.min(100,distance/COURSE_MAX*100)+'%';b.style.background='linear-gradient(90deg,'+w[2]+',#ffe4a7)';}
+ const s=el('courseHudSub');if(s)s.textContent='🏁 残り'+Math.max(0,COURSE_MAX-distance)+'m / 次のゲート '+Math.max(0,Math.min(200,(i+1)*200-distance))+'m';
+}
+function courseTick(distance){
+ const i=Math.min(4,Math.floor(Math.max(0,distance)/200));
+ if(i>p.courseWorld){
+  p.courseWorld=i;saved.coursesReached=Math.max(Number(saved.coursesReached)||0,i+1);persist();courseMapUpdate();
+  p.vy+=.19;p.carrots+=3;
+  sfx('level');toast('🚩 '+COURSE_ZONES[i][1]+' に突入！ 🥕+3');
+ }
+ if(distance-p.courseHudFrame>=3||distance>=COURSE_MAX){
+  p.courseHudFrame=distance;courseHudUpdate(distance);
+ }
+}
+function courseFinish(){
+ p.z=110+COURSE_MAX;
+ land(); // Keep existing LOVE STORY, memories, evolution and scoring.
+ saved.courseChampion=true;saved.coursesReached=5;
+ saved.courseChampionAt=saved.courseChampionAt||new Date().toISOString();
+ saved.carrots+=100;persist();status();courseMapUpdate();
+ el('headline').textContent='🏆 1000m 完全クリア！';
+ el('description').innerHTML='🌸🍬🌊🌋🪐 5つの世界を制覇！<br>最終ゴールに到着！<br>🥕 優勝ボーナス100個ゲット！<br>✨ 合計 '+Math.round(p.points||0)+'ポイント';
+ el('heroPig').textContent='👑🐷';
+ el('play').textContent='🐖 もう一度、世界一周！';funFinale();
+ const confetti=el('courseConfetti');if(confetti){confetti.style.display='block';setTimeout(()=>{confetti.style.display='none';},4500);}
+ sfx('evolve');
+}
+courseInstall();
+
+
+/* __PIG_ARCADE_FUN_V1__ : choice gates, hazards, fever, rhythm tap, revives */
+const FUN_ICONS=['🌸','🍭','🐬','🔥','🌠'];
+const FUN_DANGERS=['🐝','🍪','🦈','🌋','☄️'];
+function funNotice(message){
+ worldNotice(message,100);
+}
+function funInstall(){
+ const hud=el('courseHud');
+ if(!hud||el('funStats'))return;
+ const style=document.createElement('style');
+ style.textContent='#funStats{margin-top:7px;padding-top:6px;border-top:1px solid #ffffff52;line-height:1.45}#funStats strong{font-size:12px;color:#ffedbb}#funPulse{height:5px;border-radius:7px;background:#ffffff39;overflow:hidden;margin-top:4px}#funPulseFill{width:0;height:100%;background:linear-gradient(90deg,#ffc9df,#ffe48f)}#funMenu{margin:7px 0 12px;padding:10px;border:1px solid #ffdfa48c;border-radius:13px;background:#2d375f8e;color:#ffefdd;font:800 11px/1.65 system-ui}#funMenu b{color:#ffdf9c}#funRhythm{position:fixed;z-index:16;top:calc(env(safe-area-inset-top) + 173px);right:10px;display:none;padding:7px 10px;max-width:42vw;border-radius:12px;background:#18284bdc;color:#fff;border:1px solid #fff9;font:900 11px/1.35 system-ui;pointer-events:none}#funRhythm.on{background:#a23f73ed;border-color:#fff2ab;box-shadow:0 0 16px #ffd1ac80}#funBest{font:800 11px/1.5 system-ui;color:#ffedd5;margin-bottom:6px}@media(max-height:640px){#funRhythm{top:92px;right:5px;font-size:10px;padding:4px 6px}}';
+ document.head.appendChild(style);
+ const stats=document.createElement('div');stats.id='funStats';stats.innerHTML='<strong id="funScore">✨ FEVER 0/5</strong><div id="funGuide">🎯 左右で宝ゲートを狙え！</div><div id="funPulse"><div id="funPulseFill"></div></div>';
+ hud.appendChild(stats);
+ const a=document.createElement('div');a.id='funRhythm';a.textContent='🎵 空中タップでブースト';document.body.appendChild(a);
+ const intro=document.createElement('div');intro.id='funMenu';
+ intro.innerHTML='<b>🎮 NEW! 空飛ぶアーケード</b><br>💕 左右で「お宝ルート」を選ぶ → 障害物を避ける<br>🎵 空中タップでリズムブースト（PERFECTで高得点）<br>⚡ アイテム5個でFEVER！　🪽 救済ジャンプで再挑戦<br><span id="funBest">🏆 最高コンボ 0</span>';
+ const map=el('courseMap');if(map)map.insertAdjacentElement('afterend',intro);
+ funMenuUpdate();
+}
+function funMenuUpdate(){
+ const t=el('funBest');if(t)t.textContent='🏆 歴代最高コンボ '+(saved.funBestCombo||0)+' ｜ 成功ゲート '+(saved.funGatesWon||0)+' ｜ 回避 '+(saved.funHazardsDodged||0);
+}
+function funBegin(){
+ funInstall();
+ p.funEnergy=45;p.funCombo=0;p.funBestCombo=0;p.funFever=0;p.funRevives=1;p.funReviveTimer=0;p.funTapCooldown=0;p.funGoodTaps=0;
+ p.funHits=0;p.funDodges=0;p.funGatesWon=0;p.funPerfects=0;p.funLastZone=0;p.funHudAt=-100;
+ p.funCommitted=false;p.funEvents=[];
+ const seed=Math.floor(Number(saved.runs)||0);
+ for(let i=0;i<5;i++){
+  const side=(seed+i)%2===0?-1:1;
+  p.funEvents.push({kind:'gate',zone:i,z:110+110+i*200,x:side*3.7,y:23,hit:false});
+  p.funEvents.push({kind:'danger',zone:i,z:110+164+i*200,x:0,y:24,hit:false,phase:i*1.57+seed*.49});
+ }
+ const r=el('funRhythm');if(r)r.style.display='block';
+ const guide=el('guide');if(guide)guide.textContent='← → 宝ルートを選ぼう！ 空中タップでリズムブースト 🎵';
+ funHudUpdate(0);
+}
+function funBoostTap(){
+ if(p.phase!=='air'||p.funTapCooldown>0)return;
+ const distance=Math.max(0,Math.floor(p.z-110));
+ const beat=distance%85;
+ const perfect=beat<=11||beat>=74;
+ const fresh=!p.boosted;
+ const cost=fresh?0:20;
+ if(p.funEnergy<cost){
+  funNotice('💗 エナジー不足！ゲート・アイテムでチャージ');
+  p.funTapCooldown=12;return;
+ }
+ p.funEnergy-=cost;p.boosted=true;
+ p.vy+=perfect?.42:.21;p.speed+=perfect?.08:.025;
+ p.funTapCooldown=perfect?19:26;p.funGoodTaps++;p.funReviveTimer=0;
+ if(perfect){
+  p.funPerfects++;p.funCombo++;p.funBestCombo=Math.max(p.funBestCombo,p.funCombo);
+  p.points=(p.points||0)+100;p.worldScore=(p.worldScore||0)+50;chargeDuo(14);
+  funNotice('🎵 PERFECT BOOST！ +150P ✨');sfx('level');
+ }else{
+  p.points=(p.points||0)+20;toast(fresh?'🐖 TAKE OFF BOOST！':'🎵 GOOD BOOST！ +20P');sfx('boost');
+ }
+ funHudUpdate(distance);
+}
+function funCollect(item){
+ if(p.phase!=='air')return;
+ p.funEnergy=Math.min(100,p.funEnergy+(item.kind==='ring'?20:12));
+ p.funCombo++;p.funBestCombo=Math.max(p.funBestCombo,p.funCombo);
+ if(p.funCombo%5===0){
+  p.funFever=110;p.spinAct=Math.max(p.spinAct||0,110);
+  p.funRevives=Math.min(2,p.funRevives+1);
+  p.points=(p.points||0)+250;
+  chargeDuo(20);
+  funNotice('⚡ FEVER！ スコア2倍・復活チャンス+1');
+  sfx('evolve');
+ }
+}
+function funHit(event,distance){
+ const isGate=event.kind==='gate';
+ const inLane=Math.abs((p.x||0)-event.x);
+ const inSky=Math.abs((p.y||0)-event.y);
+ if(isGate){
+  if(inLane<=2.7&&inSky<30){
+   p.funGatesWon++;p.funCombo++;p.funBestCombo=Math.max(p.funBestCombo,p.funCombo);
+   p.funEnergy=Math.min(100,p.funEnergy+35);
+   p.funRevives=Math.min(2,p.funRevives+1);
+   p.vy+=.29;p.carrots+=7;p.points=(p.points||0)+180;chargeDuo(18);
+   funNotice(FUN_ICONS[event.zone]+' お宝ゲート大成功！ 🥕+7 ＋180P');
+   sfx('level');
+  }else{
+   p.funEnergy=Math.min(100,p.funEnergy+8);
+   toast('💫 宝ゲートは次のチャンスで！');
+  }
+ }else{
+  const movingX=Math.sin(distance*.09+event.phase)*2.7;
+  if(Math.abs((p.x||0)-movingX)<2.0&&inSky<27&&!(p.duoActive>0)){
+   p.funHits++;p.funCombo=0;
+   p.funEnergy=Math.min(100,p.funEnergy+5);
+   p.vy-=.14;p.speed=Math.max(.55,p.speed-.08);
+   p.points=Math.max(0,(p.points||0)-60);
+   funNotice(FUN_DANGERS[event.zone]+' 障害物にヒット！ -60P');
+   sfx('oink');
+  }else{
+   p.funDodges++;p.funEnergy=Math.min(100,p.funEnergy+12);
+   p.points=(p.points||0)+90;chargeDuo(8);
+   toast('🌀 ナイス回避！ +90P');
+  }
+ }
+}
+function funTick(distance,dt){
+ if(p.phase!=='air')return;
+ p.funTapCooldown=Math.max(0,p.funTapCooldown-dt);
+ p.funFever=Math.max(0,p.funFever-dt);
+ p.funReviveTimer=Math.max(0,p.funReviveTimer-dt);
+ const zone=Math.min(4,Math.floor(Math.max(0,distance)/200));
+ if(zone>p.funLastZone){
+  p.funLastZone=zone;
+  p.funRevives=Math.min(2,p.funRevives+1);
+  p.funEnergy=Math.min(100,p.funEnergy+30);
+  p.vy=Math.max(p.vy,.38);
+  funNotice('🪽 CHECKPOINT！ 復活+1・エナジー回復');
+ }
+ for(const event of p.funEvents){
+  if(event.hit||p.z<event.z)continue;
+  event.hit=true;funHit(event,distance);
+ }
+ if(distance-p.funHudAt>=3||distance>=COURSE_MAX){p.funHudAt=distance;funHudUpdate(distance);}
+}
+function funHudUpdate(distance){
+ const t=el('funScore');if(t)t.textContent=(p.funFever>0?'⚡ FEVER！':'✨ COMBO '+p.funCombo+' / 5')+'　💗'+Math.floor(p.funEnergy||0);
+ const b=el('funPulseFill');if(b)b.style.width=Math.floor(p.funEnergy||0)+'%';
+ const n=el('funGuide');
+ if(n){const next=(p.funEvents||[]).find(e=>!e.hit);n.textContent=next?((next.kind==='gate'?'🎁 宝ルート':'⚠️ 障害物')+'まで '+Math.max(0,Math.floor(next.z-p.z))+'m'):'🏆 ゴールは目前！';}
+ const r=el('funRhythm');if(r){
+  const beat=distance%85,perfect=beat<=11||beat>=74;
+  r.textContent=(perfect?'🎵 PERFECT NOW!':'🎵 タップでBOOST')+' 💗'+Math.floor(p.funEnergy||0)+' 🪽'+(p.funRevives||0);
+  r.classList.toggle('on',perfect&&p.phase==='air'&&p.funTapCooldown<=0);
+ }
+}
+function funRescue(){
+ if(p.phase!=='air'||p.z>110+COURSE_MAX||p.y>0||p.funRevives<=0)return false;
+ p.funRevives--;p.y=8;p.vy=.70;p.glide=Math.max(p.glide||0,58);p.speed=Math.max(p.speed,.82);
+ p.funReviveTimer=45;
+ funNotice('🪽 救済ジャンプ！ もう一度空へ！');
+ sfx('boost');funHudUpdate(Math.floor(p.z-110));
+ return true;
+}
+function funLand(){
+ const a=el('funRhythm');if(a)a.style.display='none';
+ if(p.phase!=='air'||p.funCommitted)return;
+ p.funCommitted=true;
+ saved.funBestCombo=Math.max(Number(saved.funBestCombo)||0,p.funBestCombo||0);
+ saved.funGatesWon=(Number(saved.funGatesWon)||0)+(p.funGatesWon||0);
+ saved.funHazardsDodged=(Number(saved.funHazardsDodged)||0)+(p.funDodges||0);
+ saved.funPerfects=(Number(saved.funPerfects)||0)+(p.funPerfects||0);
+ persist();funMenuUpdate();
+}
+function funResults(){
+ const d=el('description');if(d&&p.funCommitted){
+  d.innerHTML+='<br>🎵 PERFECT '+p.funPerfects+'回 ｜ 🎁 宝ゲート '+p.funGatesWon+'/5 ｜ 🌀 回避 '+p.funDodges+'回 ｜ 🔥 最大コンボ '+p.funBestCombo;
+ }
+}
+function funFinale(){
+ const trueEnd=(Number(saved.level)||1)>=30&&(Number(saved.memoryChapters)||0)>=10;
+ if(trueEnd){saved.funTrueEnding=true;persist();}
+ const d=el('description');if(d)d.innerHTML+=trueEnd
+  ?'<br>💍 TRUE ENDING：記憶を取り戻したふたりは、人間へ戻り結婚式へ！'
+  :'<br>💌 SECRET：進化Lv.30と記憶10通で「人間に戻る結婚式」が解放！';
+}
+function funDraw(now){
+ if(p.phase!=='air')return;
+ const tr=(x,y,z)=>[x,y,z];
+ for(const event of p.funEvents||[]){
+  if(event.hit||event.z<p.z-12||event.z>p.z+115)continue;
+  const dy=Math.sin(now*.004+event.zone)*.45;
+  if(event.kind==='gate'){
+   const colors=[[1,.68,.85],[1,.84,.44],[.40,.91,1],[1,.52,.28],[.85,.71,1]],c=colors[event.zone];
+   for(let j=0;j<12;j++){
+    const a=j*Math.PI/6+now*.0007;
+    uvBall(event.x+Math.cos(a)*2.5,event.y+Math.sin(a)*2.5+dy,event.z,.31,.31,.36,c,tr,4,6);
+   }
+   uvBall(event.x,event.y+dy,event.z,.8,.82,.38,[1.,.97,.72],tr,5,8);
+  }else{
+   const x=Math.sin(Math.max(0,p.z-110)*.09+event.phase)*2.7;
+   for(let j=0;j<6;j++){
+    const a=j*Math.PI/3+now*.002;
+    uvBall(x+Math.cos(a)*1.55,event.y+dy+Math.sin(a)*1.55,event.z,.38,.39,.38,[1,.39,.28],tr,4,7);
+   }
+   uvBall(x,event.y+dy,event.z,1.1,1.1,1.1,[.32,.19,.36],tr,6,8);
+   uvBall(x-.27,event.y+.26+dy,event.z+.97,.14,.14,.13,[1.,.88,.33],tr,4,6);
+   uvBall(x+.27,event.y+.26+dy,event.z+.97,.14,.14,.13,[1.,.88,.33],tr,4,6);
+  }
+ }
+}
+funInstall();
+
+function begin(){p.hopY=0;p.hopV=0;p.downAt=0;PigAudio.setScene('run');p.phase='ready';p.z=0;p.y=0;p.vy=0;p.speed=.57;p.holding=false;p.boosted=false;p.carrots=0;p.combo=0;p.score=0;p.earned=0;p.spin=0;p.points=0;p.flaps=3;p.glide=0;p.glideUsed=false;p.spinAct=0;p.spinUsed=false;p.diveUsed=false;p.actionCool=0;initItems();worldInit();memoryInit();resetLoveActions();showLoveActions(false);showWorld(false);if(el("loveMemoryHud"))el("loveMemoryHud").style.display="none";resetPigEvent();flyMenu(false);if(el('groundJump'))el('groundJump').style.display='block';el('modal').classList.add('hidden');el('phase').textContent='HOLD TO RUN';el('action').textContent='🐷 タップでジャンプ・長押しでダッシュ';el('guide').textContent='🐷 タップでジャンプ・長押しダッシュ → 空中でランダムイベント！';el('toast').textContent='';el('distance').innerHTML='0<small>METERS</small>';el('fill').style.width='0%';courseBegin();funBegin();memoryArcadeBegin();}
 function upgrade(){
  const cost=shopCost();if(saved.level>=30||saved.carrots<cost||upgradeWaitRuns()>0)return;
  const was=stageFor(saved.level).name;
@@ -830,7 +1228,7 @@ el('play').addEventListener('click',()=>{unlockSound();sfx('oink');begin()});el(
 el('sound').addEventListener('click',()=>{saved.muted=!saved.muted;el('sound').textContent=saved.muted?'🔇':'🔊';el('sound').setAttribute?.('aria-label',saved.muted?'音をオンにする':'音をオフにする');persist();if(!saved.muted){unlockSound();sfx('oink')}else PigAudio.setMuted(true);status()});el('sound').textContent=saved.muted?'🔇':'🔊';
 function interactDown(event){if(event)event.preventDefault();p.downAt=Date.now();unlockSound();if(p.phase==='ready'){p.phase='run';p.holding=true;sfx('run');el('phase').textContent='FULL SPEED!';}
 else if(p.phase==='run'){p.holding=true;}
-else if(p.phase==='air'&&!p.boosted){p.boosted=true;p.vy+=.33+saved.level*.013;p.speed+=.14;sfx('boost');toast('🐖 PIG BOOST! ✨');el('action').textContent='🐽 空を飛んでる！';}}
+else if(p.phase==='air'){funBoostTap();}}
 function interactUp(){const tap=Date.now()-(p.downAt||0)<260;p.holding=false;if(tap&&p.phase==='run')groundJump();}
 for(const target of [canvas,el('action')]){
 target.addEventListener('pointerdown',e=>{if(target===el('action')){try{target.setPointerCapture?.(e.pointerId)}catch(_){}}interactDown(e)});
@@ -841,15 +1239,15 @@ el('action').addEventListener('click',()=>{if(Date.now()-(p.lastTapHandled||0)>4
 window.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat){e.preventDefault();interactDown(e)}});
 window.addEventListener('keyup',e=>{if(e.code==='Space')interactUp()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)p.holding=false});
-function land(){showLoveActions(false);if(p.missionDone){saved.loveMissionsWon=(saved.loveMissionsWon||0)+1;persist();}if(el("loveMemoryHud"))el("loveMemoryHud").style.display="none";showWorld(false);worldSaveFlight();resetPigEvent();if(el('groundJump'))el('groundJump').style.display='none';flyMenu(false);if(p.phase!=='air')return;p.phase='land';p.y=0;p.score=Math.max(0,Math.floor(p.z-110));const bonus=Math.floor(p.score/55)+Math.floor(p.combo/7)*2;p.earned=p.carrots+bonus;const record=p.score>saved.best;saved.best=Math.max(saved.best,p.score);saved.carrots+=p.earned;saved.runs++;persist();status();sfx('land');PigAudio.setScene('end');
+function land(){memoryArcadeLand();funLand();const ch=el('courseHud');if(ch)ch.style.display='none';showLoveActions(false);if(p.missionDone){saved.loveMissionsWon=(saved.loveMissionsWon||0)+1;persist();}if(el("loveMemoryHud"))el("loveMemoryHud").style.display="none";showWorld(false);worldSaveFlight();resetPigEvent();if(el('groundJump'))el('groundJump').style.display='none';flyMenu(false);if(p.phase!=='air')return;p.phase='land';p.y=0;p.score=Math.max(0,Math.floor(p.z-110));const bonus=Math.floor(p.score/55)+Math.floor(p.combo/7)*2;p.earned=p.carrots+bonus;const record=p.score>saved.best;saved.best=Math.max(saved.best,p.score);saved.carrots+=p.earned;saved.runs++;persist();status();sfx('land');PigAudio.setScene('end');
 el('heroPig').textContent='🐖';
 el('headline').textContent=record?'🏆 NEW RECORD!':'ナイスジャンプ！';
 el('description').innerHTML='飛距離 <strong>'+p.score+'m</strong>！<br>🥕 空中で '+p.carrots+'個 GET ＋ 距離・コンボボーナス '+bonus+'個。<br>育てて、30段階の進化を目指そう！';
 p.points+=(p.worldScore||0);saved.bestPoints=Math.max(Number(saved.bestPoints)||0,p.points||0);persist();el('description').innerHTML+='<br/>✨ ボーナス '+(p.points||0)+' PTS （最高 '+saved.bestPoints+'）';el('play').textContent='🐖 もう1回飛ぶ！';
-el('modal').classList.remove('hidden');memoryFlightCleared(p.score);
+el('modal').classList.remove('hidden');funResults();memoryFlightCleared(p.score);
 }
 function update(dt){if(p.phase==='run'){const max=.98+Math.min(saved.level,20)*.055;p.speed=clamp(p.speed+(p.holding?.017:.003)*dt,.57,max);p.z+=p.speed*2.55*dt;p.y=roadY(Math.min(p.z,110));if(p.hopY>0){p.hopY+=p.hopV*dt;p.hopV-=.047*dt;if(p.hopY<=0){p.hopY=0;p.hopV=0;}p.y+=p.hopY;}p.spin+=dt*.2;el('fill').style.width=(p.speed/max*100).toFixed(1)+'%';if(p.z>=109.6){p.z=110;p.y=10.5;p.vy=.55+p.speed*.24+saved.level*.018;p.phase='air';p.vy+=(p.runProfession?.boost||0);p.hopY=0;p.hopV=0;p.holding=false;p.boosted=false;if(el('groundJump'))el('groundJump').style.display='none';el('phase').textContent='FLYING PIG!';el('action').textContent='✨ タップで空中ブースト！';el('guide').textContent='⬅️➡️で操縦！ 🛸・🌪️・🎡・🎯・🐣・💎を探そう';sfx('launch');PigAudio.setScene('air');toast('TAKE OFF! 🐷');flyMenu(true);showWorld(true);showLoveActions(true);if(el('loveMemoryHud'))el('loveMemoryHud').style.display='block';}}
-else if(p.phase==='air'){p.z+=p.speed*2.8*dt;tickPigEvents();tickWorld(dt);memoryFlight(dt);tickLoveActions(dt);p.y+=p.vy*dt;p.vy-=(p.glide>0?.0048:.015)*dt;p.glide=Math.max(0,(p.glide||0)-dt);p.spinAct=Math.max(0,(p.spinAct||0)-dt);p.actionCool=Math.max(0,(p.actionCool||0)-dt);p.spin+=dt*.045;const distance=Math.max(0,Math.floor(p.z-110));p.score=distance;el('distance').innerHTML=distance+'<small>METERS</small>';for(const item of p.items){if(!item.taken&&!item.missed&&p.z>=item.z){if(Math.abs(p.y-item.y)<15){item.taken=true;p.combo++;p.carrots+=1+Math.min(2,Math.floor(p.combo/6))+(p.eventActive==='carrot'?1:0);sfx('carrot');toast('🥕 '+p.carrots+'  + COMBO '+p.combo);}else{item.missed=true;p.combo=0;}}}collectBonuses();if((p.y<=0&&p.z>155)||p.z>LIMIT){land();}else{el('fill').style.width=(clamp(p.y/55*100,0,100)).toFixed(1)+'%';}}
+else if(p.phase==='air'){p.z+=p.speed*2.8*dt;tickPigEvents();tickWorld(dt);memoryFlight(dt);tickLoveActions(dt);p.y+=p.vy*dt;p.vy-=(p.glide>0?.0048:.015)*dt;p.glide=Math.max(0,(p.glide||0)-dt);p.spinAct=Math.max(0,(p.spinAct||0)-dt);p.actionCool=Math.max(0,(p.actionCool||0)-dt);p.spin+=dt*.045;const distance=Math.max(0,Math.floor(p.z-110));p.score=distance;el('distance').innerHTML=distance+'<small>METERS</small>';courseTick(distance);funTick(distance,dt);memoryArcadeTick(distance);if(distance>=COURSE_MAX){courseFinish();return;}for(const item of p.items){if(!item.taken&&!item.missed&&p.z>=item.z){if(Math.abs(p.y-item.y)<15){item.taken=true;p.combo++;p.carrots+=1+Math.min(2,Math.floor(p.combo/6))+(p.eventActive==='carrot'?1:0);sfx('carrot');toast('🥕 '+p.carrots+'  + COMBO '+p.combo);}else{item.missed=true;p.combo=0;}}}collectBonuses();if((p.y<=0&&p.z>155)||p.z>LIMIT){if(!funRescue())land();}else{el('fill').style.width=(clamp(p.y/55*100,0,100)).toFixed(1)+'%';}}
 if(p.toastTimer>0){p.toastTimer-=dt;if(p.toastTimer<=0)el('toast').textContent='';}}
 let vw=0,vh=0,dpr=1;
 function resize(){const rect=canvas.getBoundingClientRect();vw=Math.max(1,rect.width);vh=Math.max(1,rect.height);dpr=Math.min(window.devicePixelRatio||1,1.65);const nw=Math.round(vw*dpr),nh=Math.round(vh*dpr);if(canvas.width!==nw||canvas.height!==nh){canvas.width=nw;canvas.height=nh;gl.viewport(0,0,nw,nh)}}window.addEventListener('resize',resize);resize();
@@ -960,7 +1358,7 @@ cone(x,y-.4,item.z,.46,1.13,[1,.45,.14],9);
 cone(x,y+.29,item.z,.25,.52,[.22,.75,.37],7);
 }
 let cam=[-6,8,-17],look=[0,1,14];
-function render(now){resize();gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);drawSky(now,0);gl.useProgram(prog);
+function render(now){resize();gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);drawSky(now,courseSkyTheme());gl.useProgram(prog);
 const target=[p.x||0,p.y+1.5,p.z+15], desired=[(p.x||0)-6.5,p.y+7.0,p.z-16];
 const follow=p.phase==='air'?.08:.055;
 for(let i=0;i<3;i++){cam[i]+=(desired[i]-cam[i])*follow;look[i]+=(target[i]-look[i])*follow;}
@@ -970,7 +1368,7 @@ draw(staticBuffer,null,staticData.length/9);
 verts=[];
 for(const b of p.bonuses||[]){if(!b.taken&&!b.missed&&b.z>p.z-15&&b.z<p.z+185)flightBonusModel(b,now);}
 for(const item of p.items){if(!item.taken&&!item.missed&&item.z>p.z-15&&item.z<p.z+110)carrotModel(item,now);}
-renderWorldEffects(now);drawLoveRoutes(now);loveShardsDraw(now);renderLoverPig(now);pigModel(p.x||0,p.y,p.z,now);pigSparkleVfx(now);
+renderWorldEffects(now);funDraw(now);drawLoveRoutes(now);loveShardsDraw(now);renderLoverPig(now);pigModel(p.x||0,p.y,p.z,now);pigSparkleVfx(now);
 const mesh=new Float32Array(verts);draw(dynamicBuffer,mesh,mesh.length/9);
 }
 function loop(now){if(!p.last)p.last=now;let dt=clamp((now-p.last)/16.6667,.05,2.2);p.last=now;if(p.phase==='ready'||p.phase==='menu')p.spin+=dt*.035;if(p.phase==='run'||p.phase==='air')update(dt);render(now);requestAnimationFrame(loop)}

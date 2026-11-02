@@ -35,7 +35,7 @@ function terrainSample(x,z){
   const inv=1/Math.hypot(gx,1,gz);
   const ax=Math.abs(x),t=Math.min(1,Math.max(0,(ax-33)/195)),u=t*t*(3-2*t);
   const vibrance=.992+.008*Math.sin(z*.014+x*.027);
-  const c0=[.43,.67,.46],c1=[.53,.61,.65];
+  const zone=Math.min(4,Math.max(0,Math.floor((z-110)/200)));const palette=[[[.43,.67,.46],[.53,.61,.65]],[[.91,.59,.74],[.74,.59,.82]],[[.38,.78,.82],[.46,.70,.91]],[[.59,.30,.26],[.72,.44,.23]],[[.35,.39,.72],[.29,.25,.52]]][zone];const c0=palette[0],c1=palette[1];
   const rocky=Math.min(1,Math.max(0,(y-26)/26));
   const col=c0.map((v,i)=>(v*(1-u)+c1[i]*u)*(1-rocky*.10)*vibrance);
   return {x,y,z,c:col,n:[-gx*inv,inv,-gz*inv]};
@@ -92,8 +92,25 @@ for(let i=0;i<30;i++){
   const xx=(rnd()<.5?-1:1)*(8+rnd()*90),zz=116+rnd()*36;
   cone(xx,-.10,zz,.6+rnd()*1.05,.45+rnd()*.9,[.64,.72,.70],8);
 }
+
+/* __PIG_COURSE_SCENE_V3__ */
+for(let k=1;k<=5;k++){
+ const z=110+k*200,colors=[[.97,.72,.81],[.96,.63,.86],[.36,.87,1.],[1.,.44,.24],[1.,.83,.33]],c=colors[k-1];
+ for(const side of [-1,1])box(side*7.6,22,z,.5,44,.65,c);
+ box(0,44,z,8,.75,.65,c);
+ if(k===5){box(0,48,z,9,1,.7,[1.,.79,.2]);for(let j=0;j<7;j++)cone((j-3)*1.4,49,z,.5,1.6,[1.,.95,.52],6);}
+}
+for(let k=0;k<5;k++)for(let j=0;j<12;j++){
+ const z=156+k*200+j*15,x=(j%2?1:-1)*(19+(j%3)*4),y=terrainH(x,z);
+ if(k===0)cone(x,y,z,2.6,5,[1.,.63,.78],9);
+ if(k===1){box(x,y+2,z,.65,4,.65,[1.,.85,.97]);cone(x,y+4,z,2.1,2.5,[1.,.58,.89],9);}
+ if(k===2){cone(x,y,z,3,4,[.25,.80,.70],9);box(x,y+.8,z,.25,1.6,.25,[.64,.44,.26]);}
+ if(k===3){cone(x,y,z,3.2,6,[.43,.24,.30],9);cone(x,y+5,z,1.4,2,[1.,.45,.17],8);}
+ if(k===4)cone(x,y,z,2.2,5,[.62,.64,1.],7);
+}
+
 const staticData=new Float32Array(verts),staticBuffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,staticBuffer);gl.bufferData(gl.ARRAY_BUFFER,staticData,gl.STATIC_DRAW);const dynamicBuffer=gl.createBuffer(),aPos=gl.getAttribLocation(prog,'aPosition'),aCol=gl.getAttribLocation(prog,'aColor'),aNormal=gl.getAttribLocation(prog,'aNormal'),uVP=gl.getUniformLocation(prog,'uVP'),uCamera=gl.getUniformLocation(prog,'uCamera');gl.enableVertexAttribArray(aPos);gl.enableVertexAttribArray(aCol);gl.enableVertexAttribArray(aNormal);gl.enable(gl.DEPTH_TEST);gl.clearColor(.80,.91,.93,1);
 function draw(buffer,data,count){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);if(data)gl.bufferData(gl.ARRAY_BUFFER,data,gl.DYNAMIC_DRAW);gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,36,0);gl.vertexAttribPointer(aCol,3,gl.FLOAT,false,36,12);gl.vertexAttribPointer(aNormal,3,gl.FLOAT,false,36,24);gl.drawArrays(gl.TRIANGLES,0,count)}
 
-const skyProgram=gl.createProgram();gl.attachShader(skyProgram,shader(gl.VERTEX_SHADER,`attribute vec2 aSky;varying vec2 uv;void main(){uv=aSky*.5+.5;gl_Position=vec4(aSky,.999,1.);}`));gl.attachShader(skyProgram,shader(gl.FRAGMENT_SHADER,`precision mediump float;varying vec2 uv;uniform float skyTime;uniform float skyTheme;void main(){vec3 c=mix(vec3(.96,.82,.74),vec3(.37,.59,.79),smoothstep(.03,1.,uv.y));if(skyTheme>.5&&skyTheme<1.5)c=mix(vec3(.95,.72,.45),vec3(.45,.37,.58),uv.y);if(skyTheme>1.5)c=mix(vec3(.84,.91,.95),vec3(.36,.57,.76),uv.y);vec2 p=(uv-vec2(.79,.76))*vec2(1.38,1.);float sun=exp(-length(p)*23.);c+=vec3(1.,.82,.56)*sun*.36;float wisps=sin(uv.x*13.+sin(uv.y*14.)+skyTime*.006)*sin(uv.x*7.-uv.y*18.);float cloud=smoothstep(.54,.85,wisps)*smoothstep(.55,.68,uv.y)*(1.-smoothstep(.82,.98,uv.y));c=mix(c,vec3(.92,.94,.91),cloud*.4);gl_FragColor=vec4(c,1.);}`));gl.linkProgram(skyProgram);if(!gl.getProgramParameter(skyProgram,gl.LINK_STATUS))throw Error('Sky shader link failed');const skyBuffer=gl.createBuffer(),skyAttr=gl.getAttribLocation(skyProgram,'aSky'),skyTime=gl.getUniformLocation(skyProgram,'skyTime'),skyTheme=gl.getUniformLocation(skyProgram,'skyTheme');gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const skyProgram=gl.createProgram();gl.attachShader(skyProgram,shader(gl.VERTEX_SHADER,`attribute vec2 aSky;varying vec2 uv;void main(){uv=aSky*.5+.5;gl_Position=vec4(aSky,.999,1.);}`));gl.attachShader(skyProgram,shader(gl.FRAGMENT_SHADER,`precision mediump float;varying vec2 uv;uniform float skyTime;uniform float skyTheme;void main(){vec3 c=mix(vec3(.96,.82,.74),vec3(.37,.59,.79),smoothstep(.03,1.,uv.y));if(skyTheme>.5&&skyTheme<1.5)c=mix(vec3(.95,.72,.45),vec3(.45,.37,.58),uv.y);if(skyTheme>1.5&&skyTheme<2.5)c=mix(vec3(.84,.91,.95),vec3(.36,.57,.76),uv.y);if(skyTheme>2.5&&skyTheme<3.5)c=mix(vec3(1.,.82,.91),vec3(.68,.48,.87),uv.y);if(skyTheme>3.5&&skyTheme<4.5)c=mix(vec3(.66,1.,.96),vec3(.20,.47,.83),uv.y);if(skyTheme>4.5)c=mix(vec3(.25,.18,.48),vec3(.04,.06,.23),uv.y);vec2 p=(uv-vec2(.79,.76))*vec2(1.38,1.);float sun=exp(-length(p)*23.);c+=vec3(1.,.82,.56)*sun*.36;float wisps=sin(uv.x*13.+sin(uv.y*14.)+skyTime*.006)*sin(uv.x*7.-uv.y*18.);float cloud=smoothstep(.54,.85,wisps)*smoothstep(.55,.68,uv.y)*(1.-smoothstep(.82,.98,uv.y));c=mix(c,vec3(.92,.94,.91),cloud*.4);gl_FragColor=vec4(c,1.);}`));gl.linkProgram(skyProgram);if(!gl.getProgramParameter(skyProgram,gl.LINK_STATUS))throw Error('Sky shader link failed');const skyBuffer=gl.createBuffer(),skyAttr=gl.getAttribLocation(skyProgram,'aSky'),skyTime=gl.getUniformLocation(skyProgram,'skyTime'),skyTheme=gl.getUniformLocation(skyProgram,'skyTheme');gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
 function drawSky(t,theme=0){gl.disable(gl.DEPTH_TEST);gl.useProgram(skyProgram);gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);gl.enableVertexAttribArray(skyAttr);gl.vertexAttribPointer(skyAttr,2,gl.FLOAT,false,8,0);gl.uniform1f(skyTime,t*.001);gl.uniform1f(skyTheme,theme);gl.drawArrays(gl.TRIANGLES,0,3);gl.useProgram(prog);gl.enable(gl.DEPTH_TEST);}
