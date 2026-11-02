@@ -84,6 +84,14 @@ def main():
                  "/robots.txt", "/manifest.webmanifest", "/favicon.ico",
                  "/coorde-v8/", "/pose-motion-studio/"]:
         add(seed)
+    # LOOK MATCH v9 full-body assets: seed all 20 images explicitly because
+    # some image paths are assembled dynamically in app.js at runtime.
+    for seed in ("/games/look-match/index.html", "/games/look-match/app.js",
+                 "/games/look-match/style.css", "/games/look-match/families.json",
+                 "/games/look-match/rakuten-moncler-original.html", "/look-match/"):
+        add(seed)
+    for index in range(1, 21):
+        add(f"/games/look-match/assets/look-{index:02d}.webp")
     opener = urllib.request.build_opener()
     while queue and len(checked) < args.max_files and total < args.max_total_mb * 1_000_000:
         url = queue.popleft()
