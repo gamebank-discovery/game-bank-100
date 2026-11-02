@@ -5,6 +5,9 @@ on:
     paths:
       - 'pig-source/pig-love-v2.part*.b64'
       - 'scripts/restore_pig_love.py'
+      - 'scripts/patch_pig_course.py'
+      - 'scripts/patch_pig_fun.py'
+      - 'scripts/patch_pig_memory_arcade.py'
       - '.github/workflows/publish-pig-love.yml'
   workflow_dispatch:
 
@@ -28,9 +31,13 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/restore_pig_love.py
+          python3 scripts/patch_pig_course.py public-mirror/games/pig-jump-evolution
+          python3 scripts/patch_pig_fun.py public-mirror/games/pig-jump-evolution
+          python3 scripts/patch_pig_memory_arcade.py public-mirror/games/pig-jump-evolution
           node --check public-mirror/games/pig-jump-evolution/pig.js
           node --check public-mirror/games/pig-jump-evolution/engine.js
-          grep -q 'loveplay-cloudflare-v2' public-mirror/games/pig-jump-evolution/index.html
+          grep -q '20261102-memory-arcade-v5' public-mirror/games/pig-jump-evolution/index.html
+          grep -q '__PIG_MEMORY_ARCADE_V5__' public-mirror/games/pig-jump-evolution/pig.js
       - name: Commit game assets for Git-connected Pages
         run: |
           set -euo pipefail
@@ -40,7 +47,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Already up to date"
           else
-            git commit -m "feat: publish PIG LOVE STORY standalone static assets"
+            git commit -m "feat: publish PIG LOVE memory arcade v5 standalone game"
             git fetch origin main
             git rebase origin/main
             git push origin HEAD:main
