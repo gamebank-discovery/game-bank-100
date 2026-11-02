@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/deploy-pig-cloudflare.yml'
       - 'scripts/patch_pig_fun.py'
+      - 'scripts/patch_pig_memory_arcade.py'
       - 'scripts/patch_pig_course.py'
       - 'scripts/build_cloudflare.py'
       - 'scripts/restore_pig_love.py'
@@ -42,22 +43,22 @@ jobs:
         if: steps.credentials.outputs.ready == 'true'
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/build_cloudflare.py scripts/patch_pig_course.py scripts/patch_pig_fun.py
+          python3 -m py_compile scripts/build_cloudflare.py scripts/patch_pig_course.py scripts/patch_pig_fun.py scripts/patch_pig_memory_arcade.py
           python3 scripts/build_cloudflare.py
           python3 - <<'PY'
           import json,os
           from pathlib import Path
-          Path('dist/gamebank-release.json').write_text(json.dumps({'commit':os.environ['GITHUB_SHA'],'game':'pig-jump','version':'arcade-v4'}))
+          Path('dist/gamebank-release.json').write_text(json.dumps({'commit':os.environ['GITHUB_SHA'],'game':'pig-jump','version':'memory-arcade-v5'}))
           PY
           node --check dist/games/pig-jump-evolution/pig.js
           node --check dist/games/pig-jump-evolution/engine.js
           python3 - <<'PY'
           from pathlib import Path
           js=Path('dist/games/pig-jump-evolution/pig.js').read_text()
-          for marker in ('__PIG_LOVE_PLAY_V2__','__PIG_COURSE_GOAL_V3__','__PIG_ARCADE_FUN_V1__','COURSE_MAX=1000'):
+          for marker in ('__PIG_LOVE_PLAY_V2__','__PIG_COURSE_GOAL_V3__','__PIG_ARCADE_FUN_V1__','__PIG_MEMORY_ARCADE_V5__','COURSE_MAX=1000'):
               assert marker in js,marker
           assert Path('dist/index.html').is_file()
-          print('PASS: PIG JUMP + LOVE + 5 worlds + arcade')
+          print('PASS: PIG JUMP + LOVE + 5 worlds + memory arcade')
           PY
       - name: Upload Cloudflare ready GAME BANK build
         if: steps.credentials.outputs.ready == 'true'
@@ -148,7 +149,7 @@ jobs:
             --project-name "$PAGES_PROJECT" \
             --branch main \
             --commit-hash "$GITHUB_SHA" \
-            --commit-message "PIG JUMP five worlds and arcade" | tee /tmp/pages-deploy.log
+            --commit-message "PIG JUMP memory arcade v5" | tee /tmp/pages-deploy.log
       - name: Verify public game files
         if: steps.credentials.outputs.ready == 'true'
         env:
@@ -172,7 +173,7 @@ jobs:
           RELEASE_URL="https://$SUBDOMAIN/gamebank-release.json?sha=$GITHUB_SHA"
           for attempt in $(seq 1 10); do
             if curl --fail --location --silent --show-error --max-time 20 "$TEST_URL" -o /tmp/cloudflare-live-pig.js \
-              && grep -q '__PIG_ARCADE_FUN_V1__' /tmp/cloudflare-live-pig.js \
+              && grep -q '__PIG_MEMORY_ARCADE_V5__' /tmp/cloudflare-live-pig.js \
               && grep -q 'COURSE_MAX=1000' /tmp/cloudflare-live-pig.js \
               && curl --fail --silent --show-error --max-time 20 "$RELEASE_URL" -o /tmp/live-release.json \
               && python3 - <<'PY'

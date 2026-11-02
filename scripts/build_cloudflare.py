@@ -7,6 +7,7 @@ import shutil
 from restore_pig_love import restore_pig_love
 from patch_pig_course import patch_course
 from patch_pig_fun import patch_fun
+from patch_pig_memory_arcade import patch_memory_arcade
 
 STYLE = '<link rel="stylesheet" href="/monetization/gamebank-monetize.css">'
 SCRIPTS = ('<script src="/monetization/config.js"></script>'
@@ -20,6 +21,7 @@ def build(source: Path, target: Path, root: Path) -> None:
     restore_pig_love(root, source / "games/pig-jump-evolution")
     patch_course(source / "games/pig-jump-evolution")
     patch_fun(source / "games/pig-jump-evolution")
+    patch_memory_arcade(source / "games/pig-jump-evolution")
     if source.resolve() == target.resolve():
         raise SystemExit("ERROR: source and output cannot be the same directory.")
     if target.exists():
