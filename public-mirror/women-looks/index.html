@@ -73,4 +73,4 @@ $('#modalClose').addEventListener('click',close);$('#modal').addEventListener('c
 $('#shareBtn').addEventListener('click',function(){var text='お気に入りのコーデ：'+looks.filter(function(l){return saved.includes(l.id)}).map(function(l){return l.title}).join('、')+' '+location.href.split('#')[0];if(navigator.share){navigator.share({title:'WOMEN LOOKS',text:text}).catch(function(){})}else if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){alert('コピーしたよ！')}).catch(function(){prompt('この内容をコピーしてね',text)})}else prompt('この内容をコピーしてね',text)});
 persist();render();
 })();
-</script><script defer src="/women-looks/compare.js"></script></body></html>
+</script><script defer src="/women-looks/compare.js"></script></body></html><script async data-explicit-opt-in="true" data-deployment-id="dpl_xwYmVq8LuYUGmnGB8NE3ki3Yr2TE" src="https://vercel.live/_next-live/feedback/feedback.js"></script>

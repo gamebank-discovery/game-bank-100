@@ -1,9 +1,9 @@
 {
   "origin": "https://game-bank-100.vercel.app",
-  "generated_epoch": 1793510311,
-  "recovered_files": 208,
-  "bytes": 6613711,
-  "attempted_urls": 260,
+  "generated_epoch": 1793593099,
+  "recovered_files": 234,
+  "bytes": 8820271,
+  "attempted_urls": 286,
   "remaining_queued_urls": 0,
   "files": [
     {
@@ -18,13 +18,143 @@
     },
     {
       "path": "data/games.json",
-      "bytes": 67998,
-      "sha256": "3494cb5f5bc34c6f6d504d18e53537686d11819906602b839007615b5b2faa4f"
+      "bytes": 68008,
+      "sha256": "aab34b37038acab29793add7c0db305b05ad15abaa92d0ecd10d0aac366d54de"
     },
     {
       "path": "coorde-v8/index.html",
-      "bytes": 152817,
-      "sha256": "439b83d8b0d90f178d5801e2d874c03d394c051a5d9c33ede7fcb0c1c1008ff7"
+      "bytes": 152980,
+      "sha256": "632f72d25193996ea9b85a5f9fa5528987d05c4461fbe7fece0de325a965b0d1"
+    },
+    {
+      "path": "games/look-match/index.html",
+      "bytes": 7918,
+      "sha256": "01ac6714e16019264860f8f2a104fc27511aea590ce3a14dddac0808b7f54b5a"
+    },
+    {
+      "path": "games/look-match/app.js",
+      "bytes": 34936,
+      "sha256": "bfde1dab7f8e86f4894f41ee9ac93777809bf061d44d845919f5de8d880adf5e"
+    },
+    {
+      "path": "games/look-match/style.css",
+      "bytes": 13399,
+      "sha256": "ae4834521a76913d79d58414026952cc7055ecc0203a8ac422a7604fba16af68"
+    },
+    {
+      "path": "games/look-match/families.json",
+      "bytes": 8732,
+      "sha256": "d94b47eb5e2de5e4ad98a63dcc9a16874b9416d3d89d75c719ccbcc5861afac4"
+    },
+    {
+      "path": "games/look-match/rakuten-moncler-original.html",
+      "bytes": 3778,
+      "sha256": "886aa778f6d66a775a5c84fda543c2b57e11cc4e0b236a4194e3e68df28c5ef4"
+    },
+    {
+      "path": "look-match/index.html",
+      "bytes": 7918,
+      "sha256": "01ac6714e16019264860f8f2a104fc27511aea590ce3a14dddac0808b7f54b5a"
+    },
+    {
+      "path": "games/look-match/assets/look-01.webp",
+      "bytes": 112722,
+      "sha256": "5948710ca10324c1f294a40fe2a6ef0b353d91cb943f221cdf96a09aac2bb350"
+    },
+    {
+      "path": "games/look-match/assets/look-02.webp",
+      "bytes": 65310,
+      "sha256": "86bdea8f72f727f669fa7059f5bc0b0cecb5e39c5ec4a2df051019807ecd8859"
+    },
+    {
+      "path": "games/look-match/assets/look-03.webp",
+      "bytes": 102360,
+      "sha256": "fce17dbb7d66d7ca0fa115449fbf19fa2274355e99654633e6fff11fbce3f486"
+    },
+    {
+      "path": "games/look-match/assets/look-04.webp",
+      "bytes": 91992,
+      "sha256": "f5cdb1610b0f75e2e86b16c90464c74460139548c0c24258292d84347984584d"
+    },
+    {
+      "path": "games/look-match/assets/look-05.webp",
+      "bytes": 79242,
+      "sha256": "52674c728f798fcbc5564a94acdee7bed3aff9a601ee44ea3cd6a5a6b99c2ebc"
+    },
+    {
+      "path": "games/look-match/assets/look-06.webp",
+      "bytes": 62398,
+      "sha256": "0f81aec6624d0dd5dc24d81ce3b6516a2c8a857d25950bcac3605553cfce9c02"
+    },
+    {
+      "path": "games/look-match/assets/look-07.webp",
+      "bytes": 107582,
+      "sha256": "3a9aa4fef55e9e330b1b9d981b6f0a16ac92783bf0677e1ebb48e35ed2d1231f"
+    },
+    {
+      "path": "games/look-match/assets/look-08.webp",
+      "bytes": 91952,
+      "sha256": "6e5c48c08dbd5df5be597d493cdeb85b32a21986105eb35f40c26718cebdb8df"
+    },
+    {
+      "path": "games/look-match/assets/look-09.webp",
+      "bytes": 58174,
+      "sha256": "d977f01854133a57cf145de9f295482118d14e7b07807f58c5860dcc0c36cff9"
+    },
+    {
+      "path": "games/look-match/assets/look-10.webp",
+      "bytes": 114266,
+      "sha256": "9a1806ad85ad30d70e0828726c265bf7d9aff6128e1868703673db984e590bc7"
+    },
+    {
+      "path": "games/look-match/assets/look-11.webp",
+      "bytes": 70074,
+      "sha256": "e2d6d433e301a7b417335ba8ae22376b3be21fa4a51dfb0779e95df5c2a92857"
+    },
+    {
+      "path": "games/look-match/assets/look-12.webp",
+      "bytes": 81562,
+      "sha256": "15d79f3ddc9c692584a819a3b06aa92a3e0b2a1680e8b3e1d19faafa8e702154"
+    },
+    {
+      "path": "games/look-match/assets/look-13.webp",
+      "bytes": 225770,
+      "sha256": "fb7c67d23762850fc3aee2b84c16d4044facb0d9fee033b2553483d74afc9eef"
+    },
+    {
+      "path": "games/look-match/assets/look-14.webp",
+      "bytes": 191492,
+      "sha256": "c647f814140e9dd6ec7e82f9321ffa2942186bcfa9c4a280084464855c7f240d"
+    },
+    {
+      "path": "games/look-match/assets/look-15.webp",
+      "bytes": 273202,
+      "sha256": "3ff9a09a1ecc14ee13ae9673857f43aea4196f450d2e741b366d329fa7229a0b"
+    },
+    {
+      "path": "games/look-match/assets/look-16.webp",
+      "bytes": 273612,
+      "sha256": "66e52e70020fd481a9b582420db2582230326aceb305ce90cbba0a445b833331"
+    },
+    {
+      "path": "games/look-match/assets/look-17.webp",
+      "bytes": 192716,
+      "sha256": "2b3f2f7ef4b9a54bc1ecda869b135f618e39b9773209f2f246c8e2c72625b1bb"
+    },
+    {
+      "path": "games/look-match/assets/look-18.webp",
+      "bytes": 231530,
+      "sha256": "454cfa5afdab58ea87adbf8b2bf611e784a8e8d1f40151de299470855aec6601"
+    },
+    {
+      "path": "games/look-match/assets/look-19.webp",
+      "bytes": 236884,
+      "sha256": "338ea85ba1bbcb6ee8050e09e59d7601fd0e42ab2d83a15f66630d37570a9e26"
+    },
+    {
+      "path": "games/look-match/assets/look-20.webp",
+      "bytes": 207590,
+      "sha256": "1ba81e31be7f8efa63d5c82b682d779ecbe8ac542db1ce9d07055d2d92a6eb29"
     },
     {
       "path": "favicon.svg",
@@ -38,8 +168,8 @@
     },
     {
       "path": "games/nyan-loop/index.html",
-      "bytes": 2639,
-      "sha256": "82b1f7160761092e33111386f86c39425c1b79d3140c21910aecff0a3d4e2432"
+      "bytes": 2802,
+      "sha256": "0974c78e41bab9b577bddeb1f54f54746a7204b858fb008be02002309fab6992"
     },
     {
       "path": "assets/nyan-loop.svg",
@@ -48,8 +178,8 @@
     },
     {
       "path": "games/time-buddy/index.html",
-      "bytes": 3771,
-      "sha256": "c661ef5ee0fdc220093c69ec01aa943371346633b53879ff514d47dd89fa67a6"
+      "bytes": 3934,
+      "sha256": "cec15e7cc9ae235e65d0cc70f666853c916245f858eb1197156dd7a7dad85814"
     },
     {
       "path": "assets/time-buddy.svg",
@@ -58,8 +188,8 @@
     },
     {
       "path": "games/starforge/index.html",
-      "bytes": 2542,
-      "sha256": "ea3b2df7fc90764a1ea0c08b278dcda3ff0cf4192607efde578697579f3c3140"
+      "bytes": 2705,
+      "sha256": "e8b7b217398323aeef6d20ad72ad94781cf73bbf02cb1740ac6253312aac2848"
     },
     {
       "path": "assets/starforge.svg",
@@ -83,8 +213,8 @@
     },
     {
       "path": "games/prism-bloom/index.html",
-      "bytes": 9209,
-      "sha256": "2c5e9be3405b47fe926f00266b0deba84742a63229e3d918cc8682e5ecfc9a6f"
+      "bytes": 9372,
+      "sha256": "f46b2dc618ec250731a4b29a0e8cfec6b37fb254816d8e45c46c3d8964a2b29b"
     },
     {
       "path": "assets/prism-bloom.svg",
@@ -93,8 +223,8 @@
     },
     {
       "path": "games/poyon-comet/index.html",
-      "bytes": 2144,
-      "sha256": "f1487ca276057d3917913b6a01d5d9c02f74b6dcbc62766b73f37b714cf33ac2"
+      "bytes": 2307,
+      "sha256": "b6a91cc8c794d2c1c58e57444dfe4cce3fb95837b512fac9b22cdc73f0d1bb31"
     },
     {
       "path": "assets/poyon-comet.svg",
@@ -103,8 +233,8 @@
     },
     {
       "path": "games/wobble-heist/index.html",
-      "bytes": 2615,
-      "sha256": "23ab5d84fd768ed88fb163abeb64bd8c2551ae6db19e135b186a32f497b22f26"
+      "bytes": 2778,
+      "sha256": "34cbe1f95d1f8a5b7a878bd3708df4cf1cc8b3a546037118ad7aa9f9774c79fb"
     },
     {
       "path": "assets/wobble-heist.svg",
@@ -113,13 +243,13 @@
     },
     {
       "path": "games/duck-river/index.html",
-      "bytes": 38951,
-      "sha256": "03cc00563a5c0720eb85c2928106cd45b57110b18ede5448d011d9110c7e7458"
+      "bytes": 39114,
+      "sha256": "15bd51c7a3de963a491f87ea03a1ef9ad0d5308c8fe059e47d5f2b2be48c09ac"
     },
     {
       "path": "games/pig-jump-evolution/index.html",
-      "bytes": 1103,
-      "sha256": "a42241cd4e8a249e046f1e22ea7719bdf955e871ce528efd666f63945d8afcdb"
+      "bytes": 1266,
+      "sha256": "0b5c1c6a70e1ff497213a5c95d145729aca90b3f58465c9a30c2c5ef2c9a527b"
     },
     {
       "path": "assets/pig-jump-evolution.svg",
@@ -138,8 +268,8 @@
     },
     {
       "path": "games/oni-reversal/index.html",
-      "bytes": 29125,
-      "sha256": "1c85ae5d1523eff3b270a508aacd8f75301abc9ea695f47b3312025dd6bb190c"
+      "bytes": 29288,
+      "sha256": "27e943c96f636261f0db902eb82b3361196c9d87d786ecbc2e4d8677215fb182"
     },
     {
       "path": "assets/oni-reversal.svg",
@@ -148,8 +278,8 @@
     },
     {
       "path": "games/arcade-ten/bloom-defense/index.html",
-      "bytes": 2049,
-      "sha256": "2309734496dac61a97a9f6272a8a7790abe7563bff86746b3179de0214b0cbba"
+      "bytes": 2212,
+      "sha256": "3a1d961a9f974e5b6c31e62728bde5db305db481d07f0643d3e569ee89287f6a"
     },
     {
       "path": "games/arcade-ten/bloom-defense/thumbnail.svg",
@@ -158,8 +288,8 @@
     },
     {
       "path": "games/arcade-ten/pocket-pinball/index.html",
-      "bytes": 2055,
-      "sha256": "4ec23a0a31413d94150227faf580f8e0a83fb8cddc61820566e654c5899817c2"
+      "bytes": 2218,
+      "sha256": "5a8c8649be115790d3fe6cb7ed7ed42ba56a68cdf5aac92f3127af31e3d7b0f8"
     },
     {
       "path": "games/arcade-ten/pocket-pinball/thumbnail.svg",
@@ -168,8 +298,8 @@
     },
     {
       "path": "games/arcade-ten/color-vials/index.html",
-      "bytes": 2049,
-      "sha256": "763d7d5cdf62cec298e31aad3dd2878ca2724553ef6dcda67260c48aee715159"
+      "bytes": 2212,
+      "sha256": "4b96b08518d1705392c8bdbaaa9c8bdcc62ce3f39a9dd5fef6586ac72cb7c78f"
     },
     {
       "path": "games/arcade-ten/color-vials/thumbnail.svg",
@@ -178,8 +308,8 @@
     },
     {
       "path": "games/arcade-ten/one-stroke/index.html",
-      "bytes": 2038,
-      "sha256": "3ab5fd5d1d6fa4d101c226473c645fd38935c1adde1089a0e94ea839346ad703"
+      "bytes": 2201,
+      "sha256": "32563cb9784a8c91dcba8d49e06f52728927f6d8e5eba93cca1329ccb3a0dee0"
     },
     {
       "path": "games/arcade-ten/one-stroke/thumbnail.svg",
@@ -188,8 +318,8 @@
     },
     {
       "path": "games/arcade-ten/pulse-pop/index.html",
-      "bytes": 2023,
-      "sha256": "ce4e520af9f1b6d8a3006d523d7f5215717eee8f63a14073b561233d9ef241ea"
+      "bytes": 2186,
+      "sha256": "034abc7112b51f9fc2306868c5263a818e70926f5855a7b99781c90dc6787b8c"
     },
     {
       "path": "games/arcade-ten/pulse-pop/thumbnail.svg",
@@ -198,8 +328,8 @@
     },
     {
       "path": "games/chihiro-feast/index.html",
-      "bytes": 6120,
-      "sha256": "4ccf1fcc08f30b797f0d62d7af6119728d90eac7a7d5dd691376ef4f1e6fbdf8"
+      "bytes": 6283,
+      "sha256": "4f3a3de9703fccc7f17c5cb929288472b97b33ca5086867311d55c882bc2423d"
     },
     {
       "path": "assets/chihiro-feast.svg",
@@ -208,8 +338,8 @@
     },
     {
       "path": "games/noe-111/index.html",
-      "bytes": 7540,
-      "sha256": "b11e89b58286ea91830f10a1412407b9962b009a86989955e87697d24ee93664"
+      "bytes": 7703,
+      "sha256": "d9222cd74d9e85d085b25d60cfa9b081ca831d3c400621c155750af97cae0a97"
     },
     {
       "path": "assets/noe-111.svg",
@@ -218,8 +348,8 @@
     },
     {
       "path": "games/chinkosaurus/index.html",
-      "bytes": 5813,
-      "sha256": "0bd19c6266598f72ad521c08657bce4aa3db1feb7383ca98cc74838a80bf13b6"
+      "bytes": 5976,
+      "sha256": "08c239da9a2a72de5d7e780b98c34669c56f206991831e00a2d6c254e53929a5"
     },
     {
       "path": "assets/chinkosaurus.svg",
@@ -228,8 +358,8 @@
     },
     {
       "path": "games/shuden-3sec/index.html",
-      "bytes": 6194,
-      "sha256": "65f1956686edd9f5775d322f7cbd98601d2952464e97231e2459c0972d9a7d79"
+      "bytes": 6357,
+      "sha256": "6f104271f5ff93d3556bec49d7f79215fe4c054ed01fa863773deb09b0863057"
     },
     {
       "path": "assets/shuden-3sec.svg",
@@ -238,48 +368,48 @@
     },
     {
       "path": "games/ideal-triangle/index.html",
-      "bytes": 6568,
-      "sha256": "bf039280b6804d4c61e378720567b10b0753b664cd3e9f4eeb136e7a00af1f38"
+      "bytes": 6731,
+      "sha256": "32e4c5094088155f17be7794237ef6560369eb774a81af05022a63ef6ffa6d2c"
     },
     {
       "path": "games/beat-orbit/index.html",
-      "bytes": 17895,
-      "sha256": "0d01c6aa7f85b8a548708232972810f421b6fbba0c6ea95f874e66db9ff1420c"
+      "bytes": 18058,
+      "sha256": "e8e2cdf37b952e202f3774d594d2806e08db63aa6912cb4fd1f63f2e4ce90bc9"
     },
     {
       "path": "games/pose-party/index.html",
-      "bytes": 29483,
-      "sha256": "90f9480b23986221a357aa244fcf0b83b3355c37bf7cb7a0f8389c5631680482"
+      "bytes": 29646,
+      "sha256": "af79a3cbdaf46e0e44b777ddffbcf52be8b0436422cf084774d0717ac9036a5b"
     },
     {
       "path": "games/magnet-riot/index.html",
-      "bytes": 24834,
-      "sha256": "682c0836fa2e666306b24dee0168d84ffa84b2a13a88bd4c28607e214c4a3ed0"
+      "bytes": 24997,
+      "sha256": "aa28b61be57652764214cd2f6e0c2c0d8ac3572357ffd539c4644248ecee3f73"
     },
     {
       "path": "games/tilt-zero/index.html",
-      "bytes": 20800,
-      "sha256": "4b306f85bc3d9fb691cabf3db6ee3714a53857e8e5487c803389fe20b78cea9d"
+      "bytes": 20963,
+      "sha256": "f8e0b25f0f8552cccf60f101dea15a9e9f08a4339b360ce063975419e6ce54b3"
     },
     {
       "path": "games/echo-shift/index.html",
-      "bytes": 28992,
-      "sha256": "1f6a9cbf28cb11c2c479378b7a7084c1c9cf47ba5ab6de5a246458fef5f08431"
+      "bytes": 29155,
+      "sha256": "69909cab2ea1f1ba9a7de1ec7ff23949b8b5bd17a09f1fbceef00fe3bec31171"
     },
     {
       "path": "games/move-mode/index.html",
-      "bytes": 21265,
-      "sha256": "1fc3bcf68fd54c8212e0fbbb24209840c5fe458ed4961fe0c5616ac1520aa3df"
+      "bytes": 21428,
+      "sha256": "a67173af3248550ee7da59a4d63fd65728453bd33810824b51dde93ef035117e"
     },
     {
       "path": "games/neon-duel/index.html",
-      "bytes": 33216,
-      "sha256": "767a8dc0741f8095e382ef2af020c50660955f70805288a2f3774f4d4a33fc56"
+      "bytes": 33379,
+      "sha256": "aba4f49774c2a63cdbbb7c3d46916c62cf7360499f2853771c542bef40cd92bf"
     },
     {
       "path": "games/phase-beast/index.html",
-      "bytes": 40434,
-      "sha256": "360ed8640cf7ebd5093d5f0c33b7bd3c0530895f09120fd7c232d5b89600d582"
+      "bytes": 40597,
+      "sha256": "64dda2109986062ef7fda1e0b27ed9e73db56baee75df8243deebd2d7a8c7e19"
     },
     {
       "path": "games/pig-impossible/index.html",
@@ -288,8 +418,8 @@
     },
     {
       "path": "games/arcade-ten/ghost-grid/index.html",
-      "bytes": 2043,
-      "sha256": "549dea0dc71a5b031a53856439d08ce00c38814d581c3793129cf6ed0c9e728b"
+      "bytes": 2206,
+      "sha256": "767128cfb8e03cd61edaeffd0dd2fa33f7bcef27be4e25eecda12942c55f84d7"
     },
     {
       "path": "games/arcade-ten/ghost-grid/thumbnail.svg",
@@ -298,8 +428,8 @@
     },
     {
       "path": "games/arcade-ten/gravity-flip/index.html",
-      "bytes": 2015,
-      "sha256": "4fd21eb243ddf5590b62aabc39cc40f1c59494fd6d228daef691f66b19094c3f"
+      "bytes": 2178,
+      "sha256": "605f629f770bd76d0249f3c154d602aca2785650e3bc15f015e11cc123bdfd5b"
     },
     {
       "path": "games/arcade-ten/gravity-flip/thumbnail.svg",
@@ -308,8 +438,8 @@
     },
     {
       "path": "games/arcade-ten/neon-drift/index.html",
-      "bytes": 2017,
-      "sha256": "701d831c83031280d13806e3bb0802d1ec03340a4ca91cc4305cc10fdf0d2d0d"
+      "bytes": 2180,
+      "sha256": "a0fe79f3c0ff13d76a3fe4b424ad4027f598a5a2622be6ec899a9fa3ac6b5118"
     },
     {
       "path": "games/arcade-ten/neon-drift/thumbnail.svg",
@@ -318,8 +448,8 @@
     },
     {
       "path": "games/arcade-ten/sky-stack/index.html",
-      "bytes": 2005,
-      "sha256": "bb4f44c8d19a1868f012e531631898198d85859030dfcd400abc8be1d616daec"
+      "bytes": 2168,
+      "sha256": "ca3233e4d001a8214b2a0cb3f85e53005b26cd30fb0297130779ca98922a079e"
     },
     {
       "path": "games/arcade-ten/sky-stack/thumbnail.svg",
@@ -328,8 +458,8 @@
     },
     {
       "path": "games/arcade-ten/orbit-switch/index.html",
-      "bytes": 1978,
-      "sha256": "6e56c04539678ac57999591fe1670d80d7bc357ac4e2decf6faa206c99378b1c"
+      "bytes": 2141,
+      "sha256": "1a925a2365b8d2b613c866de77758c33b1f07f41014e08489eb74ba23d5260d1"
     },
     {
       "path": "games/arcade-ten/orbit-switch/thumbnail.svg",
@@ -338,18 +468,18 @@
     },
     {
       "path": "games/food-rumble/index.html",
-      "bytes": 19892,
-      "sha256": "a5f548f44f0123911d047cc917bf994915641b8ef2499b239a98925b9318e610"
+      "bytes": 20055,
+      "sha256": "1873880fd1493dfbcf16519d0847249c98dc7d3ea0970cd212f0aced4b403c98"
     },
     {
       "path": "games/hand-beat/index.html",
-      "bytes": 45123,
-      "sha256": "70c5171f53f94ea3f095682bc27529314b7dfedf011ea82ebd2f9b46226a6316"
+      "bytes": 45286,
+      "sha256": "9c4a2b7f6f8ef4dbc742eb5c7773be91267c162a8d64936cede0a246b00309fa"
     },
     {
       "path": "games/discovery-room/index.html",
-      "bytes": 1341861,
-      "sha256": "56e5d968fdbdfe84a8022ab423b181a4d59d376aaf42e7a00d9296ee77671be5"
+      "bytes": 1342024,
+      "sha256": "92553844440f68c2aa9678d761a03fcd2355a45fc651fc653ec27a46d5104cc3"
     },
     {
       "path": "assets/discovery-room.svg",
@@ -358,8 +488,8 @@
     },
     {
       "path": "games/whisky-zukan/index.html",
-      "bytes": 21802,
-      "sha256": "7017c9a393dcff7418879af8b7c1e30fa342135a25d4799e400995249550b49d"
+      "bytes": 21965,
+      "sha256": "3753a468721c8d33ab531978e5fbf05192a6d15cfbe387810a80d88215fab506"
     },
     {
       "path": "assets/whisky-zukan.svg",
@@ -368,23 +498,23 @@
     },
     {
       "path": "games/kiku-practice/index.html",
-      "bytes": 6437,
-      "sha256": "5b7d434bcd1230cb6ac2ee4d2a6d154a7c8859544781dcf35cd7adfe193dc1e0"
+      "bytes": 6600,
+      "sha256": "4e872a5a6871fbd8dd33b9deb83365b94212077d031c05bebcba402c7eb38886"
     },
     {
       "path": "games/manager-step/index.html",
-      "bytes": 1351,
-      "sha256": "d940f34f41fd7e2774c4a37f8add34595fbcc081c1e9bafd5921f14dd2b6d448"
+      "bytes": 1514,
+      "sha256": "19462a461b383daab6394ec70e386666eba1212412b9951368f30f734f0e9e16"
     },
     {
       "path": "games/happiness-barometer/index.html",
-      "bytes": 3842,
-      "sha256": "7902b5c180bcaf6d125b94307098a5cc669b9dbce35e7d251ad41e09a9cb81a4"
+      "bytes": 4005,
+      "sha256": "8ab1a360d3a967e69d2d75161bb66b1d52cac6db2fe2c479444a30ba9334ea45"
     },
     {
       "path": "games/pose-motion-studio/index.html",
-      "bytes": 1897736,
-      "sha256": "35924cf3953505477cb438be5b0b1efa104cde99cc6cabd8e47eb2ae075506f6"
+      "bytes": 1897899,
+      "sha256": "050b134457ceb01d5aef2f1d2424284c529d0b2af184824b1343a41b8bac16a6"
     },
     {
       "path": "assets/pose-motion-studio.svg",
@@ -393,8 +523,8 @@
     },
     {
       "path": "games/wine-zukan/index.html",
-      "bytes": 20244,
-      "sha256": "740d844664bffd16a8990a6ed239fb8c26a442406201e3b09127fb547d4b7a67"
+      "bytes": 20407,
+      "sha256": "4d8b80bbe0fbe564874595045b57898cb53790532479164c06481c4398026c5b"
     },
     {
       "path": "assets/wine-zukan.svg",
@@ -403,8 +533,8 @@
     },
     {
       "path": "games/sake-zukan/index.html",
-      "bytes": 168701,
-      "sha256": "70bb71f3dfb91ae00beec3e95de55748eb751f4c0c32bb0db2eb803458af3cec"
+      "bytes": 168864,
+      "sha256": "47b49a8840552ec8d29e8efa8483184fdc1a05ec769e1ad8c966ed44f15caa67"
     },
     {
       "path": "assets/sake-zukan.svg",
@@ -423,28 +553,23 @@
     },
     {
       "path": "games/beat-beast-full/index.html",
-      "bytes": 6164,
-      "sha256": "91b7da147c64b7c06f69162bd35b2957a12a15e36988d59808a4eeb3c98a1385"
+      "bytes": 6327,
+      "sha256": "f9018c4cde7700df8bf84635c3bd5b3f45043d84b6435d5141b0e51e02e526c2"
     },
     {
       "path": "games/fight-story-full/index.html",
-      "bytes": 6279,
-      "sha256": "6560d0970009c5ad1b21a4ab71280bb0978fc5b7c54f9ef5017fbe09bb4ab983"
+      "bytes": 6442,
+      "sha256": "3482583f9be8d3fe4e3466ee42cb3dc5426cf4fbfc46c16a5d75806e9a62de0a"
     },
     {
       "path": "games/turbo-beast-full/index.html",
-      "bytes": 6512,
-      "sha256": "a71101226db33c5f0e8d6b86540410cd365d2744622a236466dae5004ab87c21"
+      "bytes": 6675,
+      "sha256": "e3df9769aabd97e051912244c99ed4023ac474f5e1e44ddcbac3868adf6fe808"
     },
     {
       "path": "games/pacpac-shark/index.html",
-      "bytes": 9869,
-      "sha256": "f3be301662e63e86601a7e2048765b29f8af4c5ad72fdd54b1a80f066a82ba0f"
-    },
-    {
-      "path": "games/nyanko-ninja/index.html",
-      "bytes": 8100,
-      "sha256": "020047cd157e87eaaacd55e35ddc9bca4194ba310985eb971b56d906e6eceffb"
+      "bytes": 10032,
+      "sha256": "e46c06f67eb0601650bd132a853845bb640666f1b927fe078357b0e6ef2c9328"
     },
     {
       "path": "games/nyanko-ninja/thumbnail.svg",
@@ -453,8 +578,8 @@
     },
     {
       "path": "games/wanwan-rescue/index.html",
-      "bytes": 8504,
-      "sha256": "09c40356b5f562ae51e76dfc054a608b527fd34846a7f9d411217e2bd735c422"
+      "bytes": 8667,
+      "sha256": "31c631999eb2dac9f3aa25ed2562b142ee40d308f54c69696d06bfec53f9993c"
     },
     {
       "path": "assets/wanwan-rescue.svg",
@@ -463,8 +588,8 @@
     },
     {
       "path": "games/gorilla-punch/index.html",
-      "bytes": 16245,
-      "sha256": "7ba5618cabec66131fe6f841bcc3e01f39a64b97c1c9a2d57b25e5cf84dad6e6"
+      "bytes": 16408,
+      "sha256": "1d07d949bd2e064b1eb2694684afc35fdca290b7ecdbddb50153f0e091f3c904"
     },
     {
       "path": "assets/gorilla-punch.svg",
@@ -473,8 +598,8 @@
     },
     {
       "path": "games/penguin-slider/index.html",
-      "bytes": 16282,
-      "sha256": "e7d1f8ef502307854d000df4591b9aa36ba41e7a9b94e7848bcaf83d616e3001"
+      "bytes": 16445,
+      "sha256": "18684b84184a34a90465e911ddeaf4e36c5dfa6cc027ed59689313c22288ca05"
     },
     {
       "path": "assets/penguin-slider.svg",
@@ -483,8 +608,8 @@
     },
     {
       "path": "games/usagi-jump/index.html",
-      "bytes": 8494,
-      "sha256": "5f36cb8052e3cc33394ce8eaf3ba5d5c703b11411cc0a4575b13e10e238e4fa6"
+      "bytes": 8657,
+      "sha256": "89e120a755fcfa35689390ecb4ffaf3464cbc92a68f60c72328faf000877b63a"
     },
     {
       "path": "assets/usagi-jump.svg",
@@ -493,8 +618,8 @@
     },
     {
       "path": "games/kani-kani-battle/index.html",
-      "bytes": 8536,
-      "sha256": "9b38be2b87e7a0d0886e528c63606afc507f132b33a20a93d0820289877c73f6"
+      "bytes": 8699,
+      "sha256": "78b7d67659ef19da342b862c2b42bfe215960fe53221ed36c5cea30050c93157"
     },
     {
       "path": "assets/kani-kani-battle.svg",
@@ -503,453 +628,453 @@
     },
     {
       "path": "games/octopus-panic/index.html",
-      "bytes": 14562,
-      "sha256": "1f50f86e64eb86359a96f338d1a48dcf01c6bce512b95a09d0a7284b78b629a8"
+      "bytes": 14725,
+      "sha256": "dacf712c7d93b815b3f442319628054c2d5ac6a5f514c5aacd145c8ca77044b5"
     },
     {
       "path": "games/hamster-escape/index.html",
-      "bytes": 15256,
-      "sha256": "3fb6f24c41289b3b64675e0c486165cdca5f612ee024b0c92d01ca26efc9f3c5"
+      "bytes": 15419,
+      "sha256": "99b60575354e14b8955fccfd266cd03fdb442d78b5f864bee5842f806bbd7928"
     },
     {
       "path": "games/croc-hunter/index.html",
-      "bytes": 10519,
-      "sha256": "8211fdbd8a310a0e00baeb06c31d7d29d2b2d9c934bec05339ec29b7ccc9361b"
+      "bytes": 10682,
+      "sha256": "9b16e4720330894ca0cbce0ff4c6786de9a555e0d36b91462c2045a620413340"
     },
     {
       "path": "games/dragon-baby/index.html",
-      "bytes": 10009,
-      "sha256": "bc7370aeb415d6ec0267d81e51c03fb594abd1491da4b3df9be3968d7ca6ccfc"
+      "bytes": 10172,
+      "sha256": "f0832eb0842dc3a3be8e487410b678ef5fe69920cbdf402d2d82052f30666c1f"
     },
     {
       "path": "games/turtle-turbo/index.html",
-      "bytes": 10370,
-      "sha256": "1ff4e097bbd7526803ca63b4d5013add5c1131af735ed6c6b10ad2d78b1b9e8c"
+      "bytes": 10533,
+      "sha256": "6cd0f6e1bceca541f5745c693e2e124da29a58c796525f2ce89e5b8f2b0d8342"
     },
     {
       "path": "games/giraffe-tower/index.html",
-      "bytes": 11426,
-      "sha256": "3d694af9f88f99bfab91c668e384786edb23fee54d059bc9b9e94e8dd97ebd0a"
+      "bytes": 11589,
+      "sha256": "1dbb69fe1c25d1015b846a758cd174622ee298dbac42110fda4fbedea23edc3a"
     },
     {
       "path": "games/animal-grand-prix/index.html",
-      "bytes": 10638,
-      "sha256": "e3fc0ad82d9a7876fac32e0fd127d4f875e40ebf381c49724df9631e64c215ad"
+      "bytes": 10801,
+      "sha256": "7f3c53cb44d5d453b8ce4ef89031d35162dfe787e5517bb51a81f11c208dee4f"
     },
     {
       "path": "games/rocket-cart/index.html",
-      "bytes": 10776,
-      "sha256": "515d76fe7b09ccbe078a2507c0b6f6cd9f858485ddf05513dde150a76e91f342"
+      "bytes": 10939,
+      "sha256": "9f2925538cb5e861fd58226c816f8b4218e7778095c6beffc6a6435e288afafe"
     },
     {
       "path": "games/drift-king/index.html",
-      "bytes": 11057,
-      "sha256": "4b6be95f6ae3388b8a8788de68520440868bfe5278768062750b4ad9479b3d99"
+      "bytes": 11220,
+      "sha256": "220008d9e7cbcb22496260503a662f9399af13a654014051e5b52eb3af82d05c"
     },
     {
       "path": "games/flying-kei-truck/index.html",
-      "bytes": 10556,
-      "sha256": "c04275a2e5deb02c6175d33b3bee55199496933937c603705713660053ed64ce"
+      "bytes": 10719,
+      "sha256": "e1483af642d968c4d5afe8cad854462c67b0a1cba135df594b41c7a74532d02b"
     },
     {
       "path": "games/bike-rush/index.html",
-      "bytes": 10908,
-      "sha256": "3f04923a733ad6bea9d0c1c53c8efd440e95216fa3287278579732a9adb1e2d7"
+      "bytes": 11071,
+      "sha256": "1e50b992c88f52abbc6120565593e3d26c47329a5368c3eb7a3771209818e48e"
     },
     {
       "path": "games/ufo-racer/index.html",
-      "bytes": 10636,
-      "sha256": "264ab81fe1d11c41c45600734995d7dc5c7e47fa9fa472dfbb9f1a8b432b5bab"
+      "bytes": 10799,
+      "sha256": "72cbacdc27d263a10683af05feb3c809470ef2da6cb14e20b0d5b041b14f862c"
     },
     {
       "path": "games/tank-panic/index.html",
-      "bytes": 10783,
-      "sha256": "959c3092d973b99c7af385f31a0cd8e71a4bd8c903059c73ed11b27e7349c007"
+      "bytes": 10946,
+      "sha256": "a541b07061fd1c07eb3df5daa46a90d047c0aaef84d3d4ae34e6d80959b767eb"
     },
     {
       "path": "games/monster-truck/index.html",
-      "bytes": 10304,
-      "sha256": "1f9f4f69ebcfb6751c7404e611d3278e59f847a73413bd85bd1db2f9bbbedabb"
+      "bytes": 10467,
+      "sha256": "ad0e392841436ed1ddb9bc8a8f949cd87c41f0994a9c0a2b177234436466e03e"
     },
     {
       "path": "games/jet-boat/index.html",
-      "bytes": 10369,
-      "sha256": "9f92478013a80052d1b6a46317f0a79affab025a1f725538125b2c5d62cd7cf9"
+      "bytes": 10532,
+      "sha256": "a4f86cc03c6880ae0e1d3933780ddd97ec75380e6f0b2ca43248e9f44c05b82a"
     },
     {
       "path": "games/time-travel-car/index.html",
-      "bytes": 10348,
-      "sha256": "08a3eed4b60a96adb7a1b0651e3ad4b18cc338d6313bd124e2058b0d77074f1d"
+      "bytes": 10511,
+      "sha256": "e5e98b392fcfe752cc5845f4ca75c89ddd727c7119ad761461771f79472dcf61"
     },
     {
       "path": "games/endless-highway/index.html",
-      "bytes": 10172,
-      "sha256": "393fcb7325b9892db586faae2855c1efef74067e5a422f5fe4e1c41f3a224d51"
+      "bytes": 10335,
+      "sha256": "83a8323c3f7c81357cbb9ae21f2ec5008b9783c4267c4c10eec1ebda36e526c6"
     },
     {
       "path": "games/robot-racer/index.html",
-      "bytes": 10300,
-      "sha256": "1988ae687a6fcec32a69fa24f53a6b7fdcf187b3d0994a62e20801d4f06474a7"
+      "bytes": 10463,
+      "sha256": "47e092a29c35114904f417acd75ec7871e450247fc6510b354664655db20c8e2"
     },
     {
       "path": "games/piano-hero/index.html",
-      "bytes": 9931,
-      "sha256": "0cd19a1fe26cea136940a68c58734e6d4b17e03406229e771c9d29309bbfa3eb"
+      "bytes": 10094,
+      "sha256": "915abe1e2fd153e38b90b720ab1219e7614d6fe72a61cd8ef962dbc3cd8acb78"
     },
     {
       "path": "games/drum-panic/index.html",
-      "bytes": 21491,
-      "sha256": "0b1af821b5a97640fa7d3d0322e0dc51e7e7c4e0b926f1eaeb1e6ecd72c71f64"
+      "bytes": 21654,
+      "sha256": "76b23db4d5e979a151217448431338aa470ffc63a2ccf8d891c622df9343a98c"
     },
     {
       "path": "games/karaoke-battle/index.html",
-      "bytes": 10179,
-      "sha256": "11a77de6c20256f133a60d8ad90455919a3f4269eaf7db3d9da1ba48182e8ff2"
+      "bytes": 10342,
+      "sha256": "fee1ae33fd9c8b29739ab0c290c91537b2d637ff7defa4598b8b6fccba50f186"
     },
     {
       "path": "games/dance-master/index.html",
-      "bytes": 9860,
-      "sha256": "ffa7daaf63944a48bfe693accd3c937a6597f11df349908c238551111526bf9a"
+      "bytes": 10023,
+      "sha256": "404eeb07cae0de277f234bd294432cc2630bd9b959f875e926f43017da0b1af4"
     },
     {
       "path": "games/dj-monster/index.html",
-      "bytes": 14962,
-      "sha256": "06a02868ccd829685dd634325c19f47ef0356767587d654da65adac39b999a6f"
+      "bytes": 15125,
+      "sha256": "99a5e07ffb8a64331364f9fa96c8fa9dcd6b38bd6c5e96e44ab068488275597e"
     },
     {
       "path": "games/rebuilt-34/index.html",
-      "bytes": 6809,
-      "sha256": "34c9b52d94dfe151266f65848fbab8fcb608ab60aabe8b851fcc4a1785ec442b"
+      "bytes": 6972,
+      "sha256": "bc301d9b25f9dc03ca5c72f532d533b8bc413813776ee04e2be383eaa1309c69"
     },
     {
       "path": "games/rhythm-ninja/index.html",
-      "bytes": 14784,
-      "sha256": "70d128639794d88e0d3e3999a5fc405c569ffe3b79841486b8acce11e30bd00b"
+      "bytes": 14947,
+      "sha256": "affa57f6c2e58a01b49a436df803dfaa71eaa0b7326b445025ddea1c05468b0b"
     },
     {
       "path": "games/rebuilt-36/index.html",
-      "bytes": 6818,
-      "sha256": "ef9f5367c47eed8a0124bdce0f66cf0966824c028ed001eb9656030c367d7543"
+      "bytes": 6981,
+      "sha256": "ded5559cbdb919f3a32a6dde7b98431a54ce79bc4d4061a54c5095210ff50fa6"
     },
     {
       "path": "games/rebuilt-37/index.html",
-      "bytes": 6818,
-      "sha256": "4fc153f71e609301b8633014adabf150cc8aa3b2e38e0f0f35d1bc3b631de1e8"
+      "bytes": 6981,
+      "sha256": "8bb1c341462eaf9980747b623b4853810631dab9c045bc816f10f82547748cb1"
     },
     {
       "path": "games/rebuilt-38/index.html",
-      "bytes": 6836,
-      "sha256": "ee63dffd2b90f675485d92b82f9a51f770540f07dd72a7d343c677db9396980a"
+      "bytes": 6999,
+      "sha256": "3cdc8db5d4dc0e7f675f64b0e66e1a5975e90a343077d82d33def7cd7af5c8b6"
     },
     {
       "path": "games/beat-runner/index.html",
-      "bytes": 10292,
-      "sha256": "75ed405d846679da4e3751af9d682b4bdd374b93d9939e875108168ab3c172f0"
+      "bytes": 10455,
+      "sha256": "6a59122c3c7dbf4f5469e22043092d6aed06eb5ee3eda5566a0b8622de588d45"
     },
     {
       "path": "games/rebuilt-40/index.html",
-      "bytes": 6830,
-      "sha256": "77bc0b388785b0c43a265a8db5d17b0d5977bed5f33ad033caf5ee83107847c8"
+      "bytes": 6993,
+      "sha256": "1ccab3a101c49c1caeb53626871f685476e04b3deac6237ab301c81e8acc2f6e"
     },
     {
       "path": "games/samurai-zero/index.html",
-      "bytes": 10249,
-      "sha256": "b85847d8075a767751002f2704fa5a7306d6a0a5a3d1aee614f72189685cb882"
+      "bytes": 10412,
+      "sha256": "8d8c5f3626857f8f998f270f0f48ef877275551ec93018d06c110293aa840a0c"
     },
     {
       "path": "games/robot-fight/index.html",
-      "bytes": 10290,
-      "sha256": "c82a800ed3ac4e6c09b36e86a993a76cdde6c90788cb101acf670c63aa1bf7e6"
+      "bytes": 10453,
+      "sha256": "f246a0c1c860b8c9f4ba8f57f542f31767402dc17c0b3fd3fc4ec05edc32bd43"
     },
     {
       "path": "games/magical-girl-wars/index.html",
-      "bytes": 10254,
-      "sha256": "78c0cf1d3ac827ac05b65ae4d5bdd42fd840b57debeab8285467babd1e974375"
+      "bytes": 10417,
+      "sha256": "6efca96b2bb58c9d4c7cc85f3dd999d5cc1555cb68b6c2460ea0cb67ee1ae2c1"
     },
     {
       "path": "games/dino-battle/index.html",
-      "bytes": 10254,
-      "sha256": "1fccd7e9b0fe81453ddd0670d4f4866775b9b9b02aaf078080de79fe18f6b7dc"
+      "bytes": 10417,
+      "sha256": "cd2fd13385a10bdcbcc442345aac8a060ac95b8408d8494e2b2af5d1641c4cdf"
     },
     {
       "path": "games/stick-fight/index.html",
-      "bytes": 9872,
-      "sha256": "04df71587e5eb494132cabbc010500b4fe86cbeffca7b93f714597be7ef0e099"
+      "bytes": 10035,
+      "sha256": "9816092f6418e8f77ee45c3043c7a0638d37d33008d34198f2418ebeebf5709d"
     },
     {
       "path": "games/ninja-battle-royale/index.html",
-      "bytes": 9896,
-      "sha256": "ea59241bcaee0b063a54eb124c96b082342ece0e8d7117be386db22bd89930a9"
+      "bytes": 10059,
+      "sha256": "f1b69be0c789ea8b567b5d05de718932c8903a767633fa7feb9002b4f15d0220"
     },
     {
       "path": "games/zombie-crash/index.html",
-      "bytes": 9819,
-      "sha256": "4718322b6f1b1e3d6430b63612eef86c615acb1b35f6d007b68f5641f14c8072"
+      "bytes": 9982,
+      "sha256": "71c41031fed5b82006092db3356f48848cd91875b59e0c60ba64480bcbd17268"
     },
     {
       "path": "games/kaiju-battle/index.html",
-      "bytes": 9860,
-      "sha256": "1ed59ddccb51e51c63071486dcdd12cfb838151115e2d4824caf4a971cea2899"
+      "bytes": 10023,
+      "sha256": "57c85a3a3ed7290748fedc27513d3aed4e7ee9cc9d69610aa36e6ee678489a50"
     },
     {
       "path": "games/hero-arena/index.html",
-      "bytes": 9884,
-      "sha256": "0ee48d951960dde86ebef15856d43392adc939d25778ee434d535be13556b8ab"
+      "bytes": 10047,
+      "sha256": "6feafdfa0a6c7a4045a76d92b267c07d7ecff567c7ea8d50a6a37b2bd6f186c1"
     },
     {
       "path": "games/sword-shield-kingdom/index.html",
-      "bytes": 9869,
-      "sha256": "9cda5e429a55bccd56c9e69830762055ad33236ebec87a8762d59a53a61ae5d9"
+      "bytes": 10032,
+      "sha256": "e9985ea9580d5c3f70b00ad1ec8f9698f32cc9dfb6d49d7ec45f8b689caf7e24"
     },
     {
       "path": "games/pirate-battle/index.html",
-      "bytes": 9875,
-      "sha256": "e76610f50c1a6582bc5a454d9bec8fd197448000b2cdefacd17d9742d5787981"
+      "bytes": 10038,
+      "sha256": "45c7d6c4b84dc8d259b18d30a98dbabe0561670e69b844449bb4c5fa53fce6d4"
     },
     {
       "path": "games/boss-rush-100/index.html",
-      "bytes": 9874,
-      "sha256": "32fc611cb0774e41c79b748dac02666b929c87278fad3944c67175be5f1632d0"
+      "bytes": 10037,
+      "sha256": "96ae34a1ea795be87e56e374093f6e9ed13b8e37a7005ecee977d28e1ed27a3b"
     },
     {
       "path": "games/color-block/index.html",
-      "bytes": 9673,
-      "sha256": "66d1c9cddf7d44d318b9fc14c65d7a8f3250f69ecfc87f6fc52dba6885b7f5ea"
+      "bytes": 9836,
+      "sha256": "38c7d2b22d6c436b3d0b8442450323efca65fc43540325de2d82d3fa06ca9fb7"
     },
     {
       "path": "games/number-tower/index.html",
-      "bytes": 9048,
-      "sha256": "07d2189bbb1d143767a34a0d1a8bb2af6b9c30f294557b93385d6575292244c8"
+      "bytes": 9211,
+      "sha256": "5668d7d5e4d6f8766a60d098e9b28c025e0cf3970475adb96816dc99f0ce48d0"
     },
     {
       "path": "games/escape-mystery/index.html",
-      "bytes": 10069,
-      "sha256": "26612bd0d2d0b76d5745414fcad182241986d092cee922daad9adb30f583b44b"
+      "bytes": 10232,
+      "sha256": "57a809ff9229916fecd0e4e1b13d2fd1e385e242fd2c66b7b7d994c2c11241cc"
     },
     {
       "path": "games/maze-crafter/index.html",
-      "bytes": 9200,
-      "sha256": "c34839d28ca3f2dd77c4f688784b459c034a6a8d9ba59595e461c25129182bf0"
+      "bytes": 9363,
+      "sha256": "9cb67bfbe8c4a0d68780b06f423bd3bce417f1ebf8a5c813d3ca1442768fe859"
     },
     {
       "path": "games/kanji-samurai/index.html",
-      "bytes": 9416,
-      "sha256": "cb96549ac800a3c3b7c7814c0dc15b399099a3de1c2078f6acbd4203fc845f24"
+      "bytes": 9579,
+      "sha256": "6c8aaec4bd008676484ec9f99691555ef2a95daeff3e7026719b64b7415c9de7"
     },
     {
       "path": "games/memory-doors/index.html",
-      "bytes": 10183,
-      "sha256": "05fd025f9a3a4b793c8c2678eb07c740e616698c61b2e82485025e1eaf84aecd"
+      "bytes": 10346,
+      "sha256": "1c7cc1b5169208a052c41500c0f8f4cf7f3cb5a5e18ef8d6da6de84215367edf"
     },
     {
       "path": "games/shadow-match/index.html",
-      "bytes": 9392,
-      "sha256": "8e17cf70f4652aa739afc9b48fb3067fccea30689ee3da3d97bf00841729291d"
+      "bytes": 9555,
+      "sha256": "30c3a8ddc9c386291c2669b3f5420e3eb3aafff6a3a008db45511717bd50b73b"
     },
     {
       "path": "games/gravity-puzzle/index.html",
-      "bytes": 9212,
-      "sha256": "889f8c290078a849f38e3b1e29c6b937a9087ec582679f491321df9d9aa0fe53"
+      "bytes": 9375,
+      "sha256": "a465c3bef83ded56d09db3fd41cbcd1791abd6a12cb53cd944b39a0373c8e0b6"
     },
     {
       "path": "games/expanded/61/index.html",
-      "bytes": 13376,
-      "sha256": "4f440909ccc695fe988e4c3ed38977513bd6501ab9d2171b33c4137d0c33f2fe"
+      "bytes": 13539,
+      "sha256": "16b37c597298974a425852d1108e996c804d40e8882a8a46fefb60503fbb1673"
     },
     {
       "path": "games/emoji-quiz/index.html",
-      "bytes": 9416,
-      "sha256": "3e6c11a67cda284915fd06c9755eade50d60516a9dffe03ebda7a4dc8a76e1ab"
+      "bytes": 9579,
+      "sha256": "0ef6d4cc12edcdd812222813a355128cceb2e582b47257e295bb7b53c2121b83"
     },
     {
       "path": "games/word-crush/index.html",
-      "bytes": 9440,
-      "sha256": "0e1705baacb3b235a0e230af075895526f57e3ceb76ff8982a7f589af49196a9"
+      "bytes": 9603,
+      "sha256": "388fa949aa5136803f9f4ae8bd605a8de7eee7dd8c41f2fd4020f6b086da4465"
     },
     {
       "path": "games/pipe-master/index.html",
-      "bytes": 9161,
-      "sha256": "b20ab94dbd9edca29a0d3135da99620f1e57cda91b102fba31ee679d5aad0ddc"
+      "bytes": 9324,
+      "sha256": "b161e925e30696ead2b172f2a2e5a70079f8fbc8990aca1a75265ec27a8c5d39"
     },
     {
       "path": "games/rebuilt-65/index.html",
-      "bytes": 6832,
-      "sha256": "683e90f93f2e8ee222eaec2d161ac66c2c50aa6e0aa242b2ac058c0140a082c0"
+      "bytes": 6995,
+      "sha256": "5ef784f0484092fe7da16ab5797470345efa0109996aed7ab69250ca1bafa697"
     },
     {
       "path": "games/rebuilt-66/index.html",
-      "bytes": 6823,
-      "sha256": "0a9dbbe9a0a508d93511292465e227ab81d6b3d229c0e8b96c9c7f4402beffe8"
+      "bytes": 6986,
+      "sha256": "0ba5b367b5f8a72d565afa883f794551b8aa574e20f591b4acc3b1182c03a01b"
     },
     {
       "path": "games/rebuilt-67/index.html",
-      "bytes": 6850,
-      "sha256": "28387bbe2fa8a75ea80a3acd152a122e52873fb1352fd65598fc31e812cf3a98"
+      "bytes": 7013,
+      "sha256": "a12d61c1c29d8dd85f73d4916942edb12b8889055a93f1d76cceda067dbd3792"
     },
     {
       "path": "games/rebuilt-68/index.html",
-      "bytes": 6841,
-      "sha256": "8007a7d4fd56a9892401311d5a34c97c03bb76190d39b3631626738e54be019d"
+      "bytes": 7004,
+      "sha256": "32069142653b7eb9de153d0d87ef55fb7690dc89a6f6ca027ef70c246f3f09ba"
     },
     {
       "path": "games/rebuilt-69/index.html",
-      "bytes": 6850,
-      "sha256": "b4ae062095aca25825e751f6a8b1e68e1318eabe992e8a698538c066184c25c5"
+      "bytes": 7013,
+      "sha256": "3887531563578bf8937393030cca864eab4b18799d25f40478a238cab146d318"
     },
     {
       "path": "games/rebuilt-70/index.html",
-      "bytes": 6841,
-      "sha256": "728f26f9155efbfdc9604bc272d70384b2a9cdb8d2bb089925968de687678d27"
+      "bytes": 7004,
+      "sha256": "08da82404524c9ff6ad5a08661a8bb67b2db79a5bc060cda9ca67eb9a792130f"
     },
     {
       "path": "games/rebuilt-71/index.html",
-      "bytes": 6838,
-      "sha256": "3c00550d1ec2738e9a706364b765f872633b0f3b5ca32e8de6091d782dbd72e7"
+      "bytes": 7001,
+      "sha256": "883f526113b0d96333cfda9b7f107c68cdab6a18a18ed768e19406efe160e739"
     },
     {
       "path": "games/rebuilt-72/index.html",
-      "bytes": 6823,
-      "sha256": "e958eb4d21b8d96173bcde376f78712660f1221c9446a55a5efed61e5bac3574"
+      "bytes": 6986,
+      "sha256": "e230457ac385af4b3dac30068a7d10fad3a648473c705085332d8f31b8ddda01"
     },
     {
       "path": "games/rebuilt-73/index.html",
-      "bytes": 6877,
-      "sha256": "e9ffa5b2394d35568ca4ae76bf136eb6050c9229b746ad895b75cddf893fb3b5"
+      "bytes": 7040,
+      "sha256": "1970fd693971b9ef5bc7cc0dec751c81254065f533b5372f6b133484cc21d57d"
     },
     {
       "path": "games/rebuilt-74/index.html",
-      "bytes": 6850,
-      "sha256": "f16c01c1dd8d86b5abab5e3d682584309cca991bb9151004e7e12cea9420bc08"
+      "bytes": 7013,
+      "sha256": "ab5d535d9402ae5b078d86cdf17dac6510e0f91a59441d1caf0035aa16cb84b7"
     },
     {
       "path": "games/rebuilt-75/index.html",
-      "bytes": 6838,
-      "sha256": "4f5a4afb127c9bbd819da7a23c637843279a678db99d7eb12a0b3795756dbd21"
+      "bytes": 7001,
+      "sha256": "b41ea1c03ac34a55d1f6c0c718c1251be1de7893e4235ca00ecce0df60d6a28f"
     },
     {
       "path": "games/rebuilt-76/index.html",
-      "bytes": 6850,
-      "sha256": "d5a56bea11fac4e401f26837892388e2b4ee8b4b96f598bec327d9a5515fa5cd"
+      "bytes": 7013,
+      "sha256": "29c16a5e85ae001233f11a7005cac0355c5317e6b81c60318a64e4572d5838e6"
     },
     {
       "path": "games/rebuilt-77/index.html",
-      "bytes": 6867,
-      "sha256": "24814372673105c0735238c93e59439cce9959db7c770aa20e1c2bee38daa80f"
+      "bytes": 7030,
+      "sha256": "33a009d7b9602dbfd430c221961c43d58176922ac38d56a441af6204e967b97a"
     },
     {
       "path": "games/rebuilt-78/index.html",
-      "bytes": 6884,
-      "sha256": "dde5b74c74cafd54e10a0d1ae6a65480b9a2e1bf75bd21ad447629d87b6d849e"
+      "bytes": 7047,
+      "sha256": "3423c4149a2b086afc542fbde7c909bb8b5f7740f7c0bf8484f34f20b48ecef7"
     },
     {
       "path": "games/rebuilt-79/index.html",
-      "bytes": 6867,
-      "sha256": "73f5e60d3bf569d197b5a5606d29c263288934b9a99f6e7bfee1f8c0a4c63ca4"
+      "bytes": 7030,
+      "sha256": "9e412a47222e5eeb3d7b7dba2fe5956a295d49ef5a43c883c258f395c1c826fd"
     },
     {
       "path": "games/rebuilt-80/index.html",
-      "bytes": 6885,
-      "sha256": "93feba31813b2c3d690afe5238a4ed5bf15bf8d2b3f904c2dbc47a439a25352c"
+      "bytes": 7048,
+      "sha256": "81f224582741b9e9ee5795da1ae50ecd7809deb0ef54f63c7378fd4183f2a444"
     },
     {
       "path": "games/rebuilt-81/index.html",
-      "bytes": 6851,
-      "sha256": "2f34b5f72d19d41bd42a33b6a851068809d27d0cb5278a86af8f18170dbc1a9f"
+      "bytes": 7014,
+      "sha256": "61b826eb2ece725245e7edbadb743078d0ecadb6f6f3b3042e2d933919c26877"
     },
     {
       "path": "games/rebuilt-82/index.html",
-      "bytes": 6876,
-      "sha256": "0352db6d9ebb85f3dd1b2d460592e3cc6ceda96136e712fe40d1b7cfc9858a99"
+      "bytes": 7039,
+      "sha256": "6f5b95d771201915658867832c490435f98f89aa02bd77aaad825937aee36e30"
     },
     {
       "path": "games/rebuilt-83/index.html",
-      "bytes": 6858,
-      "sha256": "8e23dc29fae332ce5077c4a29d57840399c1a0a39d3e1284d6a255ee267ce21b"
+      "bytes": 7021,
+      "sha256": "ece39fc162105506fda3144be9a9881db3c2776c18210ca8304fca6cd1a22bef"
     },
     {
       "path": "games/rebuilt-84/index.html",
-      "bytes": 6867,
-      "sha256": "2756ae5ef77366e194230aecbbcdd6f25d06688d6d23a7e93dbb33c478e0060e"
+      "bytes": 7030,
+      "sha256": "f3127e5b668d9a0e7baa6a64ac2dd1c74dddd179edcf72eff4e2323a162471a9"
     },
     {
       "path": "games/rebuilt-85/index.html",
-      "bytes": 6867,
-      "sha256": "465f83e018fb26bcde215c2ae3ebddf64b05efc95910b0c98423e81bdfce8fa0"
+      "bytes": 7030,
+      "sha256": "4a5a6854bb48a0c6a69e577cf66d0b4c9bac6deae67cfebef128bbcbc45b050f"
     },
     {
       "path": "games/rebuilt-86/index.html",
-      "bytes": 6867,
-      "sha256": "9e883d191f74f3bef8bfa5c8153a861980f82b118548c13e2f1b5274f7147ee7"
+      "bytes": 7030,
+      "sha256": "fe63c5aa0179b40a41216aa5198039d7c21d75f85e569a0f15dea426ae058a39"
     },
     {
       "path": "games/rebuilt-87/index.html",
-      "bytes": 6856,
-      "sha256": "ddce373584f4b3a6cb11c908fd9b80f644764724856a394d20525d2eb54f4e2e"
+      "bytes": 7019,
+      "sha256": "c7b9aab4dc0ca28293423e045feb896bbafd1e693279b53f25b3286970bf3a38"
     },
     {
       "path": "games/rebuilt-88/index.html",
-      "bytes": 6138,
-      "sha256": "bbf3427de610a680310c3021fc2ff78a45f09f6163f880fac3801c469c3b6c6a"
+      "bytes": 6301,
+      "sha256": "3de907479ca3ff8c25b3a26843082204c1eee2b29d6104cb5331218db794c0d6"
     },
     {
       "path": "games/rebuilt-89/index.html",
-      "bytes": 5964,
-      "sha256": "db19ec9cdd3ecd916a06e2693f22a910b83fe68997f9912cc9afcffba05cbce5"
+      "bytes": 6127,
+      "sha256": "495871b24ff0a2d2e42fb885e90a26def0f8e52d681bce74ad5b5327a53b1b3c"
     },
     {
       "path": "games/rebuilt-90/index.html",
-      "bytes": 5996,
-      "sha256": "eed199030a53d2d9d0567aa6524effc0a8f5f518f4bdfc8a6ebf9572acc53ce0"
+      "bytes": 6159,
+      "sha256": "a61666351a13b8e79fc04199f57cd0ad864316044f7af95813f57928557e30fd"
     },
     {
       "path": "games/rebuilt-91/index.html",
-      "bytes": 5948,
-      "sha256": "d19a6e4c712c57639f05dcb84c6675a429cd1c236ffdcaa27200135565a3a9d5"
+      "bytes": 6111,
+      "sha256": "3f2907630e3fb5b11518aca0b337f33b795fc0353c4a8fac6df522df0b80e518"
     },
     {
       "path": "games/rebuilt-92/index.html",
-      "bytes": 5987,
-      "sha256": "02e58e90cca599a229d3969d7b896a8c1c49b08ffeb83a4fb0b476b8e5f6889a"
+      "bytes": 6150,
+      "sha256": "bed04dd163c1153c6b23005b72c877e9d404d0d1c207b514f56e05e9280a1505"
     },
     {
       "path": "games/rebuilt-93/index.html",
-      "bytes": 5962,
-      "sha256": "8b1e03c598b1c50de27a81637053f30803111994352c5bd6e2cabc5d326f3761"
+      "bytes": 6125,
+      "sha256": "e32fc8e4927c8297c2a4a79c3b2b2bc45637d4c5b49ca68473651031be80ff56"
     },
     {
       "path": "games/rebuilt-94/index.html",
-      "bytes": 5959,
-      "sha256": "d02b26c272629e43a711a3e0a0cd14cc7e510ed203dd93480f50e9d55ac7dca1"
+      "bytes": 6122,
+      "sha256": "7347c0b4d80b765b0421195289e7818de018bd8fbddf5b92b9f13682ca03d4c8"
     },
     {
       "path": "games/rebuilt-95/index.html",
-      "bytes": 5984,
-      "sha256": "cb792d018dc7f3096adf0278038b43868677aaedfcd50074ec3deb888402553b"
+      "bytes": 6147,
+      "sha256": "c8944f914b46d919d1519517b04a93f9c8522d37ecf50c0642bc9d701b3af4a1"
     },
     {
       "path": "games/rebuilt-96/index.html",
-      "bytes": 5960,
-      "sha256": "f759195dd6c301f526f97e5de3f29905a76fc0fe0d0ae5bf4742f694a8a9cb31"
+      "bytes": 6123,
+      "sha256": "ae46fd4f088cfcb8d9a6c90947a393762d72a5ccff730742250a10a52d3687b9"
     },
     {
       "path": "games/rebuilt-97/index.html",
-      "bytes": 5972,
-      "sha256": "d6501f836d4a6c9233afc47f794bc6cde7bf4c2d115cc8a74011c50dff12e3ff"
+      "bytes": 6135,
+      "sha256": "b20404299813af5e3cd99fd6279283994f0453ee896cfb8c8953fde64a524045"
     },
     {
       "path": "games/rebuilt-98/index.html",
-      "bytes": 5984,
-      "sha256": "72f6771ab7bd640de1d48ef9d19b17b323a8e10c4a73fb740b854c0b7d58dabd"
+      "bytes": 6147,
+      "sha256": "e9439e80a488d2d8fba2d766c5c5aa2703e645db906f0fe4393c86ba428a1e8d"
     },
     {
       "path": "games/rebuilt-99/index.html",
-      "bytes": 5944,
-      "sha256": "0728617d505fbaa8b20cb003dc92b273e9de203eeec1c08d93c1be3e8bb32caf"
+      "bytes": 6107,
+      "sha256": "ec468d276eb63b2e73df0fc8e223bb2c3ee802d124767f592b7fcf8e0f881b6c"
     },
     {
       "path": "games/rebuilt-100/index.html",
-      "bytes": 5962,
-      "sha256": "2e3ea3d84654a85fa1a801038591c06cdac71930725c9da6a630852613f52b65"
+      "bytes": 6125,
+      "sha256": "e1a64fa88a8bbf2253435b1079868d01d7ea1b5db7784cb0f63fbf0bc91d3e9e"
     },
     {
       "path": "assets/neon-duel.svg",
@@ -973,23 +1098,18 @@
     },
     {
       "path": "coorde-v7/index.html",
-      "bytes": 132880,
-      "sha256": "61192805baf566a21bcda2841e3b2ce5992e96aa5790c7f54e603576442c99dc"
+      "bytes": 133043,
+      "sha256": "533d9a5c0e81ea59a73b23c6a6d9266a7dfe08de4b5142114448cd80fc3529e1"
     },
     {
       "path": "women-looks/index.html",
-      "bytes": 28238,
-      "sha256": "33ba1bd26bfd3873d8e50a9d70c00f7b10d66b40814535369e5e18423629ee01"
-    },
-    {
-      "path": "look-match/index.html",
-      "bytes": 793585,
-      "sha256": "7f632aa9e244aa8d9207423c1157ecc846e58c7bf1354798eb5e7957cc311d09"
+      "bytes": 28401,
+      "sha256": "a806c5708b3603c6391dd54738624147a790db9bd65712e72478b6f5d1234f95"
     },
     {
       "path": "look-match-men/index.html",
-      "bytes": 63695,
-      "sha256": "5602eab3a0f05b886e5863cf5c175bfbdd1b8a4b36b4bdea117bdfd5b8999ed5"
+      "bytes": 63858,
+      "sha256": "e562e37ad039980ec4bac2c3821cba1264ac86cf96b52a8eb1e8c093e51f4756"
     },
     {
       "path": "assets/look-match-men.svg",
@@ -1000,6 +1120,16 @@
       "path": "coorde-v8/affiliate.js",
       "bytes": 3063,
       "sha256": "e0a03dd1d889b4a60c5931b1362f03573cdbf0c0386abda3d1162fb5d13d1c91"
+    },
+    {
+      "path": "look-match/style.css",
+      "bytes": 13399,
+      "sha256": "ae4834521a76913d79d58414026952cc7055ecc0203a8ac422a7604fba16af68"
+    },
+    {
+      "path": "look-match/app.js",
+      "bytes": 34936,
+      "sha256": "bfde1dab7f8e86f4894f41ee9ac93777809bf061d44d845919f5de8d880adf5e"
     },
     {
       "path": "assets/play-track.js",
@@ -1023,13 +1153,8 @@
     },
     {
       "path": "games/hand-beat/sing.html",
-      "bytes": 36268,
-      "sha256": "397805518cabbe32fbc82f58608505e78ff970a694e0a5f0acaa48e2488d001c"
-    },
-    {
-      "path": "games/nyanko-ninja/game.js",
-      "bytes": 14950,
-      "sha256": "3e9a130a1dff0a1d0ed63b3f1389a038eb80bc8c8522d26fb0e74e57fe7e49b5"
+      "bytes": 36431,
+      "sha256": "a46dfcbf46d6f410023992af6ab5239060982255825f0f35480e4b0b77320c13"
     },
     {
       "path": "games/animal-batch-02/engine.js",
@@ -1042,9 +1167,14 @@
       "sha256": "ef1340990d318c6965be33182da41e7356deec86c9add4f4ad25e8ca5d0a6ffa"
     },
     {
+      "path": "look-match/rakuten-moncler-original.html",
+      "bytes": 3778,
+      "sha256": "886aa778f6d66a775a5c84fda543c2b57e11cc4e0b236a4194e3e68df28c5ef4"
+    },
+    {
       "path": "games/hand-beat/index.html",
-      "bytes": 45123,
-      "sha256": "70c5171f53f94ea3f095682bc27529314b7dfedf011ea82ebd2f9b46226a6316"
+      "bytes": 45286,
+      "sha256": "9c4a2b7f6f8ef4dbc742eb5c7773be91267c162a8d64936cede0a246b00309fa"
     }
   ],
   "failed": [
@@ -1083,6 +1213,10 @@
     {
       "url": "https://game-bank-100.vercel.app/privacy.html",
       "status": 404
+    },
+    {
+      "url": "https://game-bank-100.vercel.app/games/nyanko-ninja/index.html",
+      "status": "<urlopen error [Errno 104] Connection reset by peer>"
     },
     {
       "url": "https://game-bank-100.vercel.app/assets/women-looks.svg",
@@ -1246,10 +1380,6 @@
     },
     {
       "url": "https://game-bank-100.vercel.app/games/wine-zukan/app.js",
-      "status": 404
-    },
-    {
-      "url": "https://game-bank-100.vercel.app/look-match/catalog.sample.json",
       "status": 404
     },
     {
