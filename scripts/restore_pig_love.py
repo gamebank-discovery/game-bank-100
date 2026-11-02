@@ -49,7 +49,7 @@ def restore_pig_love(root: Path, dest: Path | None = None) -> list[Path]:
     index = payload["index.html"].decode("utf-8")
     index, replacements = re.subn(
         r'\./pig\.js\?v=[^"]+',
-        './pig.js?v=20261101-loveplay-cloudflare-v2',
+        './pig.js?v=20261102-arcade-cloudflare-v4',
         index,
         count=1
     )
