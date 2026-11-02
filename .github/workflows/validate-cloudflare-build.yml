@@ -1,0 +1,46 @@
+name: Validate Cloudflare GAME BANK build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public-mirror/**'
+      - 'scripts/**'
+      - 'monetization/**'
+      - '.github/workflows/validate-cloudflare-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Build Cloudflare Pages static output
+        run: python3 scripts/build_cloudflare.py --source public-mirror --output dist
+      - name: Verify KEIBA EDGE PRO v6 and existing GAME BANK
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          output=Path('dist')
+          html=(output/'index.html').read_text(encoding='utf-8')
+          game=(output/'games/keiba-edge-pro/index.html').read_text(encoding='utf-8')
+          games=json.loads((output/'data/games.json').read_text(encoding='utf-8'))
+          assert len(games)>=164, 'Existing catalog unexpectedly incomplete'
+          links=[x for x in games if x.get('id')==163 and x.get('url')=='/games/keiba-edge-pro/index.html']
+          assert len(links)==1, 'KEIBA EDGE PRO catalog entry missing or duplicated'
+          assert games[0].get('id')==163, 'KEIBA EDGE PRO not featured first'
+          assert html.count('data-game-id="163"')==1, 'Homepage game card missing or duplicated'
+          assert 'KEIBA EDGE PRO' in game and 'ダービー物語' in game, 'Wrong game build'
+          assert (output/'games/keiba-edge-pro/cover.svg').stat().st_size>100, 'Game artwork missing'
+          assert len(game)>100000, 'Game content truncated'
+          print('PASS: KEIBA EDGE PRO v6 and',len(games),'catalog entries packaged for Cloudflare Pages')
+          PY
