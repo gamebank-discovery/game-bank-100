@@ -1,0 +1,119 @@
+name: Publish PIG JUMP on Cloudflare Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-pig-cloudflare.yml'
+      - 'scripts/patch_pig_fun.py'
+      - 'scripts/patch_pig_course.py'
+      - 'scripts/build_cloudflare.py'
+      - 'public-mirror/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gamebank-cloudflare-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Build and validate pig game
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/build_cloudflare.py scripts/patch_pig_course.py scripts/patch_pig_fun.py
+          python3 scripts/build_cloudflare.py
+          node --check dist/games/pig-jump-evolution/pig.js
+          node --check dist/games/pig-jump-evolution/engine.js
+          python3 - <<'PY'
+          from pathlib import Path
+          js=Path('dist/games/pig-jump-evolution/pig.js').read_text()
+          for marker in ('__PIG_LOVE_PLAY_V2__','__PIG_COURSE_GOAL_V3__','__PIG_ARCADE_FUN_V1__','COURSE_MAX=1000'):
+              assert marker in js,marker
+          assert Path('dist/index.html').is_file()
+          print('PASS: PIG JUMP + LOVE + 5 worlds + arcade')
+          PY
+      - name: Find the already configured Cloudflare Pages project
+        id: target
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PREFERRED_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "::error::Missing GitHub Secrets CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID; upload not attempted."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --retry 2 \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects?per_page=100" > /tmp/cf-projects.json
+          python3 - <<'PY'
+          import json,os
+          data=json.load(open('/tmp/cf-projects.json'))
+          if not data.get('success'):raise SystemExit('Cloudflare Pages API request failed')
+          projects=data.get('result') or []
+          preferred=os.environ.get('PREFERRED_PROJECT','').strip()
+          if preferred:
+              found=[p for p in projects if p.get('name')==preferred]
+          else:
+              linked=[p for p in projects if ((p.get('source') or {}).get('config') or {}).get('repo_name')=='game-bank-100']
+              if len(linked)==1:found=linked
+              else:
+                  expected={'game-bank-100next','game-bank-100','game-bank-100-next','gamebank-discovery','pig-jump-evolution'}
+                  found=[p for p in projects if p.get('name','').lower() in expected]
+          if len(found)!=1:
+              raise SystemExit('Could not safely choose exactly one existing GAME BANK Pages project; set repo variable CLOUDFLARE_PAGES_PROJECT to the exact name')
+          project=found[0]['name']
+          print('Selected existing Pages project:',project)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('project='+project+'\n')
+          PY
+      - name: Deploy to Cloudflare Pages (production)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_PROJECT: ${{ steps.target.outputs.project }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy dist \
+            --project-name "$PAGES_PROJECT" \
+            --branch main \
+            --commit-hash "$GITHUB_SHA" \
+            --commit-message "PIG JUMP five worlds and arcade" | tee /tmp/pages-deploy.log
+      - name: Verify public game files
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_PROJECT: ${{ steps.target.outputs.project }}
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/$PAGES_PROJECT" > /tmp/cf-deployed-project.json
+          SUBDOMAIN=$(python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/cf-deployed-project.json'))['result']
+          print(d.get('subdomain') or (d['name']+'.pages.dev'))
+          PY
+          )
+          SUBDOMAIN=$(printf '%s' "$SUBDOMAIN" | sed 's|^https://||;s|/$||')
+          echo "Checking Cloudflare at $SUBDOMAIN"
+          TEST_URL="https://$SUBDOMAIN/games/pig-jump-evolution/pig.js?sha=$GITHUB_SHA"
+          for attempt in $(seq 1 10); do
+            if curl --fail --location --silent --show-error --max-time 20 "$TEST_URL" -o /tmp/cloudflare-live-pig.js \
+              && grep -q '__PIG_ARCADE_FUN_V1__' /tmp/cloudflare-live-pig.js \
+              && grep -q 'COURSE_MAX=1000' /tmp/cloudflare-live-pig.js; then
+              echo "Verified LIVE URL https://$SUBDOMAIN/games/pig-jump-evolution/"
+              echo "### Cloudflare PIG JUMP published" >> "$GITHUB_STEP_SUMMARY"
+              echo "https://$SUBDOMAIN/games/pig-jump-evolution/" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Cloudflare upload completed but live JS with both gameplay markers was not verified."
+          exit 1
