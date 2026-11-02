@@ -7,6 +7,7 @@ on:
       - 'scripts/patch_pig_fun.py'
       - 'scripts/patch_pig_course.py'
       - 'scripts/build_cloudflare.py'
+      - 'scripts/restore_pig_love.py'
       - 'public-mirror/**'
   workflow_dispatch:
 permissions:
