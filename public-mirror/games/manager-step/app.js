@@ -101,7 +101,7 @@
   }
   function switchRole(next) {
     if (!ROLES[next] || next === role) return;
-    if (session && !confirm("受験中の問題を終了し、コースを切り替えますか？")) return;
+    if (session && !session.finished && !confirm("受験中の問題を終了し、コースを切り替えますか？")) return;
     stopTimer(); session = null; role = next; page = "home";
     try { history.replaceState(null, "", location.pathname + "?role=" + role); } catch(e) {}
     render();
@@ -118,7 +118,7 @@
     return "";
   }
   function go(next) {
-    if (session) {
+    if (session && !session.finished) {
       if (!confirm("受験中です。終了すると今回の未採点回答は保存されません。移動しますか？")) return;
       stopTimer(); session = null;
     }
