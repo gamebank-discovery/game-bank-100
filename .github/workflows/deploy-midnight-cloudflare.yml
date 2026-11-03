@@ -1,0 +1,87 @@
+name: Publish MIDNIGHT TABLE to Cloudflare Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'midnight-table/**'
+      - '.github/workflows/deploy-midnight-cloudflare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: midnight-table-cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Validate standalone game files
+        run: |
+          set -euo pipefail
+          test -s midnight-table/public/index.html
+          test -s midnight-table/public/manifest.webmanifest
+          test -s midnight-table/public/icon.svg
+          test -s midnight-table/public/service-worker.js
+          grep -q 'MIDNIGHT TABLE' midnight-table/public/index.html
+          python3 -m json.tool midnight-table/public/manifest.webmanifest >/dev/null
+          echo 'Source ready for Cloudflare Pages'
+      - name: Ensure Cloudflare account credentials
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "::error::Set repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID for Cloudflare deployment"
+            exit 1
+          fi
+      - name: Create isolated Pages project if needed
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          PROJECT=midnight-table-discovery
+          if curl --fail-with-body --silent --show-error --max-time 30 \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT" \
+            -o /tmp/midnight-project.json; then
+            echo "Cloudflare Pages project exists: $PROJECT"
+          else
+            echo "Creating an independent Cloudflare Pages project"
+            npx --yes wrangler@4 pages project create "$PROJECT" --production-branch main
+          fi
+      - name: Deploy only MIDNIGHT TABLE assets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy midnight-table/public \
+            --project-name midnight-table-discovery \
+            --branch main \
+            --commit-hash "$GITHUB_SHA" \
+            --commit-message "MIDNIGHT TABLE game"
+      - name: Verify independent production URL
+        run: |
+          set -euo pipefail
+          SITE=https://midnight-table-discovery.pages.dev/
+          for attempt in 1 2 3 4 5; do
+            if curl --fail --location --silent --show-error --max-time 15 "$SITE?sha=$GITHUB_SHA" | grep -q 'MIDNIGHT TABLE'; then
+              echo "Deployed and verified: $SITE"
+              echo "### MIDNIGHT TABLE Cloudflare live" >> "$GITHUB_STEP_SUMMARY"
+              echo "$SITE" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Cloudflare upload did not pass public URL verification"
+          exit 1
