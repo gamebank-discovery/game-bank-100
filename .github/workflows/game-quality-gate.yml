@@ -1,0 +1,31 @@
+name: GAME BANK quality gate (Claude-ready)
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'public-mirror/**'
+      - 'scripts/**'
+      - 'CLAUDE.md'
+      - '.github/workflows/game-quality-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-and-gameplay-syntax:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout reviewed commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Python syntax check
+        run: |
+          python3 -m py_compile scripts/build_cloudflare.py scripts/qa_gamebank_quality.py
+      - name: Build exact Cloudflare static output
+        run: python3 scripts/build_cloudflare.py --source public-mirror --output dist
+      - name: Catalog, flagship and Duck River script integrity
+        run: python3 scripts/qa_gamebank_quality.py --root dist
