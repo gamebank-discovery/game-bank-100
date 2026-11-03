@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
       - name: Build Cloudflare Pages static output
         run: python3 scripts/build_cloudflare.py --source public-mirror --output dist
-      - name: Verify KEIBA EDGE PRO v6 and existing GAME BANK
+      - name: Verify existing GAME BANK catalog and LOST QUEST
         shell: bash
         run: |
           python3 - <<'PY'
@@ -32,15 +32,19 @@ jobs:
           from pathlib import Path
           output=Path('dist')
           html=(output/'index.html').read_text(encoding='utf-8')
-          game=(output/'games/keiba-edge-pro/index.html').read_text(encoding='utf-8')
           games=json.loads((output/'data/games.json').read_text(encoding='utf-8'))
-          assert len(games)>=164, 'Existing catalog unexpectedly incomplete'
-          links=[x for x in games if x.get('id')==163 and x.get('url')=='/games/keiba-edge-pro/index.html']
-          assert len(links)==1, 'KEIBA EDGE PRO catalog entry missing or duplicated'
-          assert games[0].get('id')==163, 'KEIBA EDGE PRO not featured first'
-          assert html.count('data-game-id="163"')==1, 'Homepage game card missing or duplicated'
-          assert 'KEIBA EDGE PRO' in game and 'ダービー物語' in game, 'Wrong game build'
-          assert (output/'games/keiba-edge-pro/cover.svg').stat().st_size>100, 'Game artwork missing'
-          assert len(game)>100000, 'Game content truncated'
-          print('PASS: KEIBA EDGE PRO v6 and',len(games),'catalog entries packaged for Cloudflare Pages')
+          assert len(games)>=164, f'Catalog unexpectedly incomplete: {len(games)}'
+          assert len({str(g.get('id')) for g in games})==len(games), 'Duplicate game IDs'
+          lost=[g for g in games if g.get('id')==164 and g.get('url')=='/games/lost-quest/index.html']
+          assert len(lost)==1 and lost[0].get('listed') and lost[0].get('playable'), 'LOST QUEST missing or hidden from catalog'
+          assert html.count('data-game-id="164"')==1, 'LOST QUEST homepage card missing or duplicated'
+          assert html.count('href="/games/lost-quest/index.html"')==1, 'LOST QUEST link missing or duplicated'
+          app=(output/'games/lost-quest/index.html').read_text(encoding='utf-8')
+          assert len(app)>40000 and 'LOST QUEST' in app and 'function qrSVG' in app, 'LOST QUEST demo truncated'
+          # Keep all previously bundled content, including KEIBA EDGE PRO,
+          # without assuming another game controls ID 163 or the first catalog slot.
+          horse=(output/'games/keiba-edge-pro/index.html').read_text(encoding='utf-8')
+          assert 'KEIBA EDGE PRO' in horse and 'ダービー物語' in horse and len(horse)>100000
+          assert (output/'games/keiba-edge-pro/cover.svg').stat().st_size>100
+          print('PASS:',len(games),'catalog entries, LOST QUEST card+demo and existing horse game bundled')
           PY
