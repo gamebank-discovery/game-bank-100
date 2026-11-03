@@ -14,6 +14,10 @@ SCRIPTS = ('<script src="/monetization/config.js"></script>'
            '<script defer src="/monetization/gamebank-monetize.js"></script>')
 WIDGETS = ('<section aria-label="おすすめ商品" data-gb-affiliate-list></section>'
            '<div data-gb-ad-slot="catalog"></div>')
+SELECT_LINK = ('<aside aria-label="お買い物比較ガイド" style="max-width:1100px;margin:32px auto;padding:16px 20px;border-radius:18px;background:#e7ede4;color:#234b41;text-align:center">'
+               '<strong>DISCOVERY SELECT</strong>｜失敗しない買い物の選び方を読む　'
+               '<a href="/discovery-select/" style="display:inline-block;padding:7px 14px;border-radius:24px;background:#23564a;color:#fff;text-decoration:none">比較ガイドを見る ↗</a>'
+               '</aside>')
 
 def build(source: Path, target: Path, root: Path) -> None:
     if not (source / "index.html").is_file():
@@ -43,7 +47,7 @@ def build(source: Path, target: Path, root: Path) -> None:
             raise SystemExit("ERROR: unexpected homepage structure; refuse unsafe injection.")
         # This does not insert ads near in-game action buttons.
         html = html.replace("</head>", STYLE + "\n</head>", 1)
-        html = html.replace("</body>", WIDGETS + SCRIPTS + "\n</body>", 1)
+        html = html.replace("</body>", WIDGETS + SELECT_LINK + SCRIPTS + "\n</body>", 1)
         homepage.write_text(html, encoding="utf-8")
     print(f"Built {target}/ (main catalog monetization hook ready, ads disabled by default).")
 
