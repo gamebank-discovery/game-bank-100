@@ -1,0 +1,62 @@
+name: Verify DISCOVERY SELECT
+on:
+  push:
+    branches: [main]
+    paths:
+      - "public-mirror/discovery-select/**"
+      - "scripts/build_cloudflare.py"
+      - ".github/workflows/verify-discovery-select.yml"
+  pull_request:
+    paths:
+      - "public-mirror/discovery-select/**"
+      - "scripts/build_cloudflare.py"
+      - ".github/workflows/verify-discovery-select.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - name: Syntax checks
+        run: |
+          python3 -m py_compile scripts/build_cloudflare.py
+          node --check public-mirror/discovery-select/content.js
+          node --check public-mirror/discovery-select/app.js
+          node --check public-mirror/discovery-select/studio.js
+      - name: Editorial schema and local asset checks
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const vm = require("node:vm");
+          const dir = "public-mirror/discovery-select/";
+          for (const f of ["index.html","studio.html","styles.css","app.js","studio.js","content.js"]) {
+            if (!fs.statSync(dir + f).size) throw Error("empty asset: " + f);
+          }
+          const sandbox = {window:{}};
+          vm.runInNewContext(fs.readFileSync(dir+"content.js","utf8"),sandbox);
+          const data = sandbox.window.DS_ARTICLES;
+          if (!Array.isArray(data) || data.length < 3) throw Error("Need at least 3 editorial guides");
+          const ids = new Set();
+          const allowed = new Set(["www.amazon.co.jp","amazon.co.jp","amzn.to","hb.afl.rakuten.co.jp","px.a8.net"]);
+          for (const a of data) {
+            if (!a.id || ids.has(a.id)) throw Error("Missing or duplicate article id");
+            ids.add(a.id);
+            for (const field of ["title","category","intro","conclusion","reason"]) if (!a[field]) throw Error("Missing "+field+" on "+a.id);
+            if (!Array.isArray(a.products) || a.products.length!==3) throw Error("Need exactly 3 products on "+a.id);
+            for (const p of a.products) {
+              if (!p.name || !p.best || !p.not || !p.point) throw Error("Incomplete product data in "+a.id);
+              if (p.url) {
+                const u = new URL(p.url);
+                if (u.protocol!=="https:" || !allowed.has(u.hostname)) throw Error("Invalid affiliate host in "+a.id);
+              }
+            }
+          }
+          console.log("Validated", data.length, "guides");
+          NODE
