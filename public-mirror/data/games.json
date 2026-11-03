@@ -1,5 +1,19 @@
 [
   {
+    "id": 165,
+    "title": "餃子マージ 3D風｜具材から黄金餃子へ",
+    "category": "パズル・脳トレ",
+    "genre": "パズル・脳トレ",
+    "status": "published",
+    "type": "standalone",
+    "url": "/games/gyoza-merge-3d/index.html",
+    "emoji": "🥟",
+    "description": "落ちてくるひき肉・野菜の具材を合体！ 生餃子、焼き餃子、羽根つき餃子を経て伝説の黄金餃子を目指す。ぷるっと立体風のスイカ系マージパズル。スマホ操作・連鎖ボーナス・ベストスコア保存対応。",
+    "listed": true,
+    "playable": true,
+    "hidden": false
+  },
+  {
     "id": 164,
     "title": "LOST QUEST｜忘れ物QR × 返却ゲーム",
     "category": "クイズ・カード",
