@@ -1,5 +1,20 @@
 [
   {
+    "id": 166,
+    "title": "餃子職人 3D｜焼きたてオーダー",
+    "category": "アクション",
+    "genre": "アクション",
+    "status": "published",
+    "type": "standalone",
+    "url": "/games/gyoza-master-3d/index.html",
+    "thumbnail": "/games/gyoza-master-3d/thumbnail.svg",
+    "emoji": "🥟",
+    "description": "肉・海老・チーズ・しそ・激辛の注文をさばこう！立体フライパンで焼き加減を見極め、裏返し・差し水・提供をこなす餃子屋シミュレーション。",
+    "listed": true,
+    "playable": true,
+    "hidden": false
+  },
+  {
     "id": 165,
     "title": "餃子マージ 3D風｜具材から黄金餃子へ",
     "category": "パズル・脳トレ",
