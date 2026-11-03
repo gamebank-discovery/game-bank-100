@@ -1,5 +1,19 @@
 [
   {
+    "id": 164,
+    "title": "LOST QUEST｜忘れ物QR × 返却ゲーム",
+    "category": "クイズ・カード",
+    "genre": "クイズ・カード",
+    "status": "published",
+    "type": "standalone",
+    "url": "/games/lost-quest/index.html",
+    "emoji": "🏷️",
+    "description": "忘れ物にQRを貼って大切な物の帰り道をつくる。持ち物登録・QR印刷・拾得報告・返却確認・XP育成を体験できるデモ。現時点ではブラウザ保存のみで別端末との実際の連絡や決済は未接続。",
+    "listed": true,
+    "playable": true,
+    "hidden": false
+  },
+  {
     "id": 151,
     "title": "カモの川ながれ｜DUCK RIVER",
     "category": "育成・どうぶつ",
