@@ -1,0 +1,11 @@
+{
+  "id": "/",
+  "name": "MIDNIGHT TABLE",
+  "short_name": "MIDNIGHT",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#100e1b",
+  "theme_color": "#100e1b",
+  "lang": "ja"
+}
