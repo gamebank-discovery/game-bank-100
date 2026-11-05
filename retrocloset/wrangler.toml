@@ -1,0 +1,3 @@
+name = "retrocloset-discovery-720"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-05"
