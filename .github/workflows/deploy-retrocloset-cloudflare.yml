@@ -1,0 +1,116 @@
+name: Deploy RetroCloset 720 to isolated Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "retrocloset/**"
+      - ".github/workflows/deploy-retrocloset-cloudflare.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retrocloset-cloudflare-pages
+  cancel-in-progress: false
+
+jobs:
+  publish-retrocloset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out approved repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Verify Cloudflare credentials without disclosing values
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "::error::Missing repo secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID"
+            exit 1
+          fi
+
+      - name: Build independent 720-look website
+        run: |
+          set -euo pipefail
+          python3 -m py_compile retrocloset/build_site.py
+          python3 retrocloset/build_site.py
+          test -s retrocloset/dist/index.html
+          test -s retrocloset/dist/looks/look-06.avif
+          test -s retrocloset/dist/assets/hero-mobile.avif
+          grep -q 'RC_720_NEW' retrocloset/dist/index.html
+          grep -q '720の' retrocloset/dist/index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root=Path('retrocloset/dist')
+          html=(root/'index.html').read_text()
+          scripts=re.findall(r'<script>([\s\S]*?)</script>',html)
+          assert scripts, 'Main JavaScript missing'
+          Path('/tmp/retrocloset.js').write_text(scripts[-1])
+          assert len(list((root/'looks').glob('*.avif')))==6
+          assert len(list((root/'journal').glob('*.html')))>=7
+          assert 'RC_720_NEW' in html
+          assert "' / 720'" in html
+          assert 'https://retrocloset-discovery-720.pages.dev' in html
+          print("PASS: content, local images, article pages, Cloudflare URLs")
+          PY
+          node --check /tmp/retrocloset.js
+
+      - name: Create dedicated Cloudflare Pages project if absent
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          PROJECT=retrocloset-discovery-720
+          STATUS=$(curl --silent --show-error --max-time 30 -o /tmp/retro-cf.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT")
+          case "$STATUS" in
+            200) echo "Existing isolated Cloudflare project: $PROJECT" ;;
+            404) npx --yes wrangler@4 pages project create "$PROJECT" --production-branch main ;;
+            *) echo "::error::Cloudflare lookup returned HTTP $STATUS"; exit 1 ;;
+          esac
+
+      - name: Deploy isolated RetroCloset website and Pages Functions
+        working-directory: retrocloset
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy dist \
+            --project-name retrocloset-discovery-720 \
+            --branch main \
+            --commit-hash "$GITHUB_SHA" \
+            --commit-message "RetroCloset independent 720-look release"
+
+      - name: Verify public Cloudflare production URL
+        run: |
+          set -euo pipefail
+          SITE=https://retrocloset-discovery-720.pages.dev
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl -fsSL --max-time 25 "$SITE/?commit=$GITHUB_SHA" -o /tmp/retro-home.html &&
+               grep -q 'RC_720_NEW' /tmp/retro-home.html &&
+               curl -fsSL --max-time 25 "$SITE/looks/look-06.avif" -o /tmp/retro-look06.avif &&
+               curl -fsSL --max-time 25 "$SITE/journal/" -o /tmp/retro-journal.html; then
+              echo "Cloudflare LIVE: $SITE"
+              {
+                echo "## RetroCloset 720 Cloudflare Pages verified"
+                echo "URL: $SITE"
+                echo "720 coordinated look recipes, local images and shopping pages"
+                echo "Existing GAME BANK games and Cloudflare projects untouched"
+              } >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 6
+          done
+          echo "::error::Could not verify Cloudflare public production"
+          exit 1
