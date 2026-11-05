@@ -114,14 +114,15 @@ def build() -> None:
     html = grab(SOURCE + "/").decode("utf-8")
     if 'data.push(...additions);' not in html or 'id="shop20"' not in html:
         raise RuntimeError("Unexpected Vercel source: missing 360-look dataset or shopping section")
-    if "RC_720_NEW" in html:
-        raise RuntimeError("Source already contains 720-look expansion")
-    html = html.replace('data.push(...additions);', 'data.push(...additions);\n' + MORE_COORDINATES, 1)
-    # Original 360-look assertion must now validate the complete 720-look catalog.
+    if "RC_720_NEW" not in html:
+        # Build from the earlier 360-look Vercel release.
+        html = html.replace('data.push(...additions);',
+                            'data.push(...additions);\n' + MORE_COORDINATES, 1)
+    # Also accept an already-upgraded 720-look Vercel release (idempotent).
     html = html.replace('if(data.length!==360 || new Set(data.map(v=>v.id)).size!==360)',
                         'if(data.length!==720 || new Set(data.map(v=>v.id)).size!==720)', 1)
-    if 'if(data.length!==360' in html:
-        raise RuntimeError('Stale 360-look runtime guard remains')
+    if 'if(data.length!==360' in html or 'RC_720_NEW' not in html:
+        raise RuntimeError('The expected 720-look runtime catalog is unavailable')
     # The earlier Vercel build borrowed look-06 from its previous deployment;
     # restore the image as a local, self-hosted asset for the Pages copy.
     html = html.replace(OLD_LOOK06, "/looks/look-06.avif")
