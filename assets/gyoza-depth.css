@@ -1,0 +1,27 @@
+/* GAME BANK: optional 2.5D visual polish for Gyoza Merge only.
+   Canvas coordinates and physics are deliberately untouched. */
+@media (prefers-reduced-motion: no-preference) {
+  .logo { transform: rotate(-7deg) translateZ(0); animation: gb-gyoza-float 3.8s ease-in-out infinite; }
+  @keyframes gb-gyoza-float {
+    0%,100% { transform: rotate(-7deg) translateY(0); }
+    50% { transform: rotate(-4deg) translateY(-5px); }
+  }
+  .stat { transition: transform .2s ease, box-shadow .2s ease; }
+  .stat:focus-within, .stat:hover { transform: translateY(-3px); box-shadow: 0 10px 22px #0006; }
+  .primary, .tool { transition: transform .14s ease, filter .14s ease; }
+  .tool:active { transform: translateY(2px) scale(.98); }
+}
+.frame {
+  isolation: isolate;
+  box-shadow: 0 20px 40px #0009, 0 2px 2px #ffdb956e inset, 0 0 25px #e6a45b24;
+}
+.frame::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit; z-index: 2;
+  background: linear-gradient(145deg, #fff7d71b 0%, transparent 35%, #31150e20 100%);
+}
+.board { box-shadow: inset 0 5px 18px #6c402d90, inset 0 0 0 1px #3d262d44, 0 6px 12px #35180f55; }
+button:focus-visible { outline: 3px solid #ffe08a; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .logo, .stat, .primary, .tool { animation: none !important; transition: none !important; }
+}

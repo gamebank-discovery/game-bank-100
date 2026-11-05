@@ -1,0 +1,22 @@
+name: Gyoza visual enhancement preview
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  visual-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 scripts/build_cloudflare.py
+      - run: python3 scripts/apply_gyoza_depth.py
+      - run: |
+          test -s dist/assets/gyoza-depth.css
+          grep -q 'gyoza-depth.css' dist/games/gyoza-merge-3d/index.html
+          test -s dist/games/duck-river/index.html
+          if grep -q 'gyoza-depth.css' dist/games/duck-river/index.html; then exit 1; fi
