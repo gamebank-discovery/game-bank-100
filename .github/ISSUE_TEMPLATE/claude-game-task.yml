@@ -1,0 +1,31 @@
+name: Claude game improvement
+description: Specify an isolated GAME BANK task for Claude implementation
+title: "[Claude] "
+labels: ["claude-task"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should change and why?
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Relevant game and files
+      description: Specify paths or game URLs; do not change other games.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Include mobile, audio, touch and regression checks.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and preservation
+      value: "Preserve existing GAME BANK production and gameplay. Work in a branch and open a PR; never deploy directly."

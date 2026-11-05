@@ -1,0 +1,27 @@
+name: GAME BANK PR quality gate
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  game-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build GAME BANK
+        run: python3 scripts/build_cloudflare.py
+      - name: Verify core assets
+        run: |
+          test -s dist/index.html
+          test -s dist/games/pig-jump-evolution/index.html
+          test -s dist/games/pig-jump-evolution/pig.js
+      - name: Report manual mobile test requirement
+        run: echo 'Mobile Safari/Chrome touch, audio and overflow still require device testing before production.'

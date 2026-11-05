@@ -1,0 +1,47 @@
+name: Claude GAME BANK issue agent
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Existing GitHub issue number to implement'
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+  id-token: write
+
+concurrency:
+  group: claude-gamebank-${{ github.event.issue.number || inputs.issue_number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  claude:
+    if: github.event_name == 'workflow_dispatch' || (github.event.label.name == 'claude-task' && github.event.issue.state == 'open')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require Claude authentication
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::Set ANTHROPIC_API_KEY in GitHub Actions secrets before running Claude."
+            exit 1
+          fi
+      - name: Claude implements issue and opens PR
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Implement GAME BANK GitHub issue #${{ github.event.issue.number || inputs.issue_number }}.
+            Read CLAUDE.md first. Preserve existing games and the legacy production Worker.
+            Work in a new branch, run checks, and open a PR. Do not merge or deploy.
