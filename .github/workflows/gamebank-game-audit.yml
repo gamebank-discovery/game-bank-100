@@ -1,0 +1,29 @@
+name: GAME BANK all-games audit
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build existing games
+        run: python3 scripts/build_cloudflare.py
+      - name: Audit all game entrypoints and local assets
+        run: python3 scripts/audit_games.py --root dist --report game-audit-report.json
+      - name: Upload detailed findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-audit-report
+          path: game-audit-report.json
+          if-no-files-found: ignore
