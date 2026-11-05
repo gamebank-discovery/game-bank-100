@@ -25,17 +25,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Verify Cloudflare credentials without disclosing values
-        env:
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
-            echo "::error::Missing repo secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID"
-            exit 1
-          fi
-
       - name: Build independent 720-look website
         run: |
           set -euo pipefail
@@ -62,6 +51,25 @@ jobs:
           print("PASS: content, local images, article pages, Cloudflare URLs")
           PY
           node --check /tmp/retrocloset.js
+
+      - name: Keep tested Cloudflare-ready build as downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: retrocloset-720-cloudflare-dist
+          path: retrocloset/dist/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Verify Cloudflare credentials without disclosing values
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "::error::Missing repo secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID"
+            exit 1
+          fi
 
       - name: Create dedicated Cloudflare Pages project if absent
         env:
