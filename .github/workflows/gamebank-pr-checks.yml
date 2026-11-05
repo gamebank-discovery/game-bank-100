@@ -16,6 +16,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Build GAME BANK
         run: python3 scripts/build_cloudflare.py
       - name: Verify core assets
@@ -23,5 +26,7 @@ jobs:
           test -s dist/index.html
           test -s dist/games/pig-jump-evolution/index.html
           test -s dist/games/pig-jump-evolution/pig.js
+      - name: Test preview Worker API and game asset routing
+        run: node --test cloud/game-bank-cloud/src/index.test.js
       - name: Report manual mobile test requirement
         run: echo 'Mobile Safari/Chrome touch, audio and overflow still require device testing before production.'
