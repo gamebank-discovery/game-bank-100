@@ -8,6 +8,7 @@ from restore_pig_love import restore_pig_love
 from patch_pig_course import patch_course
 from patch_pig_fun import patch_fun
 from patch_pig_memory_arcade import patch_memory_arcade
+from apply_gyoza_depth import apply as apply_gyoza_depth
 
 STYLE = '<link rel="stylesheet" href="/monetization/gamebank-monetize.css">'
 SCRIPTS = ('<script src="/monetization/config.js"></script>'
@@ -49,6 +50,7 @@ def build(source: Path, target: Path, root: Path) -> None:
         html = html.replace("</head>", STYLE + "\n</head>", 1)
         html = html.replace("</body>", WIDGETS + SELECT_LINK + SCRIPTS + "\n</body>", 1)
         homepage.write_text(html, encoding="utf-8")
+    apply_gyoza_depth(root, target)
     print(f"Built {target}/ (main catalog monetization hook ready, ads disabled by default).")
 
 if __name__ == "__main__":
