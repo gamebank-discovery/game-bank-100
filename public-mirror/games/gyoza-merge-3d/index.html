@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
 <meta name="theme-color" content="#171820" />
-<title>餃子マージ 3D SHAPE｜不ぞろい具材の合体パズル</title>
+<title>餃子マージ 3D｜包んで焼いて黄金餃子へ</title>
 <style>
   :root{--paper:#fff6e6;--ink:#2b2225;--gold:#f4bf57;--red:#e96d56;--muted:#a7a2aa}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -53,8 +53,8 @@
 <main class="shell">
   <header class="top">
     <div class="logo" aria-hidden="true">🥟</div>
-    <div class="heading"><h1>餃子マージ <span style="color:#f9c16f;font-size:13px">3D</span></h1><small>形を読んで、伝説のひと皿へ。</small></div>
-    <span class="pill">SHAPE EDITION</span>
+    <div class="heading"><h1>餃子マージ <span style="color:#f9c16f;font-size:13px">3D</span></h1><small>包んで、焼いて、黄金餃子へ。</small></div>
+    <span class="pill">🥟 餃子職人 EDITION</span>
   </header>
   <section class="hud" aria-label="スコア">
     <div class="stat"><div class="label">SCORE</div><div class="number" id="score">0</div></div>
@@ -64,11 +64,11 @@
   <div class="frame"><div class="board">
     <canvas id="game" width="800" height="1000" aria-label="餃子マージのゲーム画面。左右で位置を決めてタップで落とします"></canvas>
     <div id="toast"></div>
-    <div class="board-overlay" id="overlay"><div class="modal"><div class="hero-emoji" id="heroEmoji">🥟</div><h2 id="modalTitle">餃子づくり、開店！</h2><p id="modalBody">ひき肉はゴツゴツ、ニラは細長い！<br>半月形の餃子は転がりにくく、角は引っかかる。<br>落下する形と角度を読んで黄金餃子を作ろう！</p><button id="startButton" class="primary">▶ 料理スタート！</button></div></div>
+    <div class="board-overlay" id="overlay"><div class="modal"><div class="hero-emoji" id="heroEmoji">🥟</div><h2 id="modalTitle">餃子づくり、開店！</h2><p id="modalBody">刻んだ具を重ねて、もっちり皮で包もう！<br>ひだひだ生餃子から、こんがり羽根つき餃子へ。<br>鉄板でジュワッ！伝説の黄金餃子を目指そう！</p><button id="startButton" class="primary">▶ 料理スタート！</button></div></div>
   </div></div>
-  <div class="control-row"><div class="hint">👆 <strong>狙ってタップ</strong><br>異形パーツが回転！</div><button id="shake" class="tool" aria-label="フライパンをゆする">🍳 ゆする <span id="shakeCount">×2</span></button><button id="sound" class="tool" aria-label="音を切り替え">🔊</button></div>
+  <div class="control-row"><div class="hint">👆 <strong>狙ってタップ</strong><br>ひだの向きと焼き目が勝負！</div><button id="shake" class="tool" aria-label="フライパンをゆする">🍳 ゆする <span id="shakeCount">×2</span></button><button id="sound" class="tool" aria-label="音を切り替え">🔊</button></div>
   <section class="recipe"><div class="recipe-head"><span>🥢 進化レシピ</span><span>右に進化するほど高得点 ✨</span></div><div class="stages" id="stages"></div></section>
-  <div class="footer">細長いニラ・半月皮・羽根餃子は回転して詰まりやすい · PCは ← → / SPACE</div>
+  <div class="footer">🥟 ひだのある皮、こんがり焼き目、パリパリ羽根！ · PCは ← → / SPACE</div>
 </main>
 <script>
 (() => {
@@ -120,10 +120,79 @@ function line(c,pts,col,width=2){c.beginPath();c.moveTo(pts[0][0],pts[0][1]);for
 function ellipse(c,x,y,rx,ry,color){c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=color;c.fill();}
 function rng(seed){let s=seed>>>0;return()=>((s=(s*1664525+1013904223)>>>0)/4294967296);}
 function shapePath(c,pts,r){c.beginPath();c.moveTo(pts[0][0]*r,pts[0][1]*r);for(let i=1;i<pts.length;i++)c.lineTo(pts[i][0]*r,pts[i][1]*r);c.closePath();}
+// Draw a dumpling as the actual collision silhouette rather than a tiny icon on a blob.
+// Pleated rim, pillowy dough belly and toasted base are legible even on 320px mobile screens.
+function paintFullGyoza(c,level,r,rand){
+ const cooked=level>=6,wing=level===7;
+ c.save();
+ c.shadowColor='#1d1212a8';c.shadowBlur=r*.16;c.shadowOffsetY=r*.09;
+ shapePath(c,SHAPES[level],r);
+ const dough=c.createLinearGradient(-r*.25,-r*.9,r*.22,r*.86);
+ dough.addColorStop(0,cooked?'#fff2bd':'#fff8e9');
+ dough.addColorStop(.35,cooked?'#f4d08e':'#f8e8c7');
+ dough.addColorStop(.68,cooked?'#eab06a':'#efd4a9');
+ dough.addColorStop(1,cooked?'#a95b32':'#b98b62');
+ c.fillStyle=dough;c.fill();c.shadowBlur=0;c.shadowOffsetY=0;
+ c.lineWidth=Math.max(1.7,r*.042);c.strokeStyle=cooked?'#9e592e':'#b68e69';c.stroke();
+ c.save();shapePath(c,SHAPES[level],r*.96);c.clip();
+ // The stuffed belly fills the lower two-thirds of the actual dumpling.
+ const belly=c.createLinearGradient(0,-r*.34,0,r*.67);
+ belly.addColorStop(0,'#fff9e7');belly.addColorStop(.57,cooked?'#f5c481':'#f4dfb8');belly.addColorStop(1,cooked?'#c17a43':'#cfaf83');
+ c.beginPath();c.moveTo(-r*.87,r*.02);
+ c.bezierCurveTo(-r*.68,-r*.45,r*.56,-r*.50,r*.87,r*.05);
+ c.bezierCurveTo(r*.66,r*.57,-r*.60,r*.67,-r*.87,r*.02);
+ c.closePath();c.fillStyle=belly;c.fill();
+ c.lineWidth=r*.028;c.strokeStyle=cooked?'#d49859a8':'#d9bd96a8';c.stroke();
+ // Folded top seal / the unmistakable Japanese gyoza silhouette.
+ c.beginPath();c.moveTo(-r*.91,r*.06);
+ c.bezierCurveTo(-r*.90,-r*.53,-r*.36,-r*.89,0,-r*.87);
+ c.bezierCurveTo(r*.41,-r*.88,r*.90,-r*.45,r*.92,r*.08);
+ c.strokeStyle=cooked?'#8f5a37a6':'#b9946f';c.lineWidth=r*.082;c.lineCap='round';c.stroke();
+ c.beginPath();c.moveTo(-r*.86,r*.01);
+ c.bezierCurveTo(-r*.72,-r*.44,-r*.32,-r*.76,0,-r*.76);
+ c.bezierCurveTo(r*.34,-r*.74,r*.73,-r*.43,r*.86,r*.01);
+ c.strokeStyle=cooked?'#ffedb5':'#fff9e8';c.lineWidth=r*.053;c.stroke();
+ // Seven *large* fan-shaped pleats, each with a bright and shaded crease.
+ for(let i=-3;i<=3;i++){
+  const u=i/3.7, xx=u*r*.80;
+  const yy=-r*(.78-.33*u*u);
+  c.beginPath();c.moveTo(xx-r*.10,yy-r*.055);
+  c.quadraticCurveTo(xx+r*.13,yy+r*.12,xx+r*.055,r*.03);
+  c.strokeStyle=cooked?'#a76d42bc':'#c2a080ad';c.lineWidth=Math.max(1.7,r*.048);c.stroke();
+  c.beginPath();c.moveTo(xx-r*.16,yy-r*.085);
+  c.quadraticCurveTo(xx-r*.08,yy+r*.055,xx-r*.07,-r*.09);
+  c.strokeStyle='#fffde8cf';c.lineWidth=Math.max(1,r*.035);c.stroke();
+ }
+ // Soft flour highlights and tiny green flecks behind the translucent uncooked skin.
+ if(!cooked){
+   c.beginPath();c.ellipse(-r*.25,r*.10,r*.25,r*.07,-.18,0,Math.PI*2);c.fillStyle='#fffef6a9';c.fill();
+   for(let k=0;k<7;k++)ellipse(c,(rand()-.5)*r*1.1,r*.17+(rand()-.5)*r*.22,r*.018,r*.013,'#76a16b4b');
+ }else{
+  // Seared pan-fried base, visible caramelized patches and blister freckles.
+  c.beginPath();c.ellipse(0,r*.45,r*.79,r*.17,0,0,Math.PI*2);
+  c.fillStyle='#aa542cc4';c.fill();
+  for(let k=0;k<22;k++){
+   const x=(rand()-.5)*r*1.45,y=r*(.12+rand()*.44);
+   ellipse(c,x,y,r*(.012+rand()*.024),r*(.012+rand()*.020),k%3?'#a65a3192':'#fbe6a887');
+  }
+ }
+ c.restore();
+ if(wing){
+  // Crispy, lacy skirt around the stuffed dumpling.
+  c.save();c.lineCap='round';
+  for(let i=0;i<21;i++){
+   const x=-r*.91+i*r*1.82/20,y=r*(.36+.15*Math.cos(i*.7));
+   c.beginPath();c.moveTo(x-r*.13,y-r*.06);c.lineTo(x,y);c.lineTo(x+r*.12,y-r*.09);
+   c.strokeStyle=i%3?'#f8d08a':'#b96d31';c.lineWidth=1.7;c.stroke();
+  }
+  c.restore();
+ }
+ c.restore();
+}
 function makeSprite(level){
  const t=TYPES[level],r=t.r,sz=(r+10)*2, off=document.createElement('canvas');off.width=sz*3;off.height=sz*3;
  const c=off.getContext('2d');c.scale(3,3);c.translate(sz/2,sz/2);let rr=r,rand=rng(999+level*41);
- // Faceted, irregular silhouettes with distinct 3D surface light
+ // Food-like 3D shaded ingredients and dumplings; same SAT polygon outline drives collisions
  const bg=c.createRadialGradient(-r*.36,-r*.47,r*.06,0,0,r*1.1);
  const palettes=[['#ffd8bf','#d87876','#7b474a'],['#d7f9a4','#79bd65','#3d7d44'],['#a8dc8c','#4fa775','#2c6656'],['#f3bf90','#bb8066','#835349'],['#fff9e4','#f4ddaa','#bd986b'],['#fff7da','#edd3a6','#ad785a'],['#ffdb96','#e8a45b','#9e533d'],['#fff3b2','#ebaf5c','#a2623e'],['#fff6cd','#deb57a','#a1664d'],['#fffbd5','#f5c35a','#c47e2b']];
  let pal=palettes[level];bg.addColorStop(0,pal[0]);bg.addColorStop(.65,pal[1]);bg.addColorStop(1,pal[2]);
@@ -155,6 +224,8 @@ function makeSprite(level){
   }
  }
  if(level===4){
+  // A pale, thin wonton wrapper with guide creases.
+  for(let i=-2;i<=2;i++){c.beginPath();c.moveTo(i*r*.24,-r*.64);c.quadraticCurveTo(0,r*.13,-i*r*.20,r*.66);c.strokeStyle='#d5b1818f';c.lineWidth=1.3;c.stroke();}
   for(let k=0;k<5;k++){
    c.beginPath();c.arc(0,0,r*(.25+k*.125),0,Math.PI*2);c.strokeStyle=k%2?'#f6e6c5':'#e8c99688';c.lineWidth=2;c.stroke();
   }
@@ -196,6 +267,7 @@ function makeSprite(level){
  // glossy specular highlights and warm rim
  c.beginPath();c.ellipse(-rr*.39,-rr*.56,rr*.20,rr*.095,-.45,0,Math.PI*2);c.fillStyle='#ffffff65';c.fill();
  shapePath(c,SHAPES[level],r*.94);c.lineWidth=Math.max(1,rr*.045);c.strokeStyle='#3c27242a';c.stroke();
+ if(level>=5&&level<=7)paintFullGyoza(c,level,rr,rand);
  return off;
 }
 for(let i=0;i<TYPES.length;i++)sprites.push(makeSprite(i));
@@ -206,7 +278,7 @@ function scoreUpdate(){scoreEl.textContent=score.toLocaleString('ja-JP');if(scor
 function setLevels(){stagesEl.innerHTML='';const order=[0,1,2,3,4,5,6,7,8,9];for(let i of order){let e=document.createElement('div');e.className='stage'+(i<=maxReached?' reached':'');e.innerHTML=`<span>${TYPES[i].emoji}</span><small>${i+1}</small>`;e.title=TYPES[i].name;stagesEl.appendChild(e)}}
 function toast(msg){toastEl.textContent=msg;toastEl.classList.add('shown');toastUntil=now+1.15;}
 function burst(x,y,level){let colors=level>=5?['#ffcf6c','#fff3bb','#f09a51']:['#ffd8aa','#a1cb7c','#efad88'];for(let i=0;i<17;i++){let a=Math.random()*Math.PI*2,v=80+Math.random()*155;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-70,life:.65+Math.random()*.35,full:1.0,size:2+Math.random()*4,color:colors[i%colors.length]});}}
-function newBall(type,x,y,vx=0,vy=0){const b={id:uid++,type,x,y,vx,vy,r:TYPES[type].r,age:0,angle:(Math.random()-.5)*.58,omega:(Math.random()-.5)*1.8};balls.push(b);return b;}
+function newBall(type,x,y,vx=0,vy=0){const b={id:uid++,type,x,y,vx,vy,r:TYPES[type].r,age:0,angle:(Math.random()-.5)*.30,omega:(Math.random()-.5)*(type>=5?.38:.62)};balls.push(b);return b;}
 function reset(){balls=[];particles=[];score=0;maxReached=3;shakeLeft=2;dangerTimer=0;combo=0;lastMerge=-1000;lastDrop=-1000;aimX=200;next=randNext();playing=true;gameEnded=false;now=0;clock=0;previous=performance.now();shakeVisual=0;hasPlayed=true;scoreUpdate();previewDraw();setLevels();shakeEl.disabled=false;document.querySelector('#shakeCount').textContent='×2';overlay.classList.add('hidden');toast('いらっしゃい！🥟');}
 function end(){playing=false;gameEnded=true;sfx('lose');modalTitle.textContent='おなかいっぱい！';heroEmoji.textContent=score>=1000?'🏆':'🥟';modalBody.innerHTML=`今回のスコア <b style="font-size:25px;color:#d36d42">${score.toLocaleString('ja-JP')}</b> 点<br>ベスト <b>${best.toLocaleString('ja-JP')}</b> 点<br>もう一度、最高の餃子を作ろう！`;button.textContent='↻ もう一皿つくる';overlay.classList.remove('hidden');}
 function drop(x=aimX){if(!playing||now-lastDrop<.56)return;const t=TYPES[next];let px=Math.max(WALL+t.r+2,Math.min(W-WALL-t.r-2,x));newBall(next,px,36,-7+Math.random()*14,20);lastDrop=now;next=randNext();previewDraw();sfx('drop');}
@@ -222,7 +294,7 @@ function mergePair(b1,b2){
  if(combo>=3)score+=combo*12;
  lastMerge=now;scoreUpdate();burst(x,y,nt);sfx('merge');
  if(nt>maxReached){maxReached=nt;setLevels();}
- if(nt===9)toast('👑 伝説の黄金餃子！');else if(combo>=3)toast(`🔥 ${combo}連鎖！ +${TYPES[nt].score+combo*12}`);else if(nt>=5)toast(`✨ ${TYPES[nt].name} 完成！`);
+ if(nt===9)toast('👑 伝説の黄金餃子！');else if(nt===6)toast('🔥 ジュワッ！ 焼き餃子完成！');else if(combo>=3)toast(`🔥 ${combo}連鎖！ +${TYPES[nt].score+combo*12}`);else if(nt>=5)toast(`✨ ${TYPES[nt].name} 完成！`);
  return true;
 }
 function worldVerts(b){
@@ -248,13 +320,13 @@ function sat(a,b,va,vb){
  return {nx,ny,depth:shortest};
 }
 function advanceStep(dt){
- for(const b of balls){b.age+=dt;b.vy+=GRAVITY*dt;b.vx*=Math.pow(.985,dt*60);b.omega*=Math.pow(.987,dt*60);
+ for(const b of balls){b.age+=dt;b.vy+=GRAVITY*dt;b.vx*=Math.pow(.985,dt*60);b.omega*=Math.pow(.956,dt*60);
   b.x+=b.vx*dt;b.y+=b.vy*dt;b.angle+=b.omega*dt;}
  for(let pass=0;pass<4;pass++){
   const vertices=new Map();for(const b of balls)vertices.set(b.id,worldVerts(b));
   for(const b of balls){const {minX,minY,maxX,maxY}=limits(vertices.get(b.id));
-   if(minX<WALL){b.x+=WALL-minX;if(b.vx<0)b.vx*=-.20;b.omega+=.16;}
-   if(maxX>W-WALL){b.x-=maxX-(W-WALL);if(b.vx>0)b.vx*=-.20;b.omega-=.16;}
+   if(minX<WALL){b.x+=WALL-minX;if(b.vx<0)b.vx*=-.20;b.omega+=.055;}
+   if(maxX>W-WALL){b.x-=maxX-(W-WALL);if(b.vx>0)b.vx*=-.20;b.omega-=.055;}
    if(maxY>FLOOR){b.y-=maxY-FLOOR;if(b.vy>0)b.vy*=-.10;
     b.vx*=.87;b.omega+=b.vx*.00035;b.omega*=.84;if(Math.abs(b.vy)<22)b.vy=0;}
    if(minY<4){b.y+=4-minY;if(b.vy<0)b.vy=0;}
@@ -276,8 +348,8 @@ function advanceStep(dt){
     b.vx+=impulse*nx*invB;b.vy+=impulse*ny*invB;
     // Tangential friction / torque causes long leaves and crescents to tumble and interlock.
     const tangentV=rvx*(-ny)+rvy*nx;
-    a.omega-=Math.max(-3,Math.min(3,tangentV*.015))*(b.r/(a.r+b.r));
-    b.omega+=Math.max(-3,Math.min(3,tangentV*.015))*(a.r/(a.r+b.r));
+    a.omega-=Math.max(-3,Math.min(3,tangentV*.005))*(b.r/(a.r+b.r));
+    b.omega+=Math.max(-3,Math.min(3,tangentV*.005))*(a.r/(a.r+b.r));
    }
   }
   if(pair){mergePair(...pair);return;}
@@ -291,33 +363,47 @@ function update(dt){
  if(playing){let danger=balls.some(b=>b.age>2.1&&b.y-b.r<DANGER-6);dangerTimer=danger?dangerTimer+dt:Math.max(0,dangerTimer-dt*1.1);if(dangerTimer>2.45)end();}
 }
 function drawBoard(){
- const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#fff4dc');g.addColorStop(.64,'#f6dfb4');g.addColorStop(1,'#dca979');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
- // beautiful paper texture and a subtle tilted diamond pattern
- ctx.save();ctx.strokeStyle='#a56c4730';ctx.lineWidth=.8;
- for(let i=-H;i<W+H;i+=32){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();ctx.beginPath();ctx.moveTo(i+H,0);ctx.lineTo(i,H);ctx.stroke();}
+ // Hot cast-iron pan instead of a generic paper puzzle box.
+ const g=ctx.createRadialGradient(W*.48,H*.49,34,W*.48,H*.49,360);
+ g.addColorStop(0,'#554440');g.addColorStop(.52,'#382c2b');g.addColorStop(1,'#211f26');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ ctx.save();ctx.strokeStyle='#dbac7452';ctx.lineWidth=3;
+ for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(W*.50,H*.53,174+i*37,205+i*41,0,0,Math.PI*2);ctx.stroke();}
  ctx.restore();
- const v=ctx.createLinearGradient(0,0,W,0);v.addColorStop(0,'#67432c3d');v.addColorStop(.07,'#fff9db22');v.addColorStop(.93,'#fff9db22');v.addColorStop(1,'#67432c3d');ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
- ctx.fillStyle='#7b4e38ad';ctx.fillRect(0,FLOOR,W,H-FLOOR);
- ctx.fillStyle='#fff8e699';ctx.fillRect(0,FLOOR,W,2);
- // cooking oil sparkles
- for(let i=0;i<10;i++){let x=30+i*37;ctx.fillStyle='#fff1a275';ctx.beginPath();ctx.arc(x,476+(i%3)*4,2+(i%2),0,7);ctx.fill();}
- ctx.save();ctx.setLineDash([7,6]);ctx.strokeStyle=dangerTimer>0?'#e74347':'#c673548c';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(12,DANGER);ctx.lineTo(W-12,DANGER);ctx.stroke();ctx.restore();
- ctx.font='bold 10px system-ui';ctx.textAlign='right';ctx.fillStyle='#b66d52';ctx.fillText('ここまで積むと終了',W-16,DANGER-9);
- ctx.textAlign='left';ctx.fillStyle='#b881608a';ctx.font='900 22px system-ui';ctx.fillText('餃 子 工 房',17,H-23);
+ // Warm griddle stripes and cooking-oil highlights.
+ ctx.save();ctx.strokeStyle='#f0bd7c12';ctx.lineWidth=1.5;
+ for(let x=-180;x<600;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+155,H);ctx.stroke();}
+ ctx.restore();
+ for(let i=0;i<15;i++){let x=25+(i*47)%365,y=145+(i*79)%325;
+  ctx.beginPath();ctx.ellipse(x,y,4+(i%4),1.6,Math.sin(i)*.35,0,Math.PI*2);ctx.fillStyle='#ffd38e22';ctx.fill();}
+ const v=ctx.createLinearGradient(0,0,W,0);v.addColorStop(0,'#090e16a4');v.addColorStop(.07,'#f2bf8033');v.addColorStop(.93,'#ffe9a126');v.addColorStop(1,'#090e16a4');ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='#bd744f';ctx.fillRect(0,FLOOR,W,H-FLOOR);
+ ctx.fillStyle='#ffd994';ctx.fillRect(0,FLOOR,W,2);
+ for(let i=0;i<11;i++){let x=20+i*36;ctx.fillStyle='#ffdf9a94';ctx.beginPath();ctx.arc(x,476+(i%3)*4,1.7+(i%2),0,7);ctx.fill();}
+ ctx.save();ctx.setLineDash([7,6]);ctx.strokeStyle=dangerTimer>0?'#ff7774':'#ffbc87a8';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(12,DANGER);ctx.lineTo(W-12,DANGER);ctx.stroke();ctx.restore();
+ ctx.font='bold 10px system-ui';ctx.textAlign='right';ctx.fillStyle='#ffd6ab';ctx.fillText('ここまで積むと終了',W-16,DANGER-9);
+ ctx.textAlign='left';ctx.fillStyle='#ffe0ad8a';ctx.font='900 21px system-ui';ctx.fillText('🥟 じゅうう… 餃子鉄板',17,H-23);
 }
 function render(){
  const sw=shakeVisual>0?(Math.random()-.5)*shakeVisual:0;
  ctx.save();ctx.clearRect(0,0,W,H);ctx.translate(sw,0);drawBoard();
  if(playing&&now-lastDrop>.20){
    const x=Math.max(WALL+TYPES[next].r,Math.min(W-WALL-TYPES[next].r,aimX));
-   ctx.save();ctx.setLineDash([4,6]);ctx.lineWidth=2;ctx.strokeStyle='#ae775b91';ctx.beginPath();ctx.moveTo(x,60);ctx.lineTo(x,470);ctx.stroke();ctx.restore();
+   ctx.save();ctx.setLineDash([4,6]);ctx.lineWidth=2;ctx.strokeStyle='#ffe0a080';ctx.beginPath();ctx.moveTo(x,60);ctx.lineTo(x,470);ctx.stroke();ctx.restore();
    drawSprite(ctx,next,x,36,1,.84,Math.sin(now*1.9)*.16);
-   ctx.fillStyle='#9c6546';ctx.beginPath();ctx.moveTo(x-5,66);ctx.lineTo(x+5,66);ctx.lineTo(x,73);ctx.fill();
+   ctx.fillStyle='#f4cf8b';ctx.beginPath();ctx.moveTo(x-5,66);ctx.lineTo(x+5,66);ctx.lineTo(x,73);ctx.fill();
  }
  // each piece casts a soft shadow, then draws a shaded sprite
  const ordered=[...balls].sort((a,b)=>a.y-b.y);
  for(const b of ordered){ctx.save();ctx.globalAlpha=.16;ellipse(ctx,b.x+4,b.y+b.r*.40,b.r*.69,b.r*.28,'#4b3429');ctx.restore();}
  for(const b of ordered){drawSprite(ctx,b.type,b.x,b.y,1,1,b.angle);}
+ for(const b of ordered){if(b.type<6)continue;
+  ctx.save();ctx.strokeStyle='#fff8e9';ctx.lineWidth=1.5;
+  for(let k=0;k<2;k++){const t=now*1.7+k*2.4+b.id*.73;
+   const lift=(t*18)%26;ctx.globalAlpha=.10+.12*(1-lift/26);
+   ctx.beginPath();const sx=b.x+(k?b.r*.22:-b.r*.22),sy=b.y-b.r*.63-lift;
+   ctx.moveTo(sx,sy+7);ctx.bezierCurveTo(sx-8,sy+1,sx+9,sy-8,sx+2,sy-14);ctx.stroke();}
+  ctx.restore();
+ }
  for(const p of particles){ctx.save();ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.5));ellipse(ctx,p.x,p.y,p.size,p.size*.8,p.color);ctx.restore();}
  if(dangerTimer>0){ctx.fillStyle=`rgba(227,55,67,${Math.min(.2,dangerTimer*.12)})`;ctx.fillRect(0,0,W,DANGER);ctx.font='900 13px system-ui';ctx.fillStyle='#bd3c37';ctx.textAlign='center';ctx.fillText('⚠ 上に積みすぎ！',W/2,111);}
  ctx.restore();
@@ -328,7 +414,7 @@ canvas.addEventListener('pointermove',e=>{aimX=getPointerX(e);});
 canvas.addEventListener('pointerdown',e=>{e.preventDefault();aimX=getPointerX(e);drop(aimX);});
 window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key===' '){e.preventDefault();if(e.key==='ArrowLeft')aimX-=18;else if(e.key==='ArrowRight')aimX+=18;else drop(aimX);aimX=Math.max(20,Math.min(W-20,aimX));}if(e.key.toLowerCase()==='r'&&gameEnded)reset();});
 button.addEventListener('click',()=>{reset();});
-shakeEl.addEventListener('click',()=>{if(!playing||shakeLeft<=0)return;shakeLeft--;document.querySelector('#shakeCount').textContent='×'+shakeLeft;shakeEl.disabled=shakeLeft<=0;sfx('shake');shakeVisual=10;for(const b of balls){b.vx+=(Math.random()-.5)*330;b.vy-=Math.random()*130+30;b.omega+=(Math.random()-.5)*5;}toast('🍳 フライパンをゆすった！');});
+shakeEl.addEventListener('click',()=>{if(!playing||shakeLeft<=0)return;shakeLeft--;document.querySelector('#shakeCount').textContent='×'+shakeLeft;shakeEl.disabled=shakeLeft<=0;sfx('shake');shakeVisual=10;for(const b of balls){b.vx+=(Math.random()-.5)*330;b.vy-=Math.random()*130+30;b.omega+=(Math.random()-.5)*1.4;}toast('🍳 フライパンをゆすった！');});
 soundEl.addEventListener('click',()=>{muted=!muted;soundEl.textContent=muted?'🔇':'🔊';if(!muted)sfx('drop');});
 // ultra-crisp canvas on modern phones while maintaining fixed game coordinates
 function resolution(){const dpr=Math.min(3,window.devicePixelRatio||1);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
