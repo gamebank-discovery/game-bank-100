@@ -39,3 +39,10 @@ jobs:
           python3 scripts/check_catalog_integrity.py public-mirror
           python3 scripts/build_cloudflare.py --source public-mirror --output dist
           python3 scripts/check_catalog_integrity.py dist
+      - name: Save complete merged Cloudflare Pages preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamebank-cloudflare-merged-preview
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
