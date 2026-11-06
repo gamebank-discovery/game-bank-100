@@ -1,0 +1,41 @@
+name: GAME BANK migration integrity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public-mirror/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/mirror-public-site.yml'
+      - '.github/workflows/verify-migration.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'public-mirror/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/verify-migration.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Safety tests (no data loss)
+        run: |
+          python3 -m unittest discover -s tests -p 'test_merge_vercel_snapshot.py' -v
+          python3 -m unittest discover -s tests -p 'test_catalog_integrity.py' -v
+      - name: Validate live-source catalog and rebuilt output
+        run: |
+          set -euo pipefail
+          python3 scripts/check_catalog_integrity.py public-mirror
+          python3 scripts/build_cloudflare.py --source public-mirror --output dist
+          python3 scripts/check_catalog_integrity.py dist
