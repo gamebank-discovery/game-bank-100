@@ -33,12 +33,11 @@ jobs:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "schedule" ] && { [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; }; then
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Cloudflare credentials not linked yet; scheduled publish skipped without wasting a build."
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "::error::Cloudflare credentials missing. Configure CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in GitHub Actions secrets. No deployment occurred."
+            exit 1
           fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
       - name: Build and validate pig game
         if: steps.credentials.outputs.ready == 'true'
         run: |
@@ -99,7 +98,9 @@ jobs:
                   expected={'game-bank-100next','game-bank-100','game-bank-100-next','gamebank-discovery','pig-jump-evolution'}
                   found=[p for p in projects if p.get('name','').lower() in expected]
           if len(found)!=1:
-              raise SystemExit('Could not safely choose exactly one existing GAME BANK Pages project; set repo variable CLOUDFLARE_PAGES_PROJECT to the exact name')
+              names=', '.join(sorted(p.get('name','(unnamed)') for p in projects)) or '(none visible)'
+              print('Accessible Cloudflare Pages projects:', names)
+              raise SystemExit('Could not safely choose exactly one existing GAME BANK Pages project; set repository Actions variable CLOUDFLARE_PAGES_PROJECT to the exact existing Pages project name. Do not use a Workers script name.')
           project=found[0]['name']
           print('Selected existing Pages project:',project)
           with open(os.environ['GITHUB_OUTPUT'],'a') as output: output.write('project='+project+'\n')
