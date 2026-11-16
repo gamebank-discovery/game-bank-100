@@ -36,7 +36,7 @@ def build(source: Path, target: Path, root: Path) -> None:
     monetization = target / "monetization"
     monetization.mkdir(parents=True, exist_ok=True)
     origin = root / "monetization"
-    for filename in ("gamebank-monetize.js", "gamebank-monetize.css"):
+    for filename in ("gamebank-monetize.js", "gamebank-monetize.css", "gamebank-engagement.js", "gamebank-engagement.css"):
         shutil.copy2(origin / filename, monetization / filename)
     # An explicit config takes priority; example has ads/affiliate OFF.
     cfg = origin / "config.js"
@@ -49,6 +49,16 @@ def build(source: Path, target: Path, root: Path) -> None:
         # This does not insert ads near in-game action buttons.
         html = html.replace("</head>", STYLE + "\n</head>", 1)
         html = html.replace("</body>", WIDGETS + SELECT_LINK + SCRIPTS + "\n</body>", 1)
+        homepage.write_text(html, encoding="utf-8")
+    # Curated play/share cards only on the game catalog, never on in-game controls.
+    engagement_head = '<link rel="stylesheet" href="/monetization/gamebank-engagement.css">'
+    engagement_script = '<script defer src="/monetization/gamebank-engagement.js"></script>'
+    html = homepage.read_text(encoding="utf-8")
+    if 'gamebank-engagement.js' not in html:
+        if "</head>" not in html.lower() or "</body>" not in html.lower():
+            raise SystemExit("ERROR: malformed homepage, engagement enhancement aborted.")
+        html = html.replace("</head>", engagement_head + "\n</head>", 1)
+        html = html.replace("</body>", engagement_script + "\n</body>", 1)
         homepage.write_text(html, encoding="utf-8")
     apply_gyoza_depth(root, target)
     print(f"Built {target}/ (main catalog monetization hook ready, ads disabled by default).")

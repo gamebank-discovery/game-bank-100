@@ -1,0 +1,46 @@
+name: Verify GAME BANK engagement change
+on:
+  pull_request:
+    paths:
+      - 'monetization/gamebank-engagement.*'
+      - 'scripts/build_cloudflare.py'
+      - '.github/workflows/engagement-pr-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check Python syntax
+        run: python3 -m py_compile scripts/build_cloudflare.py
+      - name: Build Cloudflare static artifact (no deployment)
+        run: python3 scripts/build_cloudflare.py
+      - name: Check links and default-off monetization
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('dist')
+          html = (p/'index.html').read_text(encoding='utf-8')
+          for name in ('gamebank-engagement.js','gamebank-engagement.css'):
+              assert (p/'monetization'/name).is_file(), name
+              assert html.count(name) == 1, name
+          js = (p/'monetization/gamebank-engagement.js').read_text(encoding='utf-8')
+          for path in (
+            '/games/shuden-3sec/index.html',
+            '/games/neko-big-heist/index.html',
+            '/games/pig-impossible/index.html',
+          ):
+              assert path in js, path
+              assert (p/path.lstrip('/')).is_file(), 'missing game: '+path
+          config = (p/'monetization/config.js').read_text(encoding='utf-8')
+          assert config.count('enabled: false') >= 2, 'monetization must remain disabled'
+          assert 'pagead2.googlesyndication' not in html, 'unexpected ad script on homepage'
+          print('PASS: curated links exist, assets emitted, no ad activation')
+          PY
